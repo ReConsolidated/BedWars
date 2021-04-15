@@ -1,0 +1,34 @@
+name: BedWars
+main: io.github.reconsolidated.BedWars.BedWars
+version: 1.0
+api-version: 1.16
+depend: [HolographicDisplays]
+commands:
+  help:
+    description: BedWars help command.
+    permission: BedWars
+    permission-message: You don't have <permission>
+  start:
+    description: Start arena.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
+  stop:
+    description: Stop arena.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
+  itemspawner:
+    description: Create an item spawner.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
+  newspawn:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
+  setspawn:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
+  setbed:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
