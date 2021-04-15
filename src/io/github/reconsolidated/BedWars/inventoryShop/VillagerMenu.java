@@ -20,6 +20,7 @@ import java.util.ArrayList;
 /**
  * Class responsible for the BedWars shop.
  * Creating an instance opens a shop menu for the player passed as the 2nd parameter.
+ * TEST
  */
 
 public class VillagerMenu implements Listener {
