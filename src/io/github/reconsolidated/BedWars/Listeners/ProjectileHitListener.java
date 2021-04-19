@@ -4,6 +4,7 @@ import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.ScoreScoreboard;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Silverfish;
@@ -47,6 +48,12 @@ public class ProjectileHitListener implements Listener {
             }
             event.getEntity().remove();
             return;
+        }
+
+        if (event.getEntityType().equals(EntityType.EGG)){
+            Egg egg = (Egg) event.getEntity();
+            egg.setCustomName("JAJOO");
+            event.getEntity().remove();
         }
 
     }

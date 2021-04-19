@@ -22,7 +22,9 @@ public class EntityDamageListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamage(EntityDamageEvent event){
 
-        if (event.getEntity() instanceof Player && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
+        if (event.getEntity() instanceof Player
+                && !(event.getCause().equals(EntityDamageEvent.DamageCause.BLOCK_EXPLOSION)
+                || event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_EXPLOSION))) {
             Player player = (Player) event.getEntity();
             for (int i = 0; i<participants.size(); i++){
                 Participant p = participants.get(i);

@@ -3,7 +3,9 @@ package io.github.reconsolidated.BedWars;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Comparator;
@@ -49,14 +51,30 @@ public class Participant {
     public void onDeath(){
         if (getLastHitBy() != null){
             getLastHitBy().kills++;
+            for (ItemStack item : player.getInventory().getContents()){
+                if (item.getType().equals(Material.IRON_INGOT)
+                        || item.getType().equals(Material.GOLD_INGOT)
+                        || item.getType().equals(Material.DIAMOND)
+                        || item.getType().equals(Material.EMERALD)){
+                    player.getInventory().remove(item);
+                    getLastHitBy().player.getInventory().addItem(item);
+                }
+            }
+
             Bukkit.broadcastMessage(getLastHitBy().player.getDisplayName() + " zabił " + player.getDisplayName());
         }
         else{
             Bukkit.broadcastMessage(player.getDisplayName() + " z jakiegoś powodu umarł XD");
         }
 
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(armor);
+
         if (team.isBedAlive()){
             player.setHealth(20);
+            player.setFireTicks(0);
+            player.getActivePotionEffects().clear();
             player.teleport(team.getSpawnLocation());
         }
         else{

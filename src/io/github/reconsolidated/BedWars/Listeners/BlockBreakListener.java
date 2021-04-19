@@ -30,6 +30,7 @@ public class BlockBreakListener implements Listener {
         if (p == null)
             return;
         if (event.getBlock().getBlockData() instanceof Bed){
+            event.setDropItems(false);
             ArrayList<Team> teams = plugin.getTeams();
             for (int i = 0; i<teams.size(); i++){
                 if (teams.get(i).getBedLocation().distance(event.getBlock().getLocation()) < 3){

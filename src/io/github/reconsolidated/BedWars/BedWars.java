@@ -70,6 +70,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this, participants), this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
+        getServer().getPluginManager().registerEvents(new ProjectileLaunchListener(this), this);
     }
 
 
