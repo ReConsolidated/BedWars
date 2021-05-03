@@ -33,23 +33,32 @@ public class Commands implements CommandExecutor {
             plugin.onStop();
             sender.sendMessage("Arena stopped.");
         }
+        if (commandName.equals("newshop1")){
+            plugin.createShop1((Player) sender);
+            sender.sendMessage("Utworzono normalny sklep.");
+        }
+        if (commandName.equals("newshop2")){
+            plugin.createShop2((Player) sender);
+            sender.sendMessage("Utworzono diax sklep.");
+        }
         if (commandName.equals("itemspawner")){
-            if (args.length >= 2){
+            if (args.length >= 3){
                 try{
                     int frequency = Integer.parseInt(args[1]);
-                    if (args.length == 2)
-                        plugin.onItemSpawner((Player) sender, args[0], frequency, -1);
-                    else{
+                    int maxAmount = Integer.parseInt(args[2]);
+                    if (args.length == 3)
+                        plugin.onItemSpawner((Player) sender, args[0], frequency, maxAmount, -1);
+                    else {
                         int team = Integer.parseInt(args[2]);
-                        plugin.onItemSpawner((Player) sender, args[0], frequency, team);
+                        plugin.onItemSpawner((Player) sender, args[0], frequency, maxAmount, team);
                     }
                 } catch (NumberFormatException e){
-                    sender.sendMessage("Podaj poprawną liczbę jako częstotliwość dropu i numer drużyny.");
+                    sender.sendMessage("Podaj poprawną liczbę jako częstotliwość dropu, maksymalną liczbę zrespionych itemów i numer drużyny.");
                 }
 
             }
             else{
-                sender.sendMessage("Podaj angielską nazwę itemu i co ile sekund ma wypadać item.");
+                sender.sendMessage("Poprawne użycie: /itemspawner NAZWA CO_ILE_SEKUND MAX_DROPPED [TEAM](opcjonalne) ");
             }
         }
 

@@ -4,6 +4,7 @@ import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.inventoryShop.VillagerMenu;
+import io.github.reconsolidated.BedWars.inventoryShop.ZombieMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -30,6 +31,9 @@ public class PlayerInteractEntityListener implements Listener {
 
         if (event.getRightClicked().getType().equals(EntityType.VILLAGER)){
             new VillagerMenu(plugin, player, "main");
+        }
+        if (event.getRightClicked().getType().equals(EntityType.ZOMBIE)){
+            new ZombieMenu(plugin, player, "diamond");
         }
     }
 }

@@ -5,6 +5,7 @@ import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public class BlockBreakListener implements Listener {
                 if (teams.get(i).getBedLocation().distance(event.getBlock().getLocation()) < 3){
                     if (p.team == teams.get(i)){
                         event.setCancelled(true);
-                        Bukkit.broadcastMessage("Nie możesz zniszczyć swojego łóżka idioto");
+                        p.player.sendMessage(ChatColor.RED + "Nie możesz zniszczyć swojego łóżka idioto");
                     }
                     else{
                         teams.get(i).onBedDestroy();

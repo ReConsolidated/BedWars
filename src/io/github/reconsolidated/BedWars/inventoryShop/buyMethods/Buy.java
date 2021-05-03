@@ -1,6 +1,7 @@
 package io.github.reconsolidated.BedWars.inventoryShop.buyMethods;
 
 import io.github.reconsolidated.BedWars.BedWars;
+import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.inventoryShop.NbtWrapper;
 import io.github.reconsolidated.BedWars.inventoryShop.VillagerMenu;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,57 +27,108 @@ public class Buy {
         }
         if (canAfford(player, cost)) {
             charge(player, cost);
-            giveItem(player, item);
+            giveItem(plugin, player, item);
             success(plugin, player, menu);
         } else {
             fail(plugin, player, menu);
         }
-
     }
 
-    private static void giveItem(Player player, ItemStack item) {
+    private static void giveItem(BedWars plugin, Player player, ItemStack item) {
         List<String> lore = new ArrayList<String>();
-        ItemMeta meta = item.getItemMeta();
-        // removing cost line from lore
-        if (meta.getLore() != null){
-            for (String loreStr : meta.getLore()) {
-                if (!loreStr.contains("Cost")) {
-                    lore.add(lore.size(), loreStr);
-                }
-            }
-            meta.setLore(lore);
-            item.setItemMeta(meta);
+        ItemStack newItem = new ItemStack(item.getType(), item.getAmount());
+        newItem.addUnsafeEnchantments(item.getEnchantments());
+        if (item.getType().equals(Material.POTION)){
+            item.getItemMeta().setLore(Collections.emptyList());
+            newItem.setItemMeta(item.getItemMeta());
         }
-        player.getInventory().addItem(item);
+        if (isArmor(item)){
+            buyArmor(plugin, player, item);
+            return;
+        }
+        Participant p = plugin.getParticipant(player);
+        if (p != null){
+            if (isPickaxe(item)){
+                p.upgradePickaxe();
+                p.team.updateEnchants();
+                return;
+            }
+            if (isAxe(item)){
+                p.upgradeAxe();
+                p.team.updateEnchants();
+                return;
+            }
+            if (item.getType().equals(Material.SHEARS)){
+                p.upgradeShears();
+                p.team.updateEnchants();
+                return;
+            }
+            if (item.getType().equals(Material.STONE_SWORD)
+                    || item.getType().equals(Material.IRON_SWORD)
+                    || item.getType().equals(Material.DIAMOND_SWORD)){
+                charge(player, new ItemStack(Material.WOODEN_SWORD));
+                p.team.updateEnchants();
+                return;
+            }
+
+        }
+
+        player.getInventory().addItem(newItem);
     }
 
-    private static void buyArmor(Player player, ItemStack item) {
+    private static boolean isPickaxe(ItemStack item){
+        if (item.getType().equals(Material.WOODEN_PICKAXE)
+        || item.getType().equals(Material.STONE_PICKAXE)
+        || item.getType().equals(Material.IRON_PICKAXE)
+        || item.getType().equals(Material.DIAMOND_PICKAXE)){
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isAxe(ItemStack item){
+        if (item.getType().equals(Material.WOODEN_AXE)
+                || item.getType().equals(Material.STONE_AXE)
+                || item.getType().equals(Material.IRON_AXE)
+                || item.getType().equals(Material.DIAMOND_AXE)){
+            return true;
+        }
+        return false;
+    }
+
+    private static void buyArmor(BedWars plugin, Player player, ItemStack item) {
         Material armorType = item.getType();
-//        if (armorType == Material.LEATHER_CHESTPLATE) {
-//            new Full_Leather_Armor().equip(player);
-//        } else if (armorType == Material.CHAINMAIL_CHESTPLATE) {
-//            new Full_Chain_Armor().equip(player);
-//        } else if (armorType == Material.IRON_CHESTPLATE) {
-//            new Full_Iron_Armor().equip(player);
-//        } else if (armorType == Material.GOLDEN_CHESTPLATE) {
-//            new Full_Gold_Armor().equip(player);
-//        } else if (armorType == Material.DIAMOND_CHESTPLATE) {
-//            new Full_Diamond_Armor().equip(player);
-//        } else if (armorType == Material.NETHERITE_CHESTPLATE) {
-//            int level = item.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
-//            new Full_Netherite_Armor(level).equip(player);
-//        }
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        if (armorType == Material.CHAINMAIL_BOOTS) {
+            armor[0] = new ItemStack(Material.CHAINMAIL_BOOTS);
+            armor[1] = new ItemStack(Material.CHAINMAIL_LEGGINGS);
+        }
+        if (armorType == Material.IRON_BOOTS) {
+            armor[0] = new ItemStack(Material.IRON_BOOTS);
+            armor[1] = new ItemStack(Material.IRON_LEGGINGS);
+        }
+        if (armorType == Material.DIAMOND_BOOTS) {
+            armor[0] = new ItemStack(Material.DIAMOND_BOOTS);
+            armor[1] = new ItemStack(Material.DIAMOND_LEGGINGS);
+        }
+
+        Participant p = plugin.getParticipant(player);
+        if (p != null){
+            p.team.updateEnchants();
+        }
+
+        player.getInventory().setArmorContents(armor);
     }
 
     private static boolean isArmor(ItemStack item) {
         Material itemMaterial = item.getType();
         ArrayList<Material> armorMaterials = new ArrayList<>();
-        armorMaterials.add(Material.LEATHER_CHESTPLATE);
-        armorMaterials.add(Material.CHAINMAIL_CHESTPLATE);
-        armorMaterials.add(Material.IRON_CHESTPLATE);
-        armorMaterials.add(Material.GOLDEN_CHESTPLATE);
-        armorMaterials.add(Material.DIAMOND_CHESTPLATE);
-        armorMaterials.add(Material.NETHERITE_CHESTPLATE);
+        armorMaterials.add(Material.LEATHER_BOOTS);
+        armorMaterials.add(Material.CHAINMAIL_BOOTS);
+        armorMaterials.add(Material.IRON_BOOTS);
+        armorMaterials.add(Material.GOLDEN_BOOTS);
+        armorMaterials.add(Material.DIAMOND_BOOTS);
+        armorMaterials.add(Material.NETHERITE_BOOTS);
         for (Material armor : armorMaterials) {
             if (itemMaterial == armor) {
                 return true;
@@ -122,7 +175,7 @@ public class Buy {
         return new ItemStack(Material.getMaterial(matName), amount);
     }
 
-    private static void charge(Player player, ItemStack cost) {
+    public static void charge(Player player, ItemStack cost) {
         int amount = cost.getAmount();
         for (int i = 0; i<player.getInventory().getContents().length; i++){
             ItemStack item = player.getInventory().getContents()[i];

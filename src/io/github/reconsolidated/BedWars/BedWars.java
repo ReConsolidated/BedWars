@@ -6,7 +6,10 @@ import io.github.reconsolidated.BedWars.Listeners.*;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -14,10 +17,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 public class BedWars extends JavaPlugin implements Listener {
 
     private World world;
+    public boolean hasStarted = false;
 
     private final int TEAMS = 4;
 
@@ -40,6 +47,8 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginCommand("newspawn").setExecutor(commandsPlugin);
         getServer().getPluginCommand("setspawn").setExecutor(commandsPlugin);
         getServer().getPluginCommand("setbed").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("newshop1").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("newshop2").setExecutor(commandsPlugin);
         getServer().getPluginManager().registerEvents(this, this);
 
 
@@ -54,7 +63,7 @@ public class BedWars extends JavaPlugin implements Listener {
         myScoreboard = new ScoreScoreboard(participants);
         myScoreboard.runTaskTimer(this, 0, 4);
 
-        countdownRunnable = new CountdownRunnable(this, myScoreboard, 120);
+        countdownRunnable = new CountdownRunnable(this, myScoreboard, 600);
         countdownRunnable.runTaskTimer(this, 0, 20);
         gameRunnable = new GameRunnable(this);
 
@@ -71,21 +80,45 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileLaunchListener(this), this);
+        getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(this), this);
+
+
     }
 
 
     public void onStart(){
-        countdownRunnable.start();
+        Object[] shopKeys = getConfig().getConfigurationSection(currentWorldName + ".shop").getKeys(false).toArray();
+        for (int i = 0; i<shopKeys.length; i++){
+            Location location = (Location) getConfig().getConfigurationSection(currentWorldName + ".shop").get((String) shopKeys[i] + ".location");
+            Integer type = (Integer) getConfig().getConfigurationSection(currentWorldName + ".shop").get((String) shopKeys[i] + ".type");
+            if (type == 1){
+                Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
+                villager.setSilent(true);
+                villager.setAI(false);
+            }
+            if (type == 2){
+                Zombie zombie = (Zombie) world.spawnEntity(location, EntityType.ZOMBIE);
+                zombie.setSilent(true);
+                zombie.setAI(false);
+            }
+        }
+
 
         for (int i = 0; i<TEAMS; i++){
             ConfigurationSection section = getConfig().getConfigurationSection(currentWorldName + "." + i);
-            assert section != null : "Section isn't set.";
+            if (section == null){
+                Bukkit.broadcastMessage("Nie są ustawione spawny teamów");
+                return;
+            }
             teams.add(new Team(
                     (Location) section.get("bedLocation"),
                     (Location) section.get("spawnLocation"),
-                    i
+                    i,
+                    this
             ));
         }
+
+        countdownRunnable.start();
 
         int spawnersCounter = getConfig().getConfigurationSection(currentWorldName).getInt("spawners_counter");
         for (int i = 1; i<=spawnersCounter; i++){
@@ -96,7 +129,8 @@ public class BedWars extends JavaPlugin implements Listener {
             Integer period = (Integer) section.get("period");
             Location location = (Location) section.get("location");
             Integer team = (Integer) section.get("team");
-            if (type == null || period == null || location == null || team == null){
+            Integer maxAmount = (Integer) section.get("maxAmount");
+            if (type == null || period == null || location == null || team == null || maxAmount == null){
                 Bukkit.broadcastMessage("Nie udało się załadować informacji o spawnerze");
             }
             else{
@@ -104,7 +138,8 @@ public class BedWars extends JavaPlugin implements Listener {
                         new ItemStack(Material.getMaterial(type)),
                         period,
                         location,
-                        team
+                        team,
+                        maxAmount
                 ));
             }
 
@@ -117,16 +152,18 @@ public class BedWars extends JavaPlugin implements Listener {
 
         gameRunnable.runTaskTimer(this, 0, 20);
 
+        hasStarted = true;
+
     }
     public void onStop(){
         countdownRunnable.stop();
     }
 
     public void onGameEnd(){
-
+        //
     } //
 
-    public void onItemSpawner(Player player, String itemName, int period, int team){
+    public void onItemSpawner(Player player, String itemName, int period, int maxAmount, int team){
         if (Material.getMaterial(itemName) == null){
             player.sendMessage("Podano niepoprawną nazwę itemu!");
             return;
@@ -136,7 +173,8 @@ public class BedWars extends JavaPlugin implements Listener {
                 new ItemStack(Material.getMaterial(itemName), 1),
                 period,
                 player.getLocation(),
-                team));
+                team,
+                maxAmount));
         player.sendMessage("Pomyślnie utworzono spawner itemu");
 
         if (getConfig().getConfigurationSection(currentWorldName) == null){
@@ -157,9 +195,34 @@ public class BedWars extends JavaPlugin implements Listener {
         section.set("type", itemName);
         section.set("period", period);
         section.set("location", player.getLocation());
+        section.set("team", team);
+        section.set("maxAmount", maxAmount);
         player.sendMessage("Poprawnie ustawiono item spawner numer: " + spawnersCounter);
         saveConfig();
 
+    }
+
+    public void createShop1(Player player){
+        saveShop(player.getLocation(), 1);
+    }
+
+    public void createShop2(Player player){
+        saveShop(player.getLocation(), 2);
+    }
+
+    private void saveShop(Location location, int type){
+        Random random = new Random();
+        ConfigurationSection section;
+        if (getConfig().contains(currentWorldName + ".shop")){
+            section = getConfig().getConfigurationSection(currentWorldName + ".shop");
+        }
+        else{
+            section = getConfig().createSection(currentWorldName + ".shop");
+        }
+        int key = random.nextInt();
+        section.set(key + ".location", location);
+        section.set(key + ".type", type);
+        saveConfig();
     }
 
 

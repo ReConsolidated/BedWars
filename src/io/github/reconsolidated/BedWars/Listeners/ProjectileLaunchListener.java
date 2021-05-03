@@ -33,7 +33,7 @@ public class ProjectileLaunchListener implements Listener {
         if (shooter == null) return;
 
         if (event.getEntityType().equals(EntityType.EGG)){
-            BukkitRunnable rn = new BridgeEggRunnable(plugin, (Egg) event.getEntity());
+            BukkitRunnable rn = new BridgeEggRunnable(plugin, (Egg) event.getEntity(), shooter);
             rn.runTaskTimer(plugin, 3L, 1L);
         }
 

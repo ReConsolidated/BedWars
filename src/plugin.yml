@@ -32,3 +32,11 @@ commands:
     description: Set second spawn point and add the two spawn points to spawns.
     permission: BedWars.admin
     permission-message: You don't have <permission>
+  newshop1:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>
+  newshop2:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: You don't have <permission>

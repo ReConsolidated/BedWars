@@ -33,10 +33,13 @@ public class ProjectileHitListener implements Listener {
 
         if (event.getHitEntity() instanceof Player){
             Participant playerHit = plugin.getParticipant((Player) event.getHitEntity());
-            if (playerHit.team.ID == shooter.team.ID){
-                event.getEntity().remove();
-                return;
+            if (playerHit.team != null && shooter.team != null){
+                if (playerHit.team.ID == shooter.team.ID){
+                    event.getEntity().remove();
+                    return;
+                }
             }
+
         }
 
         if (event.getEntityType().equals(EntityType.SNOWBALL)){

@@ -1,7 +1,8 @@
 package io.github.reconsolidated.BedWars.inventoryShop;
 
 import io.github.reconsolidated.BedWars.BedWars;
-import io.github.reconsolidated.BedWars.inventoryShop.Listeners.MenuItemClickListener;
+import io.github.reconsolidated.BedWars.Participant;
+import io.github.reconsolidated.BedWars.inventoryShop.Listeners.VillagerMenuItemClickListener;
 import io.github.reconsolidated.BedWars.inventoryShop.Listeners.DisableDraging;
 import io.github.reconsolidated.BedWars.inventoryShop.Listeners.DisableMoving;
 import org.bukkit.Bukkit;
@@ -11,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
@@ -29,32 +28,66 @@ public class VillagerMenu implements Listener {
     private Inventory inv;
     private Player player;
     private int timerID;
+    private String color;
 
     public VillagerMenu(BedWars plugin, Player player, String type) {
         this.plugin = plugin;
         this.player = player;
         this.inv = Bukkit.createInventory(null, 54, "Sklep");
+        this.color = "WHITE";
+        Participant p = plugin.getParticipant(player);
+        if (p != null){
+            this.color = p.getColor();
+        }
+
         addItems(type);
         fillEmptySpace();
         registerEvents();
         player.openInventory(inv);
+
     }
 
     private void addItems(String type) {
         switch (type){
             case "main" -> {
-                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.RED_TERRACOTTA, 1, Material.IRON_INGOT, -1, "blocks", new ArrayList<>()));
+                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_TERRACOTTA"), 1, Material.IRON_INGOT, -1, "blocks", new ArrayList<>()));
                 this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.GOLDEN_SWORD, 1, Material.IRON_INGOT, -1, "melee", new ArrayList<>()));
                 this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, -1, "armor", new ArrayList<>()));
                 this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.STONE_PICKAXE, 1, Material.IRON_INGOT, -1, "tools", new ArrayList<>()));
                 this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.BOW, 1, Material.IRON_INGOT, -1, "ranged", new ArrayList<>()));
                 this.inv.setItem(6, CustomItemStack.createCustomItemStack(Material.BREWING_STAND, 1, Material.IRON_INGOT, -1, "potions", new ArrayList<>()));
                 this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.TNT, 1, Material.IRON_INGOT, -1, "utility", new ArrayList<>()));
-                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.WHITE_WOOL, 16, Material.IRON_INGOT, 4, "", new ArrayList<>()));
+                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_WOOL"), 16, Material.IRON_INGOT, 4, "", new ArrayList<>()));
+                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.STONE_SWORD, 1, Material.IRON_INGOT, 10, "", new ArrayList<>()));
+                this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "", new ArrayList<>()));
+                this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.WOODEN_PICKAXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>()));
+                this.inv.setItem(23, CustomItemStack.createCustomItemStack(Material.BOW, 1, Material.GOLD_INGOT, 12, "", new ArrayList<>()));
+                this.inv.setItem(24, CustomItemStack.createCustomPotion(PotionType.INVISIBILITY, 1, Material.EMERALD, 2, ""));
+                this.inv.setItem(25, CustomItemStack.createCustomItemStack(Material.TNT, 1, Material.GOLD_INGOT, 4, "", new ArrayList<>()));
+                this.inv.setItem(28, CustomItemStack.createCustomItemStack(Material.OAK_PLANKS, 16, Material.GOLD_INGOT, 4, "", new ArrayList<>()));
+                this.inv.setItem(29, CustomItemStack.createCustomItemStack(Material.IRON_SWORD, 1, Material.GOLD_INGOT, 7, "", new ArrayList<>()));
+                this.inv.setItem(30, CustomItemStack.createCustomItemStack(Material.IRON_BOOTS, 1, Material.GOLD_INGOT, 12, "", new ArrayList<>()));
+                this.inv.setItem(31, CustomItemStack.createCustomItemStack(Material.SHEARS, 1, Material.IRON_INGOT, 20, "", new ArrayList<>()));
+                this.inv.setItem(32, CustomItemStack.createCustomItemStack(Material.ARROW, 8, Material.GOLD_INGOT, 2, "", new ArrayList<>()));
+                this.inv.setItem(33, CustomItemStack.createCustomPotion(PotionType.JUMP, 1, Material.EMERALD, 1, ""));
+                this.inv.setItem(34, CustomItemStack.createCustomItemStack(Material.WATER_BUCKET, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>()));
+
+                this.inv.setItem(37, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_TERRACOTTA"), 16, Material.IRON_INGOT, 12, "", new ArrayList<>()));
+                this.inv.setItem(38, CustomItemStack.createCustomItemStack(Material.DIAMOND_SWORD, 1, Material.EMERALD, 4, "", new ArrayList<>()));
+                this.inv.setItem(39, CustomItemStack.createCustomItemStack(Material.DIAMOND_BOOTS, 1, Material.EMERALD, 6, "", new ArrayList<>()));
+                this.inv.setItem(40, CustomItemStack.createCustomItemStack(Material.WOODEN_AXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>()));
+
+                ItemStack item = CustomItemStack.createCustomItemStack(Material.BOW, 1, Material.GOLD_INGOT, 24, "", new ArrayList<>());
+                item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
+                this.inv.setItem(41, item);
+
+                this.inv.setItem(42, CustomItemStack.createCustomPotion(PotionType.SPEED, 1, Material.EMERALD, 1, ""));
+                this.inv.setItem(43, CustomItemStack.createCustomItemStack(Material.GOLDEN_APPLE, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>()));
+
             }
             case "blocks" -> {
-                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.WHITE_TERRACOTTA, 16, Material.IRON_INGOT, 12, "", new ArrayList<>()));
-                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.WHITE_TERRACOTTA, 16, Material.IRON_INGOT, 12, "", new ArrayList<>()));
+                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_WOOL"), 16, Material.IRON_INGOT, 12, "", new ArrayList<>()));
+                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_TERRACOTTA"), 16, Material.IRON_INGOT, 12, "", new ArrayList<>()));
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.GLASS, 4, Material.IRON_INGOT, 12, "", new ArrayList<>()));
                 this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.END_STONE, 12, Material.IRON_INGOT, 24, "", new ArrayList<>()));
                 this.inv.setItem(23, CustomItemStack.createCustomItemStack(Material.LADDER, 16, Material.IRON_INGOT, 4, "", new ArrayList<>()));
@@ -70,9 +103,9 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(22, item);
             }
             case "armor" -> {
-                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "armor", new ArrayList<>()));
-                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.IRON_BOOTS, 1, Material.GOLD_INGOT, 12, "armor", new ArrayList<>()));
-                this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.DIAMOND_BOOTS, 1, Material.EMERALD, 6, "armor", new ArrayList<>()));
+                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "", new ArrayList<>()));
+                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.IRON_BOOTS, 1, Material.GOLD_INGOT, 12, "", new ArrayList<>()));
+                this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.DIAMOND_BOOTS, 1, Material.EMERALD, 6, "", new ArrayList<>()));
             }
             case "tools" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.SHEARS, 1, Material.IRON_INGOT, 20, "", new ArrayList<>()));
@@ -91,23 +124,9 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(22, item2);
             }
             case "potions" -> {
-                ItemStack speedPotion = CustomItemStack.createCustomItemStack(Material.POTION, 1, Material.EMERALD, 1, "", new ArrayList<>());
-                PotionMeta speedMeta = (PotionMeta) speedPotion.getItemMeta();
-                speedMeta.setBasePotionData(new PotionData(PotionType.SPEED, false, true));
-                speedPotion.setItemMeta(speedMeta);
-                this.inv.setItem(19, speedPotion);
-
-                ItemStack jumpPotion = CustomItemStack.createCustomItemStack(Material.POTION, 1, Material.EMERALD, 1, "", new ArrayList<>());
-                PotionMeta jumpMeta = (PotionMeta) jumpPotion.getItemMeta();
-                jumpMeta.setBasePotionData(new PotionData(PotionType.JUMP, false, true));
-                jumpPotion.setItemMeta(jumpMeta);
-                this.inv.setItem(20, jumpPotion);
-
-                ItemStack invisPotion = CustomItemStack.createCustomItemStack(Material.POTION, 1, Material.EMERALD, 2, "", new ArrayList<>());
-                PotionMeta invisMeta = (PotionMeta) invisPotion.getItemMeta();
-                invisMeta.setBasePotionData(new PotionData(PotionType.INVISIBILITY, false, false));
-                invisPotion.setItemMeta(invisMeta);
-                this.inv.setItem(21, invisPotion);
+                this.inv.setItem(19, CustomItemStack.createCustomPotion(PotionType.SPEED, 1, Material.EMERALD, 1, ""));
+                this.inv.setItem(20, CustomItemStack.createCustomPotion(PotionType.JUMP, 1, Material.EMERALD, 1, ""));
+                this.inv.setItem(21, CustomItemStack.createCustomPotion(PotionType.INVISIBILITY, 1, Material.EMERALD, 2, ""));
             }
             case "utility" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.GOLDEN_APPLE, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>()));
@@ -138,7 +157,7 @@ public class VillagerMenu implements Listener {
     private void registerEvents() {
         plugin.getServer().getPluginManager().registerEvents(new DisableMoving(inv), plugin);
         plugin.getServer().getPluginManager().registerEvents(new DisableDraging(inv), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new MenuItemClickListener(plugin,this), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new VillagerMenuItemClickListener(plugin,this), plugin);
     }
 
     private void setTiles(Material material) {

@@ -13,10 +13,16 @@ public class BridgeEggRunnable extends BukkitRunnable {
     private BedWars plugin;
     private Egg egg;
     private Location lastLocation;
-    public BridgeEggRunnable(BedWars plugin, Egg egg) {
+    private Participant shooter;
+    private String color = "BLUE";
+
+    public BridgeEggRunnable(BedWars plugin, Egg egg, Participant shooter) {
         this.plugin = plugin;
         this.egg = egg;
+        this.shooter = shooter;
         counter = 0;
+
+        this.color = shooter.getColor();
     }
 
     @Override
@@ -29,20 +35,22 @@ public class BridgeEggRunnable extends BukkitRunnable {
             this.cancel();
         }
         if (lastLocation != null)
-            new EggRunnable(lastLocation.clone()).runTaskLater(plugin, 10L);
+            new EggRunnable(lastLocation.clone(), color).runTaskLater(plugin, 10L);
 
         lastLocation = egg.getLocation().clone().add(0, -2, 0);
     }
 
     private static class EggRunnable extends BukkitRunnable{
         private final Location lastLocation;
-        public EggRunnable(Location lastLocation){
+        private final String color;
+        public EggRunnable(Location lastLocation, String color){
             this.lastLocation = lastLocation;
+            this.color = color;
         }
         @Override
         public void run() {
             if (lastLocation != null && lastLocation.getBlock().getType().equals(Material.AIR)){
-                lastLocation.getBlock().setType(Material.WHITE_WOOL);
+                lastLocation.getBlock().setType(Material.getMaterial(color + "_WOOL"));
                 if (lastLocation.clone().add(1, 0, 0).getBlock().getType().equals(Material.AIR)){
                     lastLocation.clone().add(1, 0, 0).getBlock().setType(Material.WHITE_WOOL);
                 }
