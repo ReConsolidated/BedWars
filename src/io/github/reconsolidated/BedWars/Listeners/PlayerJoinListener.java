@@ -30,7 +30,6 @@ public class PlayerJoinListener implements Listener {
         player.teleport(player.getWorld().getSpawnLocation());
         if (!plugin.hasStarted){
             Participant p = new Participant(player, plugin);
-            player.setScoreboard(myScoreboard.scoreboard);
             participants.add(p);
             player.setInvulnerable(true);
         }

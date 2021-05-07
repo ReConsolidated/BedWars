@@ -66,7 +66,7 @@ public class ZombieMenu implements Listener {
             case "diamond" ->{
                 this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.IRON_SWORD, 1, Material.DIAMOND, 4, "diamond", new ArrayList<>(), player));
                 this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.IRON_CHESTPLATE, 1, Material.DIAMOND, getArmorCost(), "diamond", new ArrayList<>(), player));
-                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.GOLDEN_PICKAXE, 1, Material.IRON_INGOT, getHasteCost(), "diamond", new ArrayList<>(), player));
+                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.GOLDEN_PICKAXE, 1, Material.DIAMOND, getHasteCost(), "diamond", new ArrayList<>(), player));
                 this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.FURNACE, 1, Material.DIAMOND, getResourcesCost(), "diamond", new ArrayList<>(), player));
                 this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.BEACON, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));
                 this.inv.setItem(6, CustomItemStack.createCustomItemStack(Material.DRAGON_EGG, 1, Material.DIAMOND, 5, "diamond", new ArrayList<>(), player));

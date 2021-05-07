@@ -4,6 +4,7 @@ import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Teams.Traps.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -30,6 +31,8 @@ public class Team {
     public int dragons = 1;
     public int ID;
 
+    public String lastScoreboardString = "--";
+
     private boolean hasHealPool = false;
 
     public HashSet<Participant> members;
@@ -43,6 +46,16 @@ public class Team {
         new TeamBase(plugin, ID, spawnLocation).runTaskTimer(plugin, 0L, 20L);
         members = new HashSet<>();
         traps = new LinkedList<>();
+    }
+
+    public ChatColor getChatColor(){
+        switch (ID){
+            case 0 -> {return ChatColor.BLUE;}
+            case 1 -> {return ChatColor.RED;}
+            case 2 -> {return ChatColor.YELLOW;}
+            case 3 -> {return ChatColor.GREEN;}
+        }
+        return ChatColor.BLACK;
     }
 
     public ArrayList<ItemStack> getTrapItems(){

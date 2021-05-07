@@ -34,6 +34,10 @@ public class BlockPlaceListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event){
+        if (event.getBlock().getLocation().getBlockY() > 100){
+            event.setCancelled(true);
+            return;
+        }
         Player player = event.getPlayer();
         Participant p = plugin.getParticipant(player);
         if (p == null)

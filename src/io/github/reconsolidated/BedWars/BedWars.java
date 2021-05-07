@@ -57,12 +57,16 @@ public class BedWars extends JavaPlugin implements Listener {
         world = Bukkit.getWorlds().get(0);
 
         world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.DO_INSOMNIA, false);
 
         participants = new ArrayList<>();
         teams = new ArrayList<>();
         spawners = new ArrayList<>();
 
-        myScoreboard = new ScoreScoreboard(participants);
+        myScoreboard = new ScoreScoreboard(teams);
         myScoreboard.runTaskTimer(this, 0, 4);
 
         countdownRunnable = new CountdownRunnable(this, myScoreboard, 600);
@@ -86,6 +90,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
+        getServer().getPluginManager().registerEvents(new ItemDespawnListener(this), this);
 
 
     }
@@ -103,6 +108,7 @@ public class BedWars extends JavaPlugin implements Listener {
             }
             if (type == 2){
                 Zombie zombie = (Zombie) world.spawnEntity(location, EntityType.ZOMBIE);
+                zombie.setAdult();
                 zombie.setRemoveWhenFarAway(false);
                 zombie.setSilent(true);
                 zombie.setAI(false);
@@ -157,7 +163,7 @@ public class BedWars extends JavaPlugin implements Listener {
         }
 
         gameRunnable.runTaskTimer(this, 0, 20);
-
+        myScoreboard.registerPlayers();
         hasStarted = true;
 
     }

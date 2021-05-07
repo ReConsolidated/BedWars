@@ -41,8 +41,8 @@ public class CountdownRunnable extends BukkitRunnable {
             }
 
 
-            Score score = ssb.scoreboard.getObjective("Score").getScore(lastScore);
-            score.setScore(-2); //Making it so after "Time:" it displays the int countdown(So how long it has left in seconds.)
+            Score score = ssb.scoreboard.getObjective("Drużyny").getScore(lastScore);
+            score.setScore(6); //Making it so after "Time:" it displays the int countdown(So how long it has left in seconds.)
             if(countdown == 0) {
                 plugin.onGameEnd();
                 this.cancel();

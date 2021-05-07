@@ -1,10 +1,10 @@
 package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import io.github.reconsolidated.BedWars.Teams.Team;
+import org.bukkit.*;
+import org.bukkit.block.data.type.Bed;
+import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class GameRunnable extends BukkitRunnable {
         }
         if (counter == 185){
             for (int i = 0; i<spawners.size(); i++){
-                if (spawners.get(i).getTeamID() == -1 && spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
+                if (spawners.get(i).getTeamID() == -1 && spawners.get(i).getItem().getType().equals(Material.EMERALD)){
                     spawners.get(i).setPeriod(plugin.getConfig().getInt("EMERALD_II"));
                 }
             }
@@ -71,6 +71,46 @@ public class GameRunnable extends BukkitRunnable {
                 }
             }
         }
+        if (counter == 844){
+            for (int i = 0; i<spawners.size(); i++){
+                if (spawners.get(i).getTeamID() == -1 && spawners.get(i).getItem().getType().equals(Material.EMERALD)){
+                    spawners.get(i).setPeriod(plugin.getConfig().getInt("EMERALD_III"));
+                }
+            }
+        }
+        if (counter == 1443){
+            for (Team t : plugin.getTeams()){
+                for (int i = t.getBedLocation().getBlockX()-2; i<t.getBedLocation().getBlockX()+2; i++){
+                    for (int j = t.getBedLocation().getBlockY()-2; j<t.getBedLocation().getBlockY()+2; j++){
+                        for (int k = t.getBedLocation().getBlockZ()-2; k<t.getBedLocation().getBlockZ()+2; k++){
+                            if (t.getBedLocation().getWorld().getBlockAt(i, j, k).getBlockData() instanceof Bed){
+                                t.getBedLocation().getWorld().getBlockAt(i, j, k).setType(Material.AIR);
+                            }
+                        }
+                    }
+                }
+                t.onBedDestroy();
+            }
+            Bukkit.broadcastMessage(ChatColor.DARK_PURPLE +
+                    "Wszystkie łóżka " + ChatColor.BOLD + ""
+                    + ChatColor.GOLD + "ZNISZCZONE!");
+
+        }
+        if (counter == 20){
+            for (Team t : plugin.getTeams()){
+                boolean isAnyoneAlive = false;
+                for (Participant m : t.members){
+                    if (m.player.isOnline() && m.player.getGameMode().equals(GameMode.SURVIVAL)){
+                        isAnyoneAlive = true;
+                    }
+                }
+                if (isAnyoneAlive){
+                    for (int i = 0; i<t.dragons; i++){
+                        t.getBedLocation().getWorld().spawnEntity(t.getBedLocation(), EntityType.ENDER_DRAGON);
+                    }
+                }
+            }
+        }
 
         //
         counter++;
@@ -78,11 +118,14 @@ public class GameRunnable extends BukkitRunnable {
 
     public String getNextEventName(){
         if (counter < 5) return "Start gry";
-        if (counter < 65) return "Diamenty II";
-        if (counter < 125) return "Diamenty III";
-        if (counter < 185) return "Emeraldy II";
-        if (counter < 245) return "Diamenty IV";
-        return "Nie wiem co dalej";
+        if (counter < 65) return ChatColor.AQUA + "Diamenty II" + ChatColor.WHITE;
+        if (counter < 125) return ChatColor.AQUA + "Diamenty III" + ChatColor.WHITE;
+        if (counter < 185) return ChatColor.GREEN + "Emeraldy II" + ChatColor.WHITE;
+        if (counter < 245) return ChatColor.AQUA + "Diamenty IV" + ChatColor.WHITE;
+        if (counter < 844) return ChatColor.GREEN + "Emeraldy III" + ChatColor.WHITE;
+        if (counter < 1443) return ChatColor.GOLD + "Łóżka znikną" + ChatColor.WHITE;
+        if (counter < 2042) return ChatColor.MAGIC + "Apokalipsa" + ChatColor.WHITE;
+        return "Koniec";
     }
 
     public int getNextEventTime(){
@@ -91,6 +134,9 @@ public class GameRunnable extends BukkitRunnable {
         if (counter < 125) return 125;
         if (counter < 185) return 185;
         if (counter < 245) return 245;
+        if (counter < 844) return 844;
+        if (counter < 1443) return 1443;
+        if (counter < 2042) return 2042;
         return 0;
     }
 }

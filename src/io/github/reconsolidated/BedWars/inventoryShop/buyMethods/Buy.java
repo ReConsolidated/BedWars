@@ -5,6 +5,7 @@ import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.inventoryShop.NbtWrapper;
 import io.github.reconsolidated.BedWars.inventoryShop.VillagerMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -24,6 +25,13 @@ public class Buy {
         if (cost == null){
             player.sendMessage("Something unexpected happened, please contact the server administrator.");
             return;
+        }
+        if (isArmor(item)){
+            if (player.getInventory().getBoots().getType().equals(item.getType())){
+                player.sendMessage(ChatColor.RED + "Masz już taką zbroję.");
+                fail(plugin, player, menu);
+                return;
+            }
         }
         if (canAfford(player, cost)) {
             charge(player, cost);
