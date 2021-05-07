@@ -20,15 +20,16 @@ import java.util.regex.Pattern;
 
 public class Buy {
     public static void item(BedWars plugin, Player player, ItemStack item, VillagerMenu menu) {
-
         ItemStack cost = getCost(item);
         if (cost == null){
             player.sendMessage("Something unexpected happened, please contact the server administrator.");
+            return;
         }
         if (canAfford(player, cost)) {
             charge(player, cost);
             giveItem(plugin, player, item);
             success(plugin, player, menu);
+            menu.addItems("main");
         } else {
             fail(plugin, player, menu);
         }
@@ -67,6 +68,7 @@ public class Buy {
                     || item.getType().equals(Material.IRON_SWORD)
                     || item.getType().equals(Material.DIAMOND_SWORD)){
                 charge(player, new ItemStack(Material.WOODEN_SWORD));
+                player.getInventory().addItem(newItem);
                 p.team.updateEnchants();
                 return;
             }
@@ -196,7 +198,7 @@ public class Buy {
         }
     }
 
-    private static boolean canAfford(Player player, ItemStack cost) {
+    public static boolean canAfford(Player player, ItemStack cost) {
         int amount = cost.getAmount();
         for (ItemStack items : player.getInventory().getContents()){
             if (items == null)

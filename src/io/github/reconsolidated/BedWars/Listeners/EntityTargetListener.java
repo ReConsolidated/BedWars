@@ -1,8 +1,10 @@
 package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
+import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
+import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
 import io.github.reconsolidated.BedWars.Participant;
-import io.github.reconsolidated.BedWars.ScoreScoreboard;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -10,9 +12,6 @@ import org.bukkit.entity.Silverfish;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.ArrayList;
 
 public class EntityTargetListener implements Listener {
     private BedWars plugin;
@@ -28,8 +27,19 @@ public class EntityTargetListener implements Listener {
             if (event.getTarget() instanceof Player){
                 Participant p = plugin.getParticipant((Player) event.getTarget());
                 if (p != null && p.team != null){
-                    if (Integer.toString(p.team.ID).equals(le.getCustomName())){
-                        event.setCancelled(true);
+                    for (CustomIronGolem golem : plugin.getGolems()){
+                        if (le.getEntityId() == golem.getBukkitEntity().getEntityId()){
+                            if (golem.teamID == p.team.ID){
+                                event.setCancelled(true);
+                            }
+                        }
+                    }
+                    for (CustomSilverFish sf : plugin.getSilverFish()){
+                        if (le.getEntityId() == sf.getBukkitEntity().getEntityId()){
+                            if (sf.teamID == p.team.ID){
+                                event.setCancelled(true);
+                            }
+                        }
                     }
                 }
             };

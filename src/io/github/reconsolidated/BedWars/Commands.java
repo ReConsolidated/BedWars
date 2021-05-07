@@ -22,7 +22,7 @@ public class Commands implements CommandExecutor {
 
         String commandName = command.getName().toLowerCase();
 
-        if (commandName.equals("help")){
+        if (commandName.equals("helpbedwars")){
             sender.sendMessage("This is help command. It will be implemented later");
         }
         if (commandName.equals("start")){

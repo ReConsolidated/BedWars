@@ -18,10 +18,8 @@ import java.util.ArrayList;
 
 public class BlockBreakListener implements Listener {
     private BedWars plugin;
-    private ArrayList<Participant> participants;
-    public BlockBreakListener(BedWars plugin, ArrayList<Participant> participants){
+    public BlockBreakListener(BedWars plugin){
         this.plugin = plugin;
-        this.participants = participants;
     }
 
     @EventHandler

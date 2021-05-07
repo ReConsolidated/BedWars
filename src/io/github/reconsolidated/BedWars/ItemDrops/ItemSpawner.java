@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 
 public class ItemSpawner {
     private ItemStack item;  // Item spawned by spawner
-    private int period;   // Spawns per minute
+    private int period;   // spawn every period * 20 ms
     private Location location;
     private BedWars plugin;
     private TextLine counterTextLine;

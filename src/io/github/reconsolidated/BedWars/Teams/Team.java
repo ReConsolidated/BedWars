@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -42,6 +43,17 @@ public class Team {
         new TeamBase(plugin, ID, spawnLocation).runTaskTimer(plugin, 0L, 20L);
         members = new HashSet<>();
         traps = new LinkedList<>();
+    }
+
+    public ArrayList<ItemStack> getTrapItems(){
+        ArrayList<ItemStack> trapItems = new ArrayList<>();
+        for (Trap trap : traps){
+            trapItems.add(trap.getItemStack());
+        }
+        while (trapItems.size() < 3){
+            trapItems.add(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, trapItems.size()+1));
+        }
+        return trapItems;
     }
 
     public void updateEnchants(){

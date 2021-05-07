@@ -2,8 +2,11 @@ package io.github.reconsolidated.BedWars.Teams.Traps;
 
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
+import io.github.reconsolidated.BedWars.inventoryShop.CustomItemStack;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -20,5 +23,10 @@ public class MinerTrap implements Trap {
                     p.player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 20 * 10, 1));                }
             }
         }
+    }
+
+    @Override
+    public ItemStack getItemStack() {
+        return CustomItemStack.createCustomItemStack(Material.IRON_PICKAXE, 1, Material.DIAMOND, -1, "not_clickable", new ArrayList<>(), null);
     }
 }

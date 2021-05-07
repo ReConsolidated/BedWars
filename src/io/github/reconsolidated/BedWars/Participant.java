@@ -100,6 +100,9 @@ public class Participant {
     }
 
     public void onDeath(){
+        player.setGameMode(GameMode.SPECTATOR);
+        player.teleport(player.getWorld().getSpawnLocation());
+
         if (getLastHitBy() != null){
             getLastHitBy().kills++;
             for (ItemStack item : player.getInventory().getContents()){

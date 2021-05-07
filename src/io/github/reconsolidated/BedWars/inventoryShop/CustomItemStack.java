@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -20,10 +21,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.reconsolidated.BedWars.inventoryShop.buyMethods.Buy.canAfford;
+
 public class CustomItemStack {
     private static YamlConfiguration customConfig;
 
-    public static ItemStack createCustomItemStack(Material material, int amount, Material costMaterial, int cost, String category, List<String> lore){
+    public static ItemStack createCustomItemStack(Material material, int amount, Material costMaterial, int cost, String category, List<String> lore, Player player){
         ItemStack itemStack = new ItemStack(material, amount);
         itemStack = NbtWrapper.setNBTTag("category", category, itemStack);
         if (cost > 0){
@@ -31,18 +34,74 @@ public class CustomItemStack {
             itemStack = NbtWrapper.setNBTTag("cost_material", costMaterial.toString(), itemStack);
 
             ItemMeta meta = itemStack.getItemMeta();
-            if (category.equals("diamond") || category.equals("traps") || category.equals("back"))
+            String name = "";
+            if (category.equals("diamond") || category.equals("traps") || category.equals("back")){
                 meta.setLore(getDiamondLore(material, itemStack));
-            else
-                meta.setLore(getLore(material, itemStack));
+                name = getDiamondName(itemStack);
+            }
+            else{
+                meta.setLore(getLore(material, itemStack, player, new ItemStack(costMaterial, cost)));
+                name = getName(itemStack);
+            }
+
+            if (player != null && canAfford(player, new ItemStack(costMaterial, cost))){
+                meta.setDisplayName(ChatColor.GREEN + name);
+            }
+            else if (player != null){
+                meta.setDisplayName(ChatColor.RED + name);
+            }
             itemStack.setItemMeta(meta);
         }
-
+        else{
+            ItemMeta meta = itemStack.getItemMeta();
+            meta.setDisplayName(ChatColor.AQUA + getCategoryName(itemStack));
+            itemStack.setItemMeta(meta);
+        }
 
         return itemStack;
     }
 
-    public static ItemStack createCustomPotion(PotionType type, int amount, Material costMaterial, int cost, String category){
+    private static String getCategoryName(ItemStack item){
+        loadCustomConfig("category_item_names_pl");
+        if (customConfig.contains(item.getType().toString())) {
+            String name = ChatColor
+                    .translateAlternateColorCodes('&', (String) customConfig.get(item.getType().toString()));
+            return name;
+        }
+        else{
+            Bukkit.broadcastMessage("Nie znaleziono nazwy przedmiotu: " + item.getType().toString());
+            return "NIEZNANY PRZEDMIOT";
+        }
+    }
+
+    private static String getDiamondName(ItemStack item){
+        loadCustomConfig("diamond_item_names_pl");
+        if (customConfig.contains(item.getType().toString())) {
+            String name = ChatColor
+                    .translateAlternateColorCodes('&', (String) customConfig.get(item.getType().toString()));
+            return name;
+        }
+        else{
+            Bukkit.broadcastMessage("Nie znaleziono nazwy przedmiotu: " + item.getType().toString());
+            return "NIEZNANY PRZEDMIOT";
+        }
+    }
+
+    private static String getName(ItemStack item){
+        loadCustomConfig("item_names_pl");
+        if (customConfig.contains(item.getType().toString())) {
+            String name = ChatColor
+                    .translateAlternateColorCodes('&', (String) customConfig.get(item.getType().toString()));
+            return name;
+        }
+        else{
+            Bukkit.broadcastMessage("Nie znaleziono nazwy przedmiotu: " + item.getType().toString());
+            return "NIEZNANY PRZEDMIOT";
+        }
+    }
+
+
+    public static ItemStack createCustomPotion(PotionType type, int amount, Material costMaterial, int cost, String category, Player player){
         ItemStack itemStack = new ItemStack(Material.POTION, amount);
         itemStack = NbtWrapper.setNBTTag("category", category, itemStack);
         if (cost > 0){
@@ -51,7 +110,15 @@ public class CustomItemStack {
 
             PotionMeta jumpMeta = (PotionMeta) itemStack.getItemMeta();
             jumpMeta.setBasePotionData(new PotionData(type, false, false));
-            jumpMeta.setLore(getLore(Material.POTION, itemStack));
+            jumpMeta.setLore(getLore(Material.POTION, itemStack, player, new ItemStack(costMaterial, cost)));
+
+            if (player != null && canAfford(player, new ItemStack(costMaterial, cost))){
+                jumpMeta.setDisplayName(ChatColor.GREEN + itemStack.getType().name());
+            }
+            else if (player != null){
+                jumpMeta.setDisplayName(ChatColor.RED + itemStack.getType().name());
+            }
+
             itemStack.setItemMeta(jumpMeta);
         }
 
@@ -77,7 +144,7 @@ public class CustomItemStack {
         return result;
     }
 
-    private static List<String> getLore(Material material, ItemStack item){
+    private static List<String> getLore(Material material, ItemStack item, Player player, ItemStack cost){
         if (customConfig == null){
             loadCustomConfig("item_lores");
         }
@@ -133,6 +200,13 @@ public class CustomItemStack {
         else{
             Bukkit.broadcastMessage("Nie znaleziono opisu przedmiotu: " + material.toString());
         }
+        result.add("");
+        if (canAfford(player, cost)){
+            result.add(ChatColor.GREEN + "Kliknij, żeby kupić!");
+        }
+        else{
+            result.add(ChatColor.RED + "Nie możesz tego kupić.");
+        }
         return result;
     }
 
@@ -140,8 +214,14 @@ public class CustomItemStack {
         BedWars plugin = (BedWars) Bukkit.getPluginManager().getPlugin("BedWars");
         File customConfigFile = new File(plugin.getDataFolder(), name + ".yml");
         if (!customConfigFile.exists()) {
-            customConfigFile.getParentFile().mkdirs();
-            plugin.saveResource(name+".yml", false);
+            try{
+                customConfigFile.createNewFile();
+                plugin.saveResource(name+".yml", true);
+            }
+            catch (IOException e){
+                Bukkit.broadcastMessage("Nie udalo sie wczytac pliku konfiguracyjnego: " + name);
+            }
+
         }
         customConfig = new YamlConfiguration();
         try {

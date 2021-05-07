@@ -15,7 +15,7 @@ public class CountdownRunnable extends BukkitRunnable {
     public CountdownRunnable(BedWars plugin, ScoreScoreboard ssb, int countdown) {
         this.plugin = plugin;
         this.ssb = ssb;
-        this.countdown = countdown;
+        this.countdown = 0;
         this.isGoing = false;
     }
 
@@ -30,13 +30,14 @@ public class CountdownRunnable extends BukkitRunnable {
     @Override
     public void run() {
         if (isGoing){
-            countdown --; //Taking away 1 from countdown every 1 second
+            countdown++; // Adding 1 every second
             ssb.scoreboard.resetScores(lastScore);
-            if (countdown%60 > 9){
-                lastScore = ("Time left: 0" + ((countdown - countdown%60)/60) + ":" + countdown%60);
+            int timeTillNextEvent = plugin.getNextEventTime() - countdown;
+            if (timeTillNextEvent%60 > 9){
+                lastScore = (plugin.getNextEventName() + " za: 0" + ((timeTillNextEvent - timeTillNextEvent%60)/60) + ":" + timeTillNextEvent%60);
             }
             else{
-                lastScore = ("Time left: 0" + ((countdown - countdown%60)/60)+ ":0" + countdown%60);
+                lastScore = (plugin.getNextEventName() + " za: 0" + ((timeTillNextEvent - timeTillNextEvent%60)/60)+ ":0" + timeTillNextEvent%60);
             }
 
 

@@ -31,6 +31,7 @@ public class ZombieMenu implements Listener {
     private Participant participant;
     private int timerID;
     private String color;
+    private Player player;
 
     public ZombieMenu(BedWars plugin, Player player, String type) {
         this.plugin = plugin;
@@ -40,7 +41,7 @@ public class ZombieMenu implements Listener {
         this.inv = Bukkit.createInventory(null, 54, "Sklep drużynowy");
         this.color = p.getColor();
         this.participant = p;
-
+        this.player = player;
         addItems(type);
         fillEmptySpace();
         registerEvents();
@@ -63,20 +64,24 @@ public class ZombieMenu implements Listener {
         this.inv.clear();
         switch (type){
             case "diamond" ->{
-                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.IRON_SWORD, 1, Material.DIAMOND, 4, "diamond", new ArrayList<>()));
-                this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.IRON_CHESTPLATE, 1, Material.DIAMOND, getArmorCost(), "diamond", new ArrayList<>()));
-                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.GOLDEN_PICKAXE, 1, Material.IRON_INGOT, getHasteCost(), "diamond", new ArrayList<>()));
-                this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.FURNACE, 1, Material.DIAMOND, getResourcesCost(), "diamond", new ArrayList<>()));
-                this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.BEACON, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>()));
-                this.inv.setItem(6, CustomItemStack.createCustomItemStack(Material.DRAGON_EGG, 1, Material.DIAMOND, 5, "diamond", new ArrayList<>()));
-                this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.LEATHER, 1, Material.DIAMOND, -1, "traps", new ArrayList<>()));
+                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.IRON_SWORD, 1, Material.DIAMOND, 4, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.IRON_CHESTPLATE, 1, Material.DIAMOND, getArmorCost(), "diamond", new ArrayList<>(), player));
+                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.GOLDEN_PICKAXE, 1, Material.IRON_INGOT, getHasteCost(), "diamond", new ArrayList<>(), player));
+                this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.FURNACE, 1, Material.DIAMOND, getResourcesCost(), "diamond", new ArrayList<>(), player));
+                this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.BEACON, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(6, CustomItemStack.createCustomItemStack(Material.DRAGON_EGG, 1, Material.DIAMOND, 5, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.LEATHER, 1, Material.DIAMOND, -1, "traps", new ArrayList<>(), player));
+
+                this.inv.setItem(21, participant.team.getTrapItems().get(0));
+                this.inv.setItem(22, participant.team.getTrapItems().get(1));
+                this.inv.setItem(23, participant.team.getTrapItems().get(2));
             }
             case "traps" ->{
-                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.TRIPWIRE_HOOK, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>()));
-                this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.FEATHER, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>()));
-                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.REDSTONE_TORCH, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>()));
-                this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.IRON_PICKAXE, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>()));
-                this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "back", new ArrayList<>()));
+                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.TRIPWIRE_HOOK, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.FEATHER, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.REDSTONE_TORCH, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.IRON_PICKAXE, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));
+                this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "back", new ArrayList<>(), player));
             }
         }
 

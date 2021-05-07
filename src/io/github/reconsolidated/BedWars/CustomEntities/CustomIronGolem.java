@@ -1,21 +1,21 @@
-package io.github.reconsolidated.BedWars.CustomIronGolem;
+package io.github.reconsolidated.BedWars.CustomEntities;
 
-import io.github.reconsolidated.BedWars.Participant;
 import net.minecraft.server.v1_16_R2.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 public class CustomIronGolem extends EntityIronGolem {
+    public int teamID;
 
     public CustomIronGolem(EntityTypes<? extends EntityIronGolem> entitytypes, World world) {
         super(entitytypes, world);
     }
 
-    public void spawn(Player player, Location location){
+    public void spawn(int teamID, Location location){
         ((CraftWorld)location.getWorld()).addEntity(this, CreatureSpawnEvent.SpawnReason.CUSTOM);
         this.setPosition(location.getX(), location.getY(), location.getZ());
+        this.teamID = teamID;
     }
 
 

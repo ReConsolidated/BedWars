@@ -2,8 +2,11 @@ package io.github.reconsolidated.BedWars.Teams.Traps;
 
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
+import io.github.reconsolidated.BedWars.inventoryShop.CustomItemStack;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -22,5 +25,10 @@ public class CounterOffensiveTrap implements Trap {
                 }
             }
         }
+    }
+
+    @Override
+    public ItemStack getItemStack() {
+        return CustomItemStack.createCustomItemStack(Material.FEATHER, 1, Material.DIAMOND, -1, "not_clickable", new ArrayList<>(), null);
     }
 }

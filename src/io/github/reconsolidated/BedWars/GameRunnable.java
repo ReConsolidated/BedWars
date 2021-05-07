@@ -2,6 +2,8 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -41,8 +43,54 @@ public class GameRunnable extends BukkitRunnable {
             }
         }
 
+        if (counter == 65){
+            for (int i = 0; i<spawners.size(); i++){
+                if (spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
+                    spawners.get(i).setPeriod(plugin.getConfig().getInt("DIAMOND_II"));
+                }
+            }
+        }
+        if (counter == 125){
+            for (int i = 0; i<spawners.size(); i++){
+                if (spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
+                    spawners.get(i).setPeriod(plugin.getConfig().getInt("DIAMOND_III"));
+                }
+            }
+        }
+        if (counter == 185){
+            for (int i = 0; i<spawners.size(); i++){
+                if (spawners.get(i).getTeamID() == -1 && spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
+                    spawners.get(i).setPeriod(plugin.getConfig().getInt("EMERALD_II"));
+                }
+            }
+        }
+        if (counter == 245){
+            for (int i = 0; i<spawners.size(); i++){
+                if (spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
+                    spawners.get(i).setPeriod(plugin.getConfig().getInt("DIAMOND_IV"));
+                }
+            }
+        }
 
         //
         counter++;
+    }
+
+    public String getNextEventName(){
+        if (counter < 5) return "Start gry";
+        if (counter < 65) return "Diamenty II";
+        if (counter < 125) return "Diamenty III";
+        if (counter < 185) return "Emeraldy II";
+        if (counter < 245) return "Diamenty IV";
+        return "Nie wiem co dalej";
+    }
+
+    public int getNextEventTime(){
+        if (counter < 5) return 5;
+        if (counter < 65) return 65;
+        if (counter < 125) return 125;
+        if (counter < 185) return 185;
+        if (counter < 245) return 245;
+        return 0;
     }
 }

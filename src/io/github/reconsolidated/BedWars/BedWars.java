@@ -1,6 +1,7 @@
 package io.github.reconsolidated.BedWars;
 
-import com.sk89q.worldedit.bukkit.BukkitConfiguration;
+import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
+import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Listeners.*;
 import io.github.reconsolidated.BedWars.Teams.Team;
@@ -17,9 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class BedWars extends JavaPlugin implements Listener {
 
@@ -37,10 +36,13 @@ public class BedWars extends JavaPlugin implements Listener {
     private CountdownRunnable countdownRunnable;
     private GameRunnable gameRunnable;
 
+    private ArrayList<CustomIronGolem> golems = new ArrayList<>();
+    private ArrayList<CustomSilverFish> silverFish = new ArrayList<>();
+
     @Override
     public void onEnable() {
         Commands commandsPlugin = new Commands(this);
-        getServer().getPluginCommand("help").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("helpbedwars").setExecutor(commandsPlugin);
         getServer().getPluginCommand("start").setExecutor(commandsPlugin);
         getServer().getPluginCommand("stop").setExecutor(commandsPlugin);
         getServer().getPluginCommand("itemspawner").setExecutor(commandsPlugin);
@@ -72,15 +74,18 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractEntityListener(participants, this), this);
         getServer().getPluginManager().registerEvents(new PlayerItemConsumeListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerDropItemListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDamageListener(myScoreboard, participants), this);
         getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityTargetListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(this), this);
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(this, participants), this);
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileLaunchListener(this), this);
         getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+        getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
 
 
     }
@@ -98,6 +103,7 @@ public class BedWars extends JavaPlugin implements Listener {
             }
             if (type == 2){
                 Zombie zombie = (Zombie) world.spawnEntity(location, EntityType.ZOMBIE);
+                zombie.setRemoveWhenFarAway(false);
                 zombie.setSilent(true);
                 zombie.setAI(false);
             }
@@ -162,6 +168,41 @@ public class BedWars extends JavaPlugin implements Listener {
     public void onGameEnd(){
         //
     } //
+
+    public ArrayList<CustomIronGolem> getGolems(){
+        return golems;
+    }
+
+    public ArrayList<CustomSilverFish> getSilverFish(){
+        return silverFish;
+    }
+
+    public void addSilverfish(CustomSilverFish sf){
+        silverFish.add(sf);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            silverFish.remove(sf);
+            sf.killEntity();
+        }, 20L * 15);
+    }
+
+
+    public void addGolem(CustomIronGolem golem){
+        golems.add(golem);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            golems.remove(golem);
+            golem.killEntity();
+        }, 20L * 15);
+    }
+
+    public String getNextEventName(){
+        if (gameRunnable == null) return "Jeszcze nie";
+        return gameRunnable.getNextEventName();
+    }
+
+    public int getNextEventTime(){
+        if (gameRunnable == null) return 0;
+        return gameRunnable.getNextEventTime();
+    }
 
     public void onItemSpawner(Player player, String itemName, int period, int maxAmount, int team){
         if (Material.getMaterial(itemName) == null){

@@ -7,6 +7,7 @@ import io.github.reconsolidated.BedWars.inventoryShop.ZombieMenu;
 import io.github.reconsolidated.BedWars.inventoryShop.buyMethods.Buy;
 import io.github.reconsolidated.BedWars.inventoryShop.buyMethods.ZombieBuy;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +37,9 @@ public class ZombieMenuItemClickListener implements Listener {
         }
         else if (category.equals("back")){
             menu.addItems("diamond");
+        }
+        else if(category.equals("not_clickable")){
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 10, 1);
         }
         else {
             ZombieBuy.item(plugin, player, item, menu);
