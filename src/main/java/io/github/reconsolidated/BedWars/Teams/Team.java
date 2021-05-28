@@ -134,28 +134,27 @@ public class Team {
     }
 
     public void updateItemSpawner(){
-        // TODO
         for (ItemSpawner spawner : plugin.getSpawners()){
             if (spawner.getTeamID() == ID){
                 if (spawner.getItem().getType().equals(Material.IRON_INGOT)
                 || spawner.getItem().getType().equals(Material.GOLD_INGOT)){
                     if (resourcesLevel == 1){
-                        spawner.setPeriod((int) (spawner.getBasePeriod() * 1.5));
+                        spawner.setPeriod((int) (spawner.getBasePeriod() / 1.5));
                     }
                     if (resourcesLevel == 2){
-                        spawner.setPeriod((int) (spawner.getBasePeriod() * 2));
+                        spawner.setPeriod((int) (spawner.getBasePeriod() / 2));
                     }
                     if (resourcesLevel == 3){
-                        spawner.setPeriod((int) (spawner.getBasePeriod() * 2));
+                        spawner.setPeriod((int) (spawner.getBasePeriod() / 2));
                     }
                     if (resourcesLevel == 4){
-                        spawner.setPeriod((int) (spawner.getBasePeriod() * 4));
+                        spawner.setPeriod((int) (spawner.getBasePeriod() / 4));
                     }
                 }
 
                 if (spawner.getItem().getType().equals(Material.EMERALD)){
                     if (resourcesLevel > 2){
-                        spawner.setPeriod(300);
+                        spawner.setPeriod(600);
                     }
                 }
             }

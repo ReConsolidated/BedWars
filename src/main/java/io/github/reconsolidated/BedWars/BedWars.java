@@ -32,7 +32,7 @@ public class BedWars extends JavaPlugin implements Listener {
 
     private int TEAMS = 4;
 
-    private static String currentWorldName = "bedwars_ancient"; // TODO
+    private static String currentWorldName = "bedwars_ancient"; //
 
     private ArrayList<Participant> participants;
     private ArrayList<Participant> inactiveParticipants;
