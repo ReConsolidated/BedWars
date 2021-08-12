@@ -140,6 +140,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new PlayerBucketEmptyListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockCanBuildListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatMessageListener(this), this);
+        getServer().getPluginManager().registerEvents(new LimitItemPickup(this), this);
 
         jedis = new JedisCommunicator(this);
 

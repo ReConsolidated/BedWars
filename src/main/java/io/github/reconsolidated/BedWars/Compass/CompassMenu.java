@@ -53,24 +53,24 @@ public class CompassMenu implements Listener {
         this.inv.clear();
         switch (type){
             case "main" ->{
-                this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.EMERALD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
-                this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.COMPASS, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
+                this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.EMERALD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
+                this.inv.setItem(24, CustomItemStack.createCustomItemStack(Material.COMPASS, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
             }
             case "comms" -> {
                 this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.SHIELD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
-                this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.STONE_SWORD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
-                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.EMERALD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
-                this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.DIAMOND, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
+                this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.STONE_SWORD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
+                this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.EMERALD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
+                this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.DIAMOND, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
                 this.inv.setItem(9, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "back", new ArrayList<>(), player));
 
             }
             case "finder" ->{
                 if (plugin.getTeams().size() == 4){
                     this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.BLUE_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
-                    this.inv.setItem(2, CustomItemStack.createCustomItemStack(Material.RED_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
-                    this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.YELLOW_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
-                    this.inv.setItem(4, CustomItemStack.createCustomItemStack(Material.GREEN_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
-                    this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "back", new ArrayList<>(), player));
+                    this.inv.setItem(3, CustomItemStack.createCustomItemStack(Material.RED_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
+                    this.inv.setItem(5, CustomItemStack.createCustomItemStack(Material.YELLOW_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
+                    this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.GREEN_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
+                    this.inv.setItem(9, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "back", new ArrayList<>(), player));
                 }
                 else{
                     this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.BLUE_WOOL, 1, Material.EMERALD, 2, "cmp", new ArrayList<>(), player));
