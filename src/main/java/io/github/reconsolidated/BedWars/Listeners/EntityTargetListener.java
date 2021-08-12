@@ -26,17 +26,17 @@ public class EntityTargetListener implements Listener {
             LivingEntity le = (LivingEntity) event.getEntity();
             if (event.getTarget() instanceof Player){
                 Participant p = plugin.getParticipant((Player) event.getTarget());
-                if (p != null && p.team != null){
+                if (p != null && p.getTeam() != null){
                     for (CustomIronGolem golem : plugin.getGolems()){
                         if (le.getEntityId() == golem.getBukkitEntity().getEntityId()){
-                            if (golem.teamID == p.team.ID){
+                            if (golem.teamID == p.getTeam().ID){
                                 event.setCancelled(true);
                             }
                         }
                     }
                     for (CustomSilverFish sf : plugin.getSilverFish()){
                         if (le.getEntityId() == sf.getBukkitEntity().getEntityId()){
-                            if (sf.teamID == p.team.ID){
+                            if (sf.teamID == p.getTeam().ID){
                                 event.setCancelled(true);
                             }
                         }

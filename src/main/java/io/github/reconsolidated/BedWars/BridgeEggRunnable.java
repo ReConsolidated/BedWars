@@ -1,9 +1,7 @@
 package io.github.reconsolidated.BedWars;
 
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Egg;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Score;
@@ -28,7 +26,7 @@ public class BridgeEggRunnable extends BukkitRunnable {
     @Override
     public void run() {
         counter++;
-        if (counter == 60){
+        if (counter >= 40){
             this.cancel();
         }
         if (egg.getCustomName() != null){
@@ -50,6 +48,7 @@ public class BridgeEggRunnable extends BukkitRunnable {
         @Override
         public void run() {
             if (lastLocation != null && lastLocation.getBlock().getType().equals(Material.AIR)){
+                lastLocation.getWorld().playSound(lastLocation, Sound.ENTITY_CHICKEN_EGG, 3, 1);
                 Material mat = Material.getMaterial(color + "_WOOL");
                 lastLocation.getBlock().setType(mat);
                 if (lastLocation.clone().add(1, 0, 0).getBlock().getType().equals(Material.AIR)){

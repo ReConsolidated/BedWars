@@ -29,9 +29,9 @@ public class BlockCanBuildListener implements Listener {
                     event.setBuildable(true);
                 }
                 else{
-                    if (event.getBlock().getX() == p.player.getLocation().getBlockX()
-                    && event.getBlock().getY() == p.player.getLocation().getBlockY()
-                    && event.getBlock().getZ() == p.player.getLocation().getBlockZ()){
+                    if (event.getBlock().getX() == p.getPlayer().getLocation().getBlockX()
+                    && event.getBlock().getY() == p.getPlayer().getLocation().getBlockY()
+                    && event.getBlock().getZ() == p.getPlayer().getLocation().getBlockZ()){
                         event.setBuildable(false);
                         return;
                     }

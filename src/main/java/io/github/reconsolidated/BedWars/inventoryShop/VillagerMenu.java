@@ -29,6 +29,7 @@ public class VillagerMenu implements Listener {
     private Player player;
     private int timerID;
     private String color;
+    private String terracottaColor;
     private String currentCategory;
 
     public VillagerMenu(BedWars plugin, Player player, String type) {
@@ -39,6 +40,7 @@ public class VillagerMenu implements Listener {
         Participant p = plugin.getParticipant(player);
         if (p != null){
             this.color = p.getColor();
+            this.terracottaColor = p.getTerracottaColor();
         }
 
         addItems(type);
@@ -111,8 +113,8 @@ public class VillagerMenu implements Listener {
 
             }
             case "blocks" -> {
-                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_WOOL"), 16, Material.IRON_INGOT, 12, "", new ArrayList<>(), player));
-                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_TERRACOTTA"), 16, Material.IRON_INGOT, 12, "", new ArrayList<>(), player));
+                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_WOOL"), 16, Material.IRON_INGOT, 4, "", new ArrayList<>(), player));
+                this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.getMaterial(terracottaColor + "_TERRACOTTA"), 16, Material.IRON_INGOT, 12, "", new ArrayList<>(), player));
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.GLASS, 4, Material.IRON_INGOT, 12, "", new ArrayList<>(), player));
                 this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.END_STONE, 12, Material.IRON_INGOT, 24, "", new ArrayList<>(), player));
                 this.inv.setItem(23, CustomItemStack.createCustomItemStack(Material.LADDER, 16, Material.IRON_INGOT, 4, "", new ArrayList<>(), player));
@@ -161,10 +163,10 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(23, CustomItemStack.createCustomItemStack(Material.TNT, 1, Material.GOLD_INGOT, 4, "", new ArrayList<>(), player));
                 this.inv.setItem(24, CustomItemStack.createCustomItemStack(Material.ENDER_PEARL, 1, Material.EMERALD, 4, "", new ArrayList<>(), player));
                 this.inv.setItem(25, CustomItemStack.createCustomItemStack(Material.WATER_BUCKET, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
-                this.inv.setItem(26, CustomItemStack.createCustomItemStack(Material.EGG, 1, Material.EMERALD, 2, "", new ArrayList<>(), player));
-                this.inv.setItem(27, CustomItemStack.createCustomItemStack(Material.MILK_BUCKET, 1, Material.GOLD_INGOT, 4, "", new ArrayList<>(), player));
-                this.inv.setItem(28, CustomItemStack.createCustomItemStack(Material.SPONGE, 4, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
-                this.inv.setItem(29, CustomItemStack.createCustomItemStack(Material.CHEST, 1, Material.IRON_INGOT, 24, "", new ArrayList<>(), player));
+                this.inv.setItem(28, CustomItemStack.createCustomItemStack(Material.EGG, 1, Material.EMERALD, 2, "", new ArrayList<>(), player));
+                this.inv.setItem(29, CustomItemStack.createCustomItemStack(Material.MILK_BUCKET, 1, Material.GOLD_INGOT, 4, "", new ArrayList<>(), player));
+                this.inv.setItem(30, CustomItemStack.createCustomItemStack(Material.SPONGE, 4, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
+                this.inv.setItem(31, CustomItemStack.createCustomItemStack(Material.CHEST, 1, Material.IRON_INGOT, 24, "", new ArrayList<>(), player));
             }
         }
         fillEmptySpace();

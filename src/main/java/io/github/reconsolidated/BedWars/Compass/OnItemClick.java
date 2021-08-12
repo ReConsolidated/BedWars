@@ -41,8 +41,8 @@ public class OnItemClick {
             case DIAMOND -> wiadomosc = "Potrzebujemy diamentów";
             case EMERALD -> wiadomosc = "Potrzebujemy emeraldów";
         }
-        for (Participant m : p.team.members){
-            m.player.sendMessage(p.team.getChatColor() + player.getName()
+        for (Participant m : p.getTeam().members){
+            m.getPlayer().sendMessage(p.getTeam().getChatColor() + player.getName()
                     + " >> " + ChatColor.GREEN + wiadomosc);
         }
     }
@@ -83,12 +83,12 @@ public class OnItemClick {
                         t = 7;
                     }
                 }
-                Location location = tp.team.getBedLocation();
+                Location location = tp.getTeam().getBedLocation();
                 int currentSmallestDistance = 0;
                 for (Participant p : plugin.getTeams().get(t).members){
                     if (location == null
-                            || player.getLocation().distanceSquared(p.player.getLocation()) > currentSmallestDistance){
-                        location = p.player.getLocation();
+                            || player.getLocation().distanceSquared(p.getPlayer().getLocation()) > currentSmallestDistance){
+                        location = p.getPlayer().getLocation();
                     }
                 }
                 player.setCompassTarget(location);

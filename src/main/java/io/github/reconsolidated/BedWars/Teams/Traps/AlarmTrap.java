@@ -21,8 +21,8 @@ public class AlarmTrap implements Trap {
             if (e instanceof Player) {
                 Participant p = plugin.getParticipant((Player) e);
                 if (p == null) continue;
-                if (p.team.ID != teamID) {
-                    p.player.getActivePotionEffects().removeIf(effect -> effect.getType().equals(PotionEffectType.INVISIBILITY));
+                if (p.getTeam().ID != teamID) {
+                    p.getPlayer().getActivePotionEffects().removeIf(effect -> effect.getType().equals(PotionEffectType.INVISIBILITY));
                 }
             }
         }

@@ -32,7 +32,7 @@ public class EntityDamageListener implements Listener {
         if (event.getEntity() instanceof Player){
             Participant p = plugin.getParticipant((Player) event.getEntity());
 
-            if (p == null || p.isSpectating() || p.team == null){
+            if (p == null || p.isSpectating() || p.getTeam() == null){
                 event.setCancelled(true);
                 return;
             }
@@ -42,10 +42,10 @@ public class EntityDamageListener implements Listener {
             Player player = (Player) event.getEntity();
             for (int i = 0; i<participants.size(); i++){
                 Participant p = participants.get(i);
-                if (p.player.equals(player)){
+                if (p.getPlayer().equals(player)){
                     if (player.getHealth() - event.getFinalDamage() <= 0){
                         event.setCancelled(true);
-                        p.player.playSound(p.player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 10, 1);
+                        p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 10, 1);
                         p.onDeath();
                     }
                 }

@@ -37,7 +37,7 @@ public class ScoreScoreboard extends BukkitRunnable {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         scoreboard.getObjective("Drużyny").setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "BEDWARS");
-        Score funFactScore = scoreboard.getObjective("Drużyny").getScore(ChatColor.GREEN + "twitch.tv/bratiki94");
+        Score funFactScore = scoreboard.getObjective("Drużyny").getScore(ChatColor.GREEN + "grypciocraft.pl");
         funFactScore.setScore(12);
         Score spaceScore = scoreboard.getObjective("Drużyny").getScore("    ");
         spaceScore.setScore(11);
@@ -49,7 +49,7 @@ public class ScoreScoreboard extends BukkitRunnable {
         spaceScore = scoreboard.getObjective("Drużyny").getScore("      ");
         spaceScore.setScore(-1);
 
-        owner.player.setScoreboard(scoreboard);
+        owner.getPlayer().setScoreboard(scoreboard);
 
         new CountdownRunnable(plugin, this).runTaskTimer(plugin, 0L, 20L);
 
@@ -59,13 +59,6 @@ public class ScoreScoreboard extends BukkitRunnable {
         player.setScoreboard(scoreboard);
     }
 
-    public void registerPlayers(){
-        for (Team t : teams){
-            for (Participant p : t.members){
-                p.player.setScoreboard(scoreboard);
-            }
-        }
-    }
 
     @Override
     public void run() {
@@ -79,7 +72,7 @@ public class ScoreScoreboard extends BukkitRunnable {
             else{
                 int alive = 0;
                 for (Participant p : t.members){
-                    if (p.player.isOnline() && p.player.getGameMode().equals(GameMode.SURVIVAL)){
+                    if (p.getPlayer().isOnline() && (p.getPlayer().getGameMode().equals(GameMode.SURVIVAL) || p.isRespawning()) ){
                         alive++;
                     }
                 }
@@ -116,7 +109,7 @@ public class ScoreScoreboard extends BukkitRunnable {
 
     }
     private String getStringIfIsInTeam(int teamID, String s){
-        if (teamID == owner.team.ID) return s;
+        if (teamID == owner.getTeam().ID) return s;
         return "";
     }
 }

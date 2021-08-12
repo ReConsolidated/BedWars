@@ -37,8 +37,8 @@ public class ProjectileHitListener implements Listener {
 
         if (event.getHitEntity() instanceof Player){
             Participant playerHit = plugin.getParticipant((Player) event.getHitEntity());
-            if (playerHit.team != null && shooter.team != null){
-                if (playerHit.team.ID == shooter.team.ID){
+            if (playerHit.getTeam() != null && shooter.getTeam() != null){
+                if (playerHit.getTeam().ID == shooter.getTeam().ID){
                     event.getEntity().remove();
                     return;
                 }
@@ -48,7 +48,7 @@ public class ProjectileHitListener implements Listener {
         if (event.getEntityType().equals(EntityType.SNOWBALL)){
             Participant p = plugin.getParticipant((Player) event.getEntity().getShooter());
             CustomSilverFish sf = new CustomSilverFish(EntityTypes.SILVERFISH, ((CraftWorld) event.getEntity().getLocation().getWorld()).getHandle());
-            sf.spawn(shooter.team.ID, event.getEntity().getLocation(), p);
+            sf.spawn(shooter.getTeam().ID, event.getEntity().getLocation(), p);
             plugin.addSilverfish(sf);
             event.getEntity().remove();
             return;

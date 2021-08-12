@@ -8,11 +8,11 @@ commands:
     description: BedWars help command.
     permission: BedWars.player
     permission-message: Nie posiadasz uprawnień do tej komendy.
-  start:
+  bdstart:
     description: Start arena.
     permission: BedWars.admin
     permission-message: Nie posiadasz uprawnień do tej komendy.
-  stop:
+  bdstop:
     description: Stop arena.
     permission: BedWars.admin
     permission-message: Nie posiadasz uprawnień do tej komendy.
@@ -43,4 +43,20 @@ commands:
   release:
     description: Go spectator
     permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  team:
+    description: Przełącz na czat drużynowy.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  d:
+    description: Przełącz na czat drużynowy.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  all:
+    description: Przełącz na czat ogólny.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  w:
+    description: Przełącz na czat ogólny.
+    permission: BedWars.player
     permission-message: Nie posiadasz uprawnień do tej komendy.

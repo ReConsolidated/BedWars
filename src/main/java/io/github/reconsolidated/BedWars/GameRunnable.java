@@ -29,11 +29,16 @@ public class GameRunnable extends BukkitRunnable {
 
         int teamsPlaying = 0;
         for (Team t : plugin.getTeams()){
+            boolean isPlaying = false;
             for (Participant m : t.members){
-                if (!m.hasLost && m.player.isOnline()){
+                if (!m.hasLost() && m.getPlayer().isOnline()){
                     teamsPlaying++;
+                    isPlaying = true;
                     break;
                 }
+            }
+            if (counter > 5 && !isPlaying){
+                t.destroyBed();
             }
         }
 
@@ -45,8 +50,8 @@ public class GameRunnable extends BukkitRunnable {
 
         if (counter < 5){
             for (Participant p : participants){
-                p.player.playSound(p.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 10, counter+2);
-                p.player.sendTitle("Start za " + (5-counter), "", 0, 21, 0);
+                p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 10, counter+2);
+                p.getPlayer().sendTitle("Start za " + (5-counter), "", 0, 21, 0);
             }
         }
         // POCZĄTEK GRY
@@ -65,14 +70,17 @@ public class GameRunnable extends BukkitRunnable {
                 }
 
                 plugin.getTeams().get(minPlayersTeamID).addMember(participants.get(i));
-                participants.get(i).team = plugin.getTeams().get(minPlayersTeamID);
+                Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + minPlayersTeamID).addEntry(participants.get(i).getPlayer().getDisplayName());
+                participants.get(i).setTeam(plugin.getTeams().get(minPlayersTeamID));
                 participants.get(i).onStart();
-                participants.get(i).scoreboard = new ScoreScoreboard(plugin, plugin.getTeams(), participants.get(i));
-                participants.get(i).scoreboard.runTaskTimer(plugin, 0, 4);
+                participants.get(i).setScoreboard(new ScoreScoreboard(plugin, plugin.getTeams(), participants.get(i)));
+                participants.get(i).getScoreboard().runTaskTimer(plugin, 0, 4);
             }
             for (int i = 0; i<spawners.size(); i++){
                 spawners.get(i).start();
             }
+
+
         }
 
         if (counter == 365){
@@ -112,16 +120,7 @@ public class GameRunnable extends BukkitRunnable {
         }
         if (counter == 2165){
             for (Team t : plugin.getTeams()){
-                for (int i = t.getBedLocation().getBlockX()-2; i<t.getBedLocation().getBlockX()+2; i++){
-                    for (int j = t.getBedLocation().getBlockY()-2; j<t.getBedLocation().getBlockY()+2; j++){
-                        for (int k = t.getBedLocation().getBlockZ()-2; k<t.getBedLocation().getBlockZ()+2; k++){
-                            if (t.getBedLocation().getWorld().getBlockAt(i, j, k).getBlockData() instanceof Bed){
-                                t.getBedLocation().getWorld().getBlockAt(i, j, k).setType(Material.AIR);
-                            }
-                        }
-                    }
-                }
-                t.onBedDestroy();
+                t.destroyBed();
             }
             Bukkit.broadcastMessage(ChatColor.DARK_PURPLE +
                     "Wszystkie łóżka " + ChatColor.BOLD + ""
@@ -132,7 +131,7 @@ public class GameRunnable extends BukkitRunnable {
             for (Team t : plugin.getTeams()){
                 boolean isAnyoneAlive = false;
                 for (Participant m : t.members){
-                    if (m.player.isOnline() && m.player.getGameMode().equals(GameMode.SURVIVAL)){
+                    if (m.getPlayer().isOnline() && m.getPlayer().getGameMode().equals(GameMode.SURVIVAL)){
                         isAnyoneAlive = true;
                     }
                 }

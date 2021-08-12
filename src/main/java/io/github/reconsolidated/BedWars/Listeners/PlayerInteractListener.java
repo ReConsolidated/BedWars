@@ -8,6 +8,7 @@ import io.github.reconsolidated.BedWars.Teams.Team;
 import io.github.reconsolidated.BedWars.inventoryShop.buyMethods.Buy;
 import net.minecraft.server.v1_16_R2.EntityTypes;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
@@ -32,39 +33,43 @@ public class PlayerInteractListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event){
         Participant p = plugin.getParticipant(event.getPlayer());
 
-        if (p == null || p.isSpectating() || p.team == null){
+        if (p == null || p.isSpectating() || p.getTeam() == null){
             event.setCancelled(true);
             return;
         }
 
-
         if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             if (event.getItem() != null && event.getItem().getType().equals(Material.COMPASS)){
-                new CompassMenu(plugin, p.player, "main");
+                new CompassMenu(plugin, p.getPlayer(), "main");
             }
         }
 
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getMaterial().equals(Material.POLAR_BEAR_SPAWN_EGG)){
             event.setCancelled(true);
             Location location = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
+            if (event.getClickedBlock().getLocation().distance(p.getTeam().getBedLocation()) > 30){
+                p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz stworzyć golema tak daleko od bazy.");
+                return;
+            }
             CustomIronGolem golem = new CustomIronGolem(EntityTypes.IRON_GOLEM, ((CraftWorld) location.getWorld()).getHandle());
-            golem.spawn(p.team.ID, location, p);
+            golem.spawn(p.getTeam().ID, location, p);
             plugin.addGolem(golem);
-            Buy.charge(p.player, new ItemStack(Material.POLAR_BEAR_SPAWN_EGG));
+            Buy.charge(p.getPlayer(), new ItemStack(Material.POLAR_BEAR_SPAWN_EGG));
         }
 
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
                 && event.getClickedBlock() != null
                 && event.getClickedBlock().getState() instanceof Chest){
             int closestTeamID = getClosestTeamID(event.getClickedBlock().getLocation());
-            if (closestTeamID != p.team.ID){
+            if (closestTeamID != p.getTeam().ID){
                 event.setCancelled(true);
             }
         }
 
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+                && !p.getPlayer().isSneaking()
                 && event.getClickedBlock() != null
-                && event.getClickedBlock().getState() instanceof Bed){
+                && event.getClickedBlock().getBlockData() instanceof Bed){
             event.setCancelled(true);
         }
 
@@ -72,8 +77,8 @@ public class PlayerInteractListener implements Listener {
                 && (event.getAction().equals(Action.RIGHT_CLICK_AIR)
                 || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
             event.setCancelled(true);
-            p.player.launchProjectile(Fireball.class, p.player.getEyeLocation().getDirection());
-            Buy.charge(p.player, new ItemStack(Material.FIRE_CHARGE));
+            p.getPlayer().launchProjectile(Fireball.class, p.getPlayer().getEyeLocation().getDirection());
+            Buy.charge(p.getPlayer(), new ItemStack(Material.FIRE_CHARGE));
         }
 
     }

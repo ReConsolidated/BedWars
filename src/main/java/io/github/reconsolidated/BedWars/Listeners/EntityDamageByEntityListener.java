@@ -34,15 +34,15 @@ public class EntityDamageByEntityListener implements Listener {
                     return;
                 }
 
-                if (p1.team == p2.team){
+                if (p1.getTeam() == p2.getTeam()){
                     event.setCancelled(true);
                     return;
                 }
 
-                p1.player.removePotionEffect(PotionEffectType.INVISIBILITY);
-                p2.player.removePotionEffect(PotionEffectType.INVISIBILITY);
-                MakeArmorsInvisible.sendOutArmorPacket(p1.player);
-                MakeArmorsInvisible.sendOutArmorPacket(p2.player);
+                p1.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                p2.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                MakeArmorsInvisible.sendOutArmorPacket(p1.getPlayer());
+                MakeArmorsInvisible.sendOutArmorPacket(p2.getPlayer());
                 p1.setLastHitBy(p2);
             }
 
@@ -51,14 +51,14 @@ public class EntityDamageByEntityListener implements Listener {
                 if (projectile.getShooter() instanceof Player){
                     Participant p2 = plugin.getParticipant((Player) projectile.getShooter());
                     if (p2 != null){
-                        if (p1.team.ID == p2.team.ID && !p1.player.equals(p2.player)){
+                        if (p1.getTeam().ID == p2.getTeam().ID && !p1.getPlayer().equals(p2.getPlayer())){
                             event.setCancelled(true);
                             return;
                         }
-                        p1.player.removePotionEffect(PotionEffectType.INVISIBILITY);
-                        p2.player.removePotionEffect(PotionEffectType.INVISIBILITY);
-                        MakeArmorsInvisible.sendOutArmorPacket(p1.player);
-                        MakeArmorsInvisible.sendOutArmorPacket(p2.player);
+                        p1.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                        p2.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                        MakeArmorsInvisible.sendOutArmorPacket(p1.getPlayer());
+                        MakeArmorsInvisible.sendOutArmorPacket(p2.getPlayer());
                         p1.setLastHitBy(p2);
                     }
                 }
@@ -84,15 +84,11 @@ public class EntityDamageByEntityListener implements Listener {
                 }
             }
 
-            if (p1.player.getHealth() - event.getFinalDamage() <= 0){
+            if (p1.getPlayer().getHealth() - event.getFinalDamage() <= 0){
                 event.setCancelled(true);
-                p1.player.playSound(p1.player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 10, 1);
+                p1.getPlayer().playSound(p1.getPlayer().getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 10, 1);
                 p1.onDeath();
             }
-
-
-
         }
-
     }
 }

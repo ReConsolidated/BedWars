@@ -3,10 +3,8 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.Participant;
-import io.github.reconsolidated.BedWars.ScoreScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +28,7 @@ public class PlayerJoinListener implements Listener {
 
         Participant p = plugin.getInactiveParticipant(player);
         if (p != null){
-            p.player = player;
+            p.setPlayer(player);
             plugin.restoreParticipant(p);
             if (p.isDead()){
                 CustomSpectator.setSpectator(plugin, player);
@@ -38,7 +36,7 @@ public class PlayerJoinListener implements Listener {
             else{
                 p.onRespawn();
             }
-            p.scoreboard.registerPlayer(p.player);
+            p.getScoreboard().registerPlayer(p.getPlayer());
 
         }
         else{
@@ -67,12 +65,5 @@ public class PlayerJoinListener implements Listener {
             }
         }
 
-    }
-
-    @EventHandler
-    public void onPrePlayerLogin(AsyncPlayerPreLoginEvent event){
-//        if (plugin.hasStarted){
-//            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_FULL, ChatColor.GRAY + "Gra się już zaczęła.");
-//        }
     }
 }

@@ -41,27 +41,27 @@ public class ZombieBuy {
         Participant p = plugin.getParticipant(player);
         if (p != null){
             if (item.getType().equals(Material.IRON_SWORD)){
-                p.team.upgradeSharp();
+                p.getTeam().upgradeSharp();
                 return;
             }
             if (item.getType().equals(Material.IRON_CHESTPLATE)){
-                p.team.upgradeProt();
+                p.getTeam().upgradeProt();
                 return;
             }
             if (item.getType().equals(Material.GOLDEN_PICKAXE)){
-                p.team.upgradeHaste();
+                p.getTeam().upgradeHaste();
                 return;
             }
             if (item.getType().equals(Material.FURNACE)){
-                p.team.upgradeResources();
+                p.getTeam().upgradeResources();
                 return;
             }
             if (item.getType().equals(Material.BEACON)){
-                p.team.setHealPool();
+                p.getTeam().setHealPool();
                 return;
             }
             if (item.getType().equals(Material.DRAGON_EGG)){
-                p.team.addDragon();
+                p.getTeam().addDragon();
                 return;
             }
             if (item.getType().equals(Material.TRIPWIRE_HOOK)
@@ -70,7 +70,7 @@ public class ZombieBuy {
                     || item.getType().equals(Material.FEATHER)
                     || item.getType().equals(Material.IRON_PICKAXE)
                     || item.getType().equals(Material.FEATHER)){
-                p.team.addTrap(item.getType());
+                p.getTeam().addTrap(item.getType());
                 return;
             }
         }
@@ -156,37 +156,37 @@ public class ZombieBuy {
         Participant p = plugin.getParticipant(player);
         if (p == null) return false;
         if (item.getType().equals(Material.IRON_SWORD)){
-            if (p.team.sharpLevel >= 1){
+            if (p.getTeam().sharpLevel >= 1){
                 player.sendMessage(ChatColor.RED + "Twoja drużyna ma już dodatkowe obrażenia do mieczy.");
                 return false;
             }
         }
         if (item.getType().equals(Material.IRON_CHESTPLATE)){
-            if (p.team.protLevel >= 4){
+            if (p.getTeam().protLevel >= 4){
                 player.sendMessage(ChatColor.RED + "Twoja drużyna ma już najwyższy poziom zbroi.");
                 return false;
             }
         }
         if (item.getType().equals(Material.GOLDEN_PICKAXE)){
-            if (p.team.hasteLevel >= 2){
+            if (p.getTeam().hasteLevel >= 2){
                 player.sendMessage(ChatColor.RED + "Twoja drużyna ma najwyzszy poziom pośpiechu.");
                 return false;
             }
         }
         if (item.getType().equals(Material.FURNACE)){
-            if (p.team.resourcesLevel >= 4){
+            if (p.getTeam().resourcesLevel >= 4){
                 player.sendMessage(ChatColor.RED + "Twoja drużyna ma już najwyższy poziom spawnera.");
                 return false;
             }
         }
         if (item.getType().equals(Material.BEACON)){
-            if (p.team.hasHealPool()){
+            if (p.getTeam().hasHealPool()){
                 player.sendMessage(ChatColor.RED + "Twoja drużyna ma już pole ochronne.");
                 return false;
             }
         }
         if (item.getType().equals(Material.DRAGON_EGG)){
-            if (p.team.dragons == 2){
+            if (p.getTeam().dragons == 2){
                 player.sendMessage(ChatColor.RED + "Nie możesz kupić więcej smoków.");
                 return false;
             }
@@ -197,11 +197,11 @@ public class ZombieBuy {
                 || item.getType().equals(Material.FEATHER)
                 || item.getType().equals(Material.IRON_PICKAXE)
                 || item.getType().equals(Material.FEATHER)){
-            if (!p.team.canAddTrap()){
+            if (!p.getTeam().canAddTrap()){
                 player.sendMessage(ChatColor.RED + "Masz już maksymalną liczbę pułapek.");
                 return false;
             }
-            for (ItemStack trapItem : p.team.getTrapItems()){
+            for (ItemStack trapItem : p.getTeam().getTrapItems()){
                 if (trapItem.getType().equals(item.getType())){
                     player.sendMessage(ChatColor.RED + "Masz już taką pułapkę.");
                     return false;

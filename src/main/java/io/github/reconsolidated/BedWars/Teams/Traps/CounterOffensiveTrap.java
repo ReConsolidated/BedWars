@@ -19,9 +19,9 @@ public class CounterOffensiveTrap implements Trap {
             if (e instanceof Player) {
                 Participant p = plugin.getParticipant((Player) e);
                 if (p == null) continue;
-                if (p.team.ID == teamID) {
-                    p.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 10, 1));
-                    p.player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 10, 2));
+                if (p.getTeam().ID == teamID) {
+                    p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 10, 1));
+                    p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 10, 2));
                 }
             }
         }

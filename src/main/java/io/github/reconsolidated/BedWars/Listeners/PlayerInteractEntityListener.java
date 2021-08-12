@@ -25,7 +25,7 @@ public class PlayerInteractEntityListener implements Listener {
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event){
         Player player = event.getPlayer();
         Participant p = plugin.getParticipant(player);
-        if (p == null || p.isSpectating() || p.team == null){
+        if (p == null || p.isSpectating() || p.getTeam() == null){
             event.setCancelled(true);
             return;
         }

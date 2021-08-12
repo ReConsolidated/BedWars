@@ -119,17 +119,17 @@ public class Buy {
         if (p != null){
             if (isPickaxe(item)){
                 p.upgradePickaxe();
-                p.team.updateEnchants();
+                p.getTeam().updateEnchants();
                 return;
             }
             if (isAxe(item)){
                 p.upgradeAxe();
-                p.team.updateEnchants();
+                p.getTeam().updateEnchants();
                 return;
             }
             if (item.getType().equals(Material.SHEARS)){
                 p.upgradeShears();
-                p.team.updateEnchants();
+                p.getTeam().updateEnchants();
                 return;
             }
             if (item.getType().equals(Material.STONE_SWORD)
@@ -137,7 +137,7 @@ public class Buy {
                     || item.getType().equals(Material.DIAMOND_SWORD)){
                 charge(player, new ItemStack(Material.WOODEN_SWORD));
                 player.getInventory().addItem(unbreakable(newItem));
-                p.team.updateEnchants();
+                p.getTeam().updateEnchants();
                 return;
             }
 
@@ -189,7 +189,7 @@ public class Buy {
 
         Participant p = plugin.getParticipant(player);
         if (p != null){
-            p.team.updateEnchants();
+            p.getTeam().updateEnchants();
         }
 
         player.getInventory().setArmorContents(armor);

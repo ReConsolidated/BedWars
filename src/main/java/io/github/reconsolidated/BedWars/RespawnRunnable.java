@@ -20,8 +20,8 @@ public class RespawnRunnable extends BukkitRunnable {
     public void run() {
         countdown --; //Taking away 1 from countdown every 1 second
         if (countdown > 0){
-            p.player.playSound(p.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 10, 1);
-            p.player.sendTitle(ChatColor.GREEN + "Odrodzisz się za: " + countdown,
+            p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 10, 1);
+            p.getPlayer().sendTitle(ChatColor.GREEN + "Odrodzisz się za: " + countdown,
                     "", 5, 20, 5);
         }
 

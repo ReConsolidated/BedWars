@@ -5,6 +5,7 @@ import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.PopupTower;
 import net.minecraft.server.v1_16_R2.EntityLiving;
 import net.minecraft.server.v1_16_R2.EntityTNTPrimed;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -41,6 +42,11 @@ public class BlockPlaceListener implements Listener {
             return;
 
         if (event.getBlockPlaced().getType().equals(Material.WATER)){
+            if (event.getBlockPlaced().getLocation().distance(p.getTeam().getBedLocation()) > 30){
+                p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz wylać wody tak daleko od bazy.");
+                event.setCancelled(true);
+                return;
+            }
             event.getPlayer().getInventory().remove(Material.BUCKET);
         }
 

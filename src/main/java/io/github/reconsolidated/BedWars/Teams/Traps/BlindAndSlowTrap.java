@@ -20,9 +20,9 @@ public class BlindAndSlowTrap implements Trap {
             if (e instanceof Player) {
                 Participant p = plugin.getParticipant((Player) e);
                 if (p == null) continue;
-                if (p.team.ID != teamID) {
-                    p.player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20*8, 1));
-                    p.player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*8, 1));
+                if (p.getTeam().ID != teamID) {
+                    p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20*8, 1));
+                    p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*8, 1));
                 }
             }
         }

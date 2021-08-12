@@ -4,6 +4,7 @@ package io.github.reconsolidated.BedWars;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,6 +28,7 @@ public class JedisCommunicator {
     public JedisCommunicator(BedWars plugin) {
         this.plugin = plugin;
         this.serverName = getNewServerName();
+        if (serverName == null) return;
         run();
     }
 
@@ -51,16 +53,21 @@ public class JedisCommunicator {
     }
 
     private String getNewServerName() {
-        List<String> servers = jedis.lrange(GAMEMODE_NAME + "Servers", 0, -1);
-        String name = "";
+        try{
+            List<String> servers = jedis.lrange(GAMEMODE_NAME + "Servers", 0, -1);
+            String name = "";
 
-        do {
-            String uuid = RandomStringUtils.randomAlphanumeric(4);
-            name = "MIN" + uuid.toLowerCase(Locale.ROOT);
-        } while (servers.contains(name));
+            do {
+                String uuid = RandomStringUtils.randomAlphanumeric(4);
+                name = "MIN" + uuid.toLowerCase(Locale.ROOT);
+            } while (servers.contains(name));
 
-        jedis.rpush(GAMEMODE_NAME + "Servers", name);
-        return name;
+            jedis.rpush(GAMEMODE_NAME + "Servers", name);
+            return name;
+        } catch (JedisConnectionException e){
+            Bukkit.getLogger().warning("[BedWars REDIS] Jedis is not connected.");
+            return null;
+        }
     }
 
     public String getServerName() {

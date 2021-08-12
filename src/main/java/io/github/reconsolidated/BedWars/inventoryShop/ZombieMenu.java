@@ -49,15 +49,15 @@ public class ZombieMenu implements Listener {
 
     }
     private int getArmorCost(){
-        return (int) Math.pow(2, participant.team.protLevel + 1);
+        return (int) Math.pow(2, participant.getTeam().protLevel + 1);
     }
 
     private int getHasteCost(){
-        return (int) Math.pow(2, participant.team.hasteLevel + 1);
+        return (int) Math.pow(2, participant.getTeam().hasteLevel + 1);
     }
 
     private int getResourcesCost(){
-        return 2*(participant.team.resourcesLevel + 1);
+        return 2*(participant.getTeam().resourcesLevel + 1);
     }
 
     public void addItems(String type) {
@@ -72,9 +72,9 @@ public class ZombieMenu implements Listener {
                 this.inv.setItem(6, CustomItemStack.createCustomItemStack(Material.DRAGON_EGG, 1, Material.DIAMOND, 5, "diamond", new ArrayList<>(), player));
                 this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.LEATHER, 1, Material.DIAMOND, -1, "traps", new ArrayList<>(), player));
 
-                this.inv.setItem(21, participant.team.getTrapItems().get(0));
-                this.inv.setItem(22, participant.team.getTrapItems().get(1));
-                this.inv.setItem(23, participant.team.getTrapItems().get(2));
+                this.inv.setItem(21, participant.getTeam().getTrapItems().get(0));
+                this.inv.setItem(22, participant.getTeam().getTrapItems().get(1));
+                this.inv.setItem(23, participant.getTeam().getTrapItems().get(2));
             }
             case "traps" ->{
                 this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.TRIPWIRE_HOOK, 1, Material.DIAMOND, 1, "diamond", new ArrayList<>(), player));

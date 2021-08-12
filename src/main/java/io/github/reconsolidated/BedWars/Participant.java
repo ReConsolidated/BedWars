@@ -2,7 +2,11 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
+import io.github.reconsolidated.BedWars.DataBase.BedWarsPlayerDomain;
+import io.github.reconsolidated.BedWars.DataBase.PlayerDataManager;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -17,24 +21,47 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Participant {
-    public Player player;
+    @Getter
+    @Setter
+    private Player player;
     private Participant lastHitBy;
-    public int currentScore = 0;
-    public int kills = 0;
-    public Team team;
-    public ScoreScoreboard scoreboard;
 
-    private BedWars plugin;
-    public boolean hasLost = false;
+    @Getter
+    @Setter
+    private BedWarsPlayerDomain domain;
+
+    @Getter
+    @Setter
+    private int kills = 0;
+
+    @Getter
+    @Setter
+    private int finalKills = 0;
+
+    @Getter
+    @Setter
+    private int bedsDestroyed = 0;
+
+    private int deaths = 0;
+
+    @Getter
+    @Setter
+    private Team team;
+
+    @Getter
+    @Setter
+    private ScoreScoreboard scoreboard;
+    private final BedWars plugin;
+    private boolean hasLost = false;
     private int trapInvincibilityTime = 0;
     private int pickaxeLevel = 0;
     private int axeLevel = 0;
     private int shearsLevel = 0;
     private boolean isSpectating = false;
     private ItemStack[] inventoryBeforeSpectating = null;
-
+    private boolean teamChat = false;
     private boolean isDead = false;
-
+    private boolean isRespawning = false;
     private Color color = Color.WHITE;
 
     public Participant(Player player, BedWars plugin){
@@ -42,15 +69,7 @@ public class Participant {
         this.plugin = plugin;
     }
 
-    public void setIsSpectating(boolean value) {
-        isSpectating = value;
-    }
-
-    public boolean isTrapInvincible(){
-        return trapInvincibilityTime > 0;
-    }
-
-
+    // onStart() initializes the player, teleports him to his bed and sets his inventory
     public void onStart(){
         player.setPlayerListName(getChatColor() + player.getName() + ChatColor.WHITE);
         player.teleport(team.getSpawnLocation());
@@ -81,11 +100,66 @@ public class Participant {
 
     }
 
-    public boolean isSpectating(){
-        return isSpectating;
+    // When player dies or falls into the void
+    public void onDeath(){
+        deaths++;
+        isDead = true;
+        player.teleport(player.getWorld().getSpawnLocation());
+
+        if (getLastHitBy() != null){
+            if (!team.isBedAlive()){
+                getLastHitBy().setFinalKills(getLastHitBy().getFinalKills()+1);
+            }
+            getLastHitBy().setKills(getLastHitBy().getKills() + 1);
+            for (ItemStack item : player.getInventory().getContents()){
+                if (item == null) continue;
+                if (item.getType().equals(Material.IRON_INGOT)
+                        || item.getType().equals(Material.GOLD_INGOT)
+                        || item.getType().equals(Material.DIAMOND)
+                        || item.getType().equals(Material.EMERALD)){
+                    player.getInventory().remove(item);
+                    getLastHitBy().player.getInventory().addItem(item);
+                }
+            }
+            if (team.isBedAlive()){
+                Bukkit.broadcastMessage(getLastHitBy().player.getDisplayName() + " zabił " + player.getDisplayName());
+            }
+            else{
+                Bukkit.broadcastMessage(ChatColor.RED + "FINAL KILL! "
+                        + getLastHitBy().getChatColor() + getLastHitBy().player.getDisplayName()
+                        + ChatColor.RED + " zabił " + getChatColor() + player.getDisplayName());
+            }
+
+
+        }
+        else{
+            Bukkit.broadcastMessage(getChatColor() + player.getDisplayName() + ChatColor.RED + " zginął.");
+            for (ItemStack item : player.getInventory().getContents()){
+                if (item == null) continue;
+                if (item.getType().equals(Material.IRON_INGOT)
+                        || item.getType().equals(Material.GOLD_INGOT)
+                        || item.getType().equals(Material.DIAMOND)
+                        || item.getType().equals(Material.EMERALD)){
+                    player.getInventory().remove(item);
+                }
+            }
+        }
+
+        CustomSpectator.setSpectator(plugin, player);
+
+        if (team.isBedAlive()){
+            isRespawning = true;
+            new RespawnRunnable(plugin, 5, this).runTaskTimer(plugin, 0L, 20L);
+        }
+        else{
+            hasLost = true;
+            onGameEnd();
+        }
     }
 
+    // onRespawn() happens 5 seconds after players' death
     public void onRespawn(){
+        isRespawning = false;
         if (pickaxeLevel != 0){
             pickaxeLevel = Math.max(1, pickaxeLevel-1);
         }
@@ -112,18 +186,23 @@ public class Participant {
         player.setFireTicks(0);
         player.getActivePotionEffects().clear();
         MakeArmorsInvisible.sendOutArmorPacket(player);
-
-
         isDead = false;
-
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.setFireTicks(0), 2L);
     }
 
+    // Player is in spectating mode after his death (for 5 seconds) or if he has lost the game.
+    public void setIsSpectating(boolean value) {
+        isSpectating = value;
+    }
+    public boolean isSpectating(){
+        return isSpectating;
+    }
+
+    // Player that hit this participant most recently
     public Participant getLastHitBy(){
         return lastHitBy;
     }
-
     public void setLastHitBy(Participant p){
         lastHitBy = p;
         BukkitScheduler scheduler = Bukkit.getScheduler();
@@ -135,67 +214,61 @@ public class Participant {
         }, 8 * 20L);
     }
 
-    public void onDeath(){
-        isDead = true;
-        player.teleport(player.getWorld().getSpawnLocation());
-
-        if (getLastHitBy() != null){
-            getLastHitBy().kills++;
-            for (ItemStack item : player.getInventory().getContents()){
-                if (item == null) continue;
-                if (item.getType().equals(Material.IRON_INGOT)
-                        || item.getType().equals(Material.GOLD_INGOT)
-                        || item.getType().equals(Material.DIAMOND)
-                        || item.getType().equals(Material.EMERALD)){
-                    player.getInventory().remove(item);
-                    getLastHitBy().player.getInventory().addItem(item);
-                }
-            }
-            if (team.isBedAlive()){
-                Bukkit.broadcastMessage(getLastHitBy().player.getDisplayName() + " zabił " + player.getDisplayName());
-            }
-            else{
-                Bukkit.broadcastMessage(ChatColor.RED + "FINAL KILL! "
-                        + getLastHitBy().getChatColor() + getLastHitBy().player.getDisplayName()
-                        + ChatColor.RED + " zabił " + getChatColor() + player.getDisplayName());
-            }
-
-        }
-        else{
-            Bukkit.broadcastMessage(getChatColor() + player.getDisplayName() + ChatColor.RED + " zginął.");
-            for (ItemStack item : player.getInventory().getContents()){
-                if (item == null) continue;
-                if (item.getType().equals(Material.IRON_INGOT)
-                        || item.getType().equals(Material.GOLD_INGOT)
-                        || item.getType().equals(Material.DIAMOND)
-                        || item.getType().equals(Material.EMERALD)){
-                    player.getInventory().remove(item);
-                }
-            }
-        }
-
-        CustomSpectator.setSpectator(plugin, player);
-
-        if (team.isBedAlive()){
-            new RespawnRunnable(plugin, 5, this).runTaskTimer(plugin, 0L, 20L);
-        }
-        else{
-            hasLost = true;
-            onGameEnd();
-        }
-    }
-
+    // When player has lost the game, but he can still spectate
     public void onGameEnd(){
         player.sendMessage(ChatColor.RED + "Twoje łóżko zostało zniszczone i już się nie odrodzisz.");
         CustomSpectator.setSpectator(plugin, player);
         player.teleport(player.getLocation().getWorld().getSpawnLocation());
+        PlayerDataManager.savePlayerData(plugin, this);
     }
 
+    // ChatColor and Color depend on the team, not really needed here, but it's handful
     public ChatColor getChatColor(){
         if (team != null){
             return team.getChatColor();
         }
         return ChatColor.BLACK;
+    }
+
+    public String getTerracottaColor() {
+        if (team == null){
+            return "WHITE";
+        }
+        switch(team.ID){
+            case 0 -> {
+                color = Color.BLUE;
+                return "BLUE";
+            }
+            case 1 -> {
+                color = Color.RED;
+                return "RED";
+            }
+            case 2 -> {
+                color = Color.YELLOW;
+                return "YELLOW";
+            }
+            case 3 -> {
+                color = Color.GREEN;
+                return "GREEN";
+            }
+            case 4 -> {
+                color = Color.AQUA;
+                return "LIGHT_BLUE";
+            }
+            case 5 -> {
+                color = Color.GRAY;
+                return "DARK_GRAY";
+            }
+            case 6 -> {
+                color = Color.PURPLE;
+                return "LIGHT_PURPLE";
+            }
+            case 7 -> {
+                color = Color.WHITE;
+                return "WHITE";
+            }
+        }
+        return "WHITE";
     }
 
     public String getColor(){
@@ -239,18 +312,17 @@ public class Participant {
         return "WHITE";
     }
 
+    // Those functions are shop-related. Player can upgrade his gear.
+    // Also all of the gear is unbreakable, function is static because it is used project-wide
     public boolean isPickaxeMaxed(){
         return pickaxeLevel == 4;
     }
-
     public boolean isAxeMaxed(){
         return axeLevel == 4;
     }
-
     public boolean hasShears(){
         return shearsLevel > 0;
     }
-
     public void upgradePickaxe(){
         for (ItemStack item : player.getInventory()){
             if (item != null && getPickaxe() != null && item.getType() == getPickaxe().getType()){
@@ -260,7 +332,6 @@ public class Participant {
         pickaxeLevel++;
         player.getInventory().addItem(unbreakable(getPickaxe()));
     }
-
     public void upgradeAxe(){
         for (ItemStack item : player.getInventory()){
             if (item != null && getAxe() != null && item.getType() == getAxe().getType()){
@@ -270,7 +341,6 @@ public class Participant {
         axeLevel++;
         player.getInventory().addItem(unbreakable(getAxe()));
     }
-
     public void upgradeShears(){
         for (ItemStack item : player.getInventory()){
             if (item != null && getShears() != null && item.getType() == getShears().getType()){
@@ -280,7 +350,6 @@ public class Participant {
         shearsLevel = 1;
         player.getInventory().addItem(unbreakable(getShears()));
     }
-
     public static ItemStack unbreakable(ItemStack item){
         ItemMeta meta = item.getItemMeta();
         if (meta != null){
@@ -290,15 +359,12 @@ public class Participant {
 
         return item;
     }
-
     public int getPickaxeLevel() {
         return pickaxeLevel;
     }
-
     public int getAxeLevel(){
         return axeLevel;
     }
-    
     private ItemStack getPickaxe(){
         pickaxeLevel = Math.min(pickaxeLevel, 4);
         ItemStack item = new ItemStack(Material.AIR);
@@ -327,7 +393,6 @@ public class Participant {
 
         return item;
     }
-
     private ItemStack getAxe(){
         axeLevel = Math.min(axeLevel, 4);
         ItemStack item = new ItemStack(Material.AIR);
@@ -354,7 +419,6 @@ public class Participant {
         }
         return item;
     }
-
     private ItemStack getShears(){
         if (shearsLevel == 0){
             return new ItemStack(Material.AIR);
@@ -367,30 +431,19 @@ public class Participant {
             return item;
         }
     }
+    // End of shop-related functions
 
-    public Map<Enchantment, Integer> getArmorEnchantments(){
-        Map<Enchantment, Integer> map = new HashMap<>();
-        if (team.protLevel > 0){
-            map.put(Enchantment.PROTECTION_ENVIRONMENTAL, team.protLevel);
-        }
-        return map;
-    }
+    // The scoreboard is sorted with this comparator
+    public static Comparator<Participant> scoreComparator = Comparator.comparingInt(Participant::getKills);
 
-    public static Comparator<Participant> scoreComparator = new Comparator<Participant>() {
-        @Override
-        public int compare(Participant o1, Participant o2) {
-            return Integer.compare(o1.currentScore, o2.currentScore);
-        }
-    };
-
-
+    // When a player is spectating he shouldn't have any items in inventory.
+    // We save them in "inventoryBeforeSpectating" variable, and then restore after he has respawned
     public void saveInventoryForSpectating() {
         if (inventoryBeforeSpectating == null){
             inventoryBeforeSpectating = player.getInventory().getContents();
             player.getInventory().clear();
         }
     }
-
     public void restoreInventoryAfterSpectating() {
         if (inventoryBeforeSpectating != null){
             player.getInventory().setContents(inventoryBeforeSpectating);
@@ -399,10 +452,20 @@ public class Participant {
 
     }
 
+    // Returns true if player is currently dead.
     public boolean isDead() {
         return isDead;
     }
 
+    // Returns true if the player is dead and will not respawn (has lost the game completely).
+    public boolean hasLost(){
+        return hasLost;
+    }
+
+    // Trap invincibility can be obtained by drinking milk
+    public boolean isTrapInvincible(){
+        return trapInvincibilityTime > 0;
+    }
     public void setTrapInvincibility(int time_in_seconds) {
         trapInvincibilityTime = time_in_seconds;
         new BukkitRunnable() {
@@ -414,6 +477,47 @@ public class Participant {
                 }
             }
         }.runTaskTimer(plugin, 20L, 20L);
+    }
+
+    // Command "/team" switches you to the team chat.
+    // If you text on the team chat, enemies can't see your messages, but
+    // your teammates can.
+    public boolean getTeamChat(){
+        return teamChat;
+    }
+    public void setTeamChat(boolean teamChat) {
+        this.teamChat = teamChat;
+    }
+
+    // Update domain is a function used to correctly save all
+    // of the information to the database.
+    public void updateDomain() {
+        domain.setKills(domain.getKills() + kills);
+        domain.setFinalKills(domain.getFinalKills() + finalKills);
+        domain.setDeaths(domain.getDeaths() + deaths);
+        domain.setBedsDestroyed(domain.getBedsDestroyed() + bedsDestroyed);
+        domain.setGamesPlayed(domain.getGamesPlayed() + 1);
+
+        int teamsPlaying = 0;
+        for (Team t : plugin.getTeams()){
+            for (Participant m : t.members){
+                if (!m.hasLost && m.player.isOnline()){
+                    teamsPlaying++;
+                    break;
+                }
+            }
+        }
+        if (hasLost) {
+            teamsPlaying++;
+        }
+        else{
+            domain.setWins(domain.getWins()+1);
+        }
+        domain.setSumOfPlaces(domain.getSumOfPlaces() + teamsPlaying);
+    }
+
+    public boolean isRespawning() {
+        return isRespawning;
     }
 
 

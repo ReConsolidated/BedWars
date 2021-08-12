@@ -1,9 +1,13 @@
 package io.github.reconsolidated.BedWars;
 
+import io.github.reconsolidated.BedWars.Chat.ChatMessageListener;
 import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
 import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
+import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.CustomSpectator.StopSpectatorSounds;
+import io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager;
+import io.github.reconsolidated.BedWars.DataBase.PlayerDataManager;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Listeners.*;
 import io.github.reconsolidated.BedWars.Teams.Team;
@@ -19,10 +23,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static io.github.reconsolidated.BedWars.CustomConfig.loadCustomConfig;
 import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
+import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.sendServerState;
 import static io.github.reconsolidated.BedWars.Participant.unbreakable;
 
 public class BedWars extends JavaPlugin implements Listener {
@@ -47,12 +53,13 @@ public class BedWars extends JavaPlugin implements Listener {
 
     private JedisCommunicator jedis;
 
+
     @Override
     public void onEnable() {
         Commands commandsPlugin = new Commands(this);
         getServer().getPluginCommand("helpbedwars").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("start").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("stop").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("bdstart").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("bdstop").setExecutor(commandsPlugin);
         getServer().getPluginCommand("itemspawner").setExecutor(commandsPlugin);
         getServer().getPluginCommand("newspawn").setExecutor(commandsPlugin);
         getServer().getPluginCommand("setspawn").setExecutor(commandsPlugin);
@@ -60,9 +67,14 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginCommand("newshop1").setExecutor(commandsPlugin);
         getServer().getPluginCommand("newshop2").setExecutor(commandsPlugin);
         getServer().getPluginCommand("release").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("team").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("d").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("all").setExecutor(commandsPlugin);
+        getServer().getPluginCommand("w").setExecutor(commandsPlugin);
         getServer().getPluginManager().registerEvents(this, this);
 
-        String[] worlds = {"bedwars_ships", "bedwars_ancient"};
+        String[] worlds = {"bedwars_ships", "bedwars_ancient",
+                "bedwars_forest", "bedwars_castle"};
 
         Random random = new Random();
         currentWorldName = worlds[random.nextInt(worlds.length)]; // this will be random
@@ -74,8 +86,10 @@ public class BedWars extends JavaPlugin implements Listener {
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.DO_INSOMNIA, false);
+        world.setGameRule(GameRule.DO_FIRE_TICK, false);
         world.setTicksPerMonsterSpawns(0);
         world.setMonsterSpawnLimit(128);
+        world.setDifficulty(Difficulty.NORMAL);
 
         currentConfig = loadCustomConfig(currentWorldName);
         if (!currentConfig.contains(currentWorldName)){
@@ -115,6 +129,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new EntityPickupItemListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlockDropItemListener(), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileLaunchListener(this), this);
         getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(this), this);
@@ -124,14 +139,17 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new InventoryCloseListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerBucketEmptyListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockCanBuildListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChatMessageListener(this), this);
 
         jedis = new JedisCommunicator(this);
+
+        sendServerState(this);
     }
 
     public void releasePlayer(Player player) {
         Participant p = this.getParticipant(player);
         if (p != null){
-            p.team.members.remove(p);
+            p.getTeam().members.remove(p);
             getParticipants().remove(p);
         }
 
@@ -147,6 +165,11 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public void onStart(){
+        ServerStateManager.removeServerFromList();
+        Bukkit.getScheduler().runTaskAsynchronously(this, () ->{
+            PlayerDataManager.fetchPlayersData(participants);
+        });
+
         if (!currentConfig.contains(currentWorldName + ".shop")){
             currentConfig.createSection(currentWorldName + ".shop");
         }
@@ -160,6 +183,7 @@ public class BedWars extends JavaPlugin implements Listener {
                 villager.setAI(false);
             }
             if (type == 2){
+                location.getWorld().setDifficulty(Difficulty.NORMAL);
                 Zombie zombie = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
                 zombie.setAdult();
                 zombie.setRemoveWhenFarAway(false);
@@ -181,6 +205,14 @@ public class BedWars extends JavaPlugin implements Listener {
                     i,
                     this
             ));
+
+            try {
+                Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("" + i);
+            } catch (Exception ignored){
+
+            }
+
+
         }
 
         int spawnersCounter = currentConfig.getConfigurationSection(currentWorldName).getInt("spawners_counter");
@@ -194,7 +226,7 @@ public class BedWars extends JavaPlugin implements Listener {
             Integer team = (Integer) section.get("team");
             Integer maxAmount = (Integer) section.get("maxAmount");
             if (type == null || period == null || location == null || team == null || maxAmount == null){
-                Bukkit.broadcastMessage("Nie udało się załadować informacji o spawnerze");
+                Bukkit.getLogger().warning("Nie udało się załadować informacji o spawnerze");
             }
             else{
                 spawners.add(new ItemSpawner(this,
@@ -216,17 +248,20 @@ public class BedWars extends JavaPlugin implements Listener {
     public void onGameEnd(){
         Team winnerTeam = teams.get(0);
         for (Participant p : participants){
-            if (!p.hasLost){
-                winnerTeam = p.team;
+            if (!p.hasLost()){
+                winnerTeam = p.getTeam();
+
             }
         }
         for (Participant p : participants){
-            if (!p.hasLost){
-                p.player.sendTitle(ChatColor.GREEN + "Zwycięstwo!", "", 5, 100, 5);
+            if (!p.hasLost()){
+                PlayerDataManager.savePlayerData(this, p);
+                p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", "", 5, 100, 5);
             }
             else{
-                p.player.sendTitle("", ChatColor.GOLD + "Wygrała drużyna " + winnerTeam.getChatColor() + winnerTeam.getName(), 5, 100, 5);
+                p.getPlayer().sendTitle("", ChatColor.GOLD + "Wygrała drużyna " + winnerTeam.getChatColor() + winnerTeam.getName(), 5, 100, 5);
             }
+            CustomSpectator.setSpectator(this, p.getPlayer());
         }
 
         new BukkitRunnable() {
@@ -365,7 +400,7 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public Participant getParticipant(Player player){
         for (int i = 0; i<participants.size(); i++){
-            if (participants.get(i).player.equals(player)){
+            if (participants.get(i).getPlayer().equals(player)){
                 return participants.get(i);
             }
         }
@@ -398,7 +433,7 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public Participant getInactiveParticipant(Player player){
         for (int i = 0; i<inactiveParticipants.size(); i++){
-            if (inactiveParticipants.get(i).player.getUniqueId().equals(player.getUniqueId())){
+            if (inactiveParticipants.get(i).getPlayer().getUniqueId().equals(player.getUniqueId())){
                 return inactiveParticipants.get(i);
             }
         }
@@ -435,4 +470,17 @@ public class BedWars extends JavaPlugin implements Listener {
         }
         return false;
     }
+
+    public void setTeamChat(Player player, boolean teamChat) {
+        Participant p = getParticipant(player);
+        if (p == null) return;
+        p.setTeamChat(teamChat);
+        if (teamChat){
+            player.sendMessage(ChatColor.GREEN + "Teraz piszesz tylko do swojej drużyny.");
+        }
+        else{
+            player.sendMessage(ChatColor.GREEN + "Teraz piszesz do wszystkich graczy.");
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import io.github.reconsolidated.BedWars.Teams.Traps.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.type.Bed;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -104,18 +105,18 @@ public class Team {
 
     public void updateEnchants(){
         for (Participant p : members){
-            if (p.team.hasteLevel > 0){
-                p.player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 999999, hasteLevel));
+            if (p.getTeam().hasteLevel > 0){
+                p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 999999, hasteLevel));
             }
 
             if (protLevel > 0){
-                for (ItemStack s : p.player.getInventory().getArmorContents()){
+                for (ItemStack s : p.getPlayer().getInventory().getArmorContents()){
                     if (s != null)
                         s.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, protLevel);
                 }
             }
             if (sharpLevel > 0){
-                for (ItemStack s : p.player.getInventory()){
+                for (ItemStack s : p.getPlayer().getInventory()){
                     if (s == null) continue;
                     if (s.getType().equals(Material.WOODEN_SWORD)
                             || s.getType().equals(Material.STONE_SWORD)
@@ -228,5 +229,19 @@ public class Team {
 
     public void onBedDestroy(){
         this.isBedAlive = false;
+    }
+
+    public void destroyBed() {
+        for (int i = getBedLocation().getBlockX()-2; i<getBedLocation().getBlockX()+2; i++){
+            for (int j = getBedLocation().getBlockY()-2; j<getBedLocation().getBlockY()+2; j++){
+                for (int k = getBedLocation().getBlockZ()-2; k<getBedLocation().getBlockZ()+2; k++){
+                    if (getBedLocation().getWorld().getBlockAt(i, j, k).getBlockData() instanceof Bed){
+                        getBedLocation().getWorld().getBlockAt(i, j, k).getDrops().clear();
+                        getBedLocation().getWorld().getBlockAt(i, j, k).setType(Material.AIR);
+                    }
+                }
+            }
+        }
+        onBedDestroy();
     }
 }
