@@ -273,6 +273,14 @@ public class Buy {
     }
 
     public static boolean canAfford(Player player, ItemStack cost) {
+        boolean hasEmptySlot = false;
+        for (ItemStack its : player.getInventory().getContents()){
+            if (its == null || its.getType().equals(Material.AIR)){
+                hasEmptySlot = true;
+            }
+        }
+        if (!hasEmptySlot) return false;
+
         int amount = cost.getAmount();
         for (ItemStack items : player.getInventory().getContents()){
             if (items == null)

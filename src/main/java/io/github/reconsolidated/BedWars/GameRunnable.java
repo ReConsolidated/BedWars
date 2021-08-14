@@ -2,13 +2,26 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import net.minecraft.server.v1_16_R2.Entity;
+import net.minecraft.server.v1_16_R2.EntityEnderDragon;
+import net.minecraft.server.v1_16_R2.EntityInsentient;
+import net.minecraft.server.v1_16_R2.Navigation;
 import org.bukkit.*;
 import org.bukkit.block.data.type.Bed;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftEnderDragon;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameRunnable extends BukkitRunnable {
     private BedWars plugin;
@@ -42,7 +55,7 @@ public class GameRunnable extends BukkitRunnable {
             }
         }
 
-        if (plugin.hasStarted && (counter == 2600 || teamsPlaying <= 1)){
+        if (plugin.hasStarted && teamsPlaying <= 1){
             plugin.onGameEnd();
             this.cancel();
         }
@@ -127,7 +140,7 @@ public class GameRunnable extends BukkitRunnable {
                     + ChatColor.GOLD + "ZNISZCZONE!");
 
         }
-        if (counter == 2525){
+        if (counter == 25){
             for (Team t : plugin.getTeams()){
                 boolean isAnyoneAlive = false;
                 for (Participant m : t.members){
@@ -138,7 +151,8 @@ public class GameRunnable extends BukkitRunnable {
                 if (isAnyoneAlive){
                     for (int i = 0; i<t.dragons; i++){
                         EnderDragon ed = (EnderDragon) t.getBedLocation().getWorld().spawnEntity(t.getBedLocation(), EntityType.ENDER_DRAGON);
-                        ed.setPhase(EnderDragon.Phase.values()[0]);
+                        ed.setInvulnerable(true);
+                        new DragonRunnable(plugin, t, ed).runTaskTimer(plugin, 0L, 1L);
                     }
                 }
             }
@@ -146,6 +160,11 @@ public class GameRunnable extends BukkitRunnable {
 
         //
         counter++;
+    }
+
+    private void moveTo(LivingEntity l, Location loc, double velocity) {
+        EntityInsentient e = (EntityInsentient) ((CraftLivingEntity)l).getHandle();
+        e.getNavigation().a(loc.getX(), loc.getY(), loc.getZ(), velocity);
     }
 
     public String getNextEventName(){

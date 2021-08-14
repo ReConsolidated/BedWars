@@ -48,7 +48,7 @@ public class VillagerMenuItemClickListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         String category = NbtWrapper.getNBTTag("category", item);
         if (category == null){
-            Bukkit.broadcastMessage(ChatColor.RED + "Kategoria przedmiotu nie jest ustawiona!");
+            Bukkit.getLogger().warning(ChatColor.RED + "Kategoria przedmiotu nie jest ustawiona!");
             return;
         }
         if (category.length() > 1){

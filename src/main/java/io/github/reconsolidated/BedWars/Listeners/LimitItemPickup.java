@@ -8,12 +8,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
 public class LimitItemPickup implements Listener {
-    private Set<UUID> playersOnCooldown = new HashSet<>();
-    private BedWars plugin;
+    private final Set<UUID> playersOnCooldown = new HashSet<>();
+    private final BedWars plugin;
 
     public LimitItemPickup(BedWars plugin){
         this.plugin = plugin;
@@ -27,12 +28,11 @@ public class LimitItemPickup implements Listener {
         Player player = (Player) event.getEntity();
         if (playersOnCooldown.contains(player.getUniqueId())){
             event.setCancelled(true);
+            if ((new Random()).nextBoolean()){
+                playersOnCooldown.remove(player.getUniqueId());
+            }
             return;
         }
         playersOnCooldown.add(player.getUniqueId());
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            playersOnCooldown.remove(player.getUniqueId());
-        }, 3L);
-
     }
 }

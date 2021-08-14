@@ -90,6 +90,12 @@ public class BedWars extends JavaPlugin implements Listener {
         world.setTicksPerMonsterSpawns(0);
         world.setMonsterSpawnLimit(128);
         world.setDifficulty(Difficulty.NORMAL);
+        world.setFullTime(0);
+
+        Bukkit.getScheduler().runTaskTimer(this, () ->{
+            world.setFullTime(0);
+        }, 20L, 20L);
+
 
         currentConfig = loadCustomConfig(currentWorldName);
         if (!currentConfig.contains(currentWorldName)){
@@ -141,6 +147,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new BlockCanBuildListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatMessageListener(this), this);
         getServer().getPluginManager().registerEvents(new LimitItemPickup(this), this);
+        getServer().getPluginManager().registerEvents(new CreatureSpawnListener(), this);
 
         jedis = new JedisCommunicator(this);
 
@@ -299,7 +306,7 @@ public class BedWars extends JavaPlugin implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             golems.remove(golem);
             golem.killEntity();
-        }, 20L * 15);
+        }, 20L * 120);
     }
 
     public String getNextEventName(){

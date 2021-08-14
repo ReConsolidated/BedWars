@@ -168,6 +168,10 @@ public class Participant {
         }
         player.teleport(team.getSpawnLocation());
         CustomSpectator.endSpectator(plugin, player);
+        player.setInvulnerable(true);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            player.setInvulnerable(false);
+        }, 20L);
 
         ItemStack[] armor = player.getInventory().getArmorContents();
 

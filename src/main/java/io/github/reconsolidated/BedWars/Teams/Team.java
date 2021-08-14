@@ -4,11 +4,14 @@ import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Teams.Traps.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -242,6 +245,13 @@ public class Team {
                 }
             }
         }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Entity e : getBedLocation().getWorld().getNearbyEntities(getBedLocation(), 2, 2 ,2 )){
+                if (e instanceof Item){
+                    e.remove();
+                }
+            }
+        }, 5L);
         onBedDestroy();
     }
 }

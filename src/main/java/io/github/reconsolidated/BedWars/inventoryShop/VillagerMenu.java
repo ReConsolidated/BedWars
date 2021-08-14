@@ -72,11 +72,11 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "", new ArrayList<>(), player));
                 if (p.getPickaxeLevel() == 0)
                     this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.WOODEN_PICKAXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
-                if (p.getPickaxeLevel() == 1)
+                else if (p.getPickaxeLevel() == 1)
                     this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.IRON_PICKAXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
-                if (p.getPickaxeLevel() == 2)
+                else if (p.getPickaxeLevel() == 2)
                     this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.GOLDEN_PICKAXE, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
-                if (p.getPickaxeLevel() == 3)
+                else
                     this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.DIAMOND_PICKAXE, 1, Material.GOLD_INGOT, 6, "", new ArrayList<>(), player));
 
 
@@ -97,11 +97,11 @@ public class VillagerMenu implements Listener {
 
                 if (p.getAxeLevel() == 0)
                     this.inv.setItem(40, CustomItemStack.createCustomItemStack(Material.WOODEN_AXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
-                if (p.getAxeLevel() == 1)
+                else if (p.getAxeLevel() == 1)
                     this.inv.setItem(40, CustomItemStack.createCustomItemStack(Material.STONE_AXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
-                if (p.getAxeLevel() == 2)
+                else if (p.getAxeLevel() == 2)
                     this.inv.setItem(40, CustomItemStack.createCustomItemStack(Material.IRON_AXE, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
-                if (p.getAxeLevel() == 3)
+                else
                     this.inv.setItem(40, CustomItemStack.createCustomItemStack(Material.DIAMOND_AXE, 1, Material.GOLD_INGOT, 6, "", new ArrayList<>(), player));
 
                 ItemStack item = CustomItemStack.createCustomItemStack(Material.BOW, 1, Material.GOLD_INGOT, 24, "", new ArrayList<>(), player);

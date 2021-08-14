@@ -31,6 +31,11 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event){
+        if (event.getAction().equals(Action.PHYSICAL)){
+            event.setCancelled(true);
+            return;
+        }
+
         Participant p = plugin.getParticipant(event.getPlayer());
 
         if (p == null || p.isSpectating() || p.getTeam() == null){
@@ -47,7 +52,7 @@ public class PlayerInteractListener implements Listener {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getMaterial().equals(Material.POLAR_BEAR_SPAWN_EGG)){
             event.setCancelled(true);
             Location location = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
-            if (event.getClickedBlock().getLocation().distance(p.getTeam().getBedLocation()) > 30){
+            if (event.getClickedBlock().getLocation().distance(p.getTeam().getBedLocation()) > 50){
                 p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz stworzyć golema tak daleko od bazy.");
                 return;
             }
