@@ -115,6 +115,10 @@ public class Buy {
             buyArmor(plugin, player, item);
             return;
         }
+        if (hasFullInventory(player)){
+            player.sendMessage(ChatColor.RED + "Masz pełny ekwipunek.");
+            return;
+        }
         Participant p = plugin.getParticipant(player);
         if (p != null){
             if (isPickaxe(item)){
@@ -148,6 +152,15 @@ public class Buy {
         }
 
         player.getInventory().addItem(newItem);
+    }
+
+    private static boolean hasFullInventory(Player player) {
+        for (ItemStack item : player.getInventory().getContents()){
+            if (item == null || item.getType().equals(Material.AIR)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isPickaxe(ItemStack item){
