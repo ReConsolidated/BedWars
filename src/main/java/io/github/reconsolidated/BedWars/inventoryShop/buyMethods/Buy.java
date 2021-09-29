@@ -79,6 +79,11 @@ public class Buy {
                 return;
             }
         }
+        if (hasFullInventory(player)){
+            player.sendMessage(ChatColor.RED + "Masz pełny ekwipunek.");
+            fail(plugin, player, menu);
+            return;
+        }
         if (canAfford(player, cost)) {
             charge(player, cost);
             giveItem(plugin, player, item);
@@ -102,6 +107,15 @@ public class Buy {
 
             fail(plugin, player, menu);
         }
+    }
+
+    private static boolean hasFullInventory(Player player) {
+        for (ItemStack item : player.getInventory().getContents()){
+            if (item == null || item.getType().equals(Material.AIR)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void giveItem(BedWars plugin, Player player, ItemStack item) {

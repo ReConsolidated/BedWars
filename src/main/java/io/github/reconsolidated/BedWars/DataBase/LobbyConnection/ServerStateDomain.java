@@ -31,4 +31,8 @@ public class ServerStateDomain {
 
     @Column
     private int maxAcceptableGroup;
+
+    @Column
+    private int parties;
+
 }

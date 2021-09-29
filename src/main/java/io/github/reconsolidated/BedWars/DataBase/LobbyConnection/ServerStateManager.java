@@ -12,22 +12,37 @@ import javax.persistence.NoResultException;
 
 
 public class ServerStateManager {
+
+    private static ServerStateDomain domain = null;
+
     public static void sendServerState(BedWars plugin){
-        sendServerState(plugin,0);
+        sendServerState(plugin,0, plugin.getServerName(), plugin.getTEAM_SIZE(), plugin.getTEAMS_COUNT());
     }
-    private static void sendServerState(BedWars plugin, int number_of_tries){
+
+    public static void sendServerState(BedWars plugin, String name, int team_size, int teams){
+        sendServerState(plugin,0, name, team_size, teams);
+    }
+    private static void sendServerState(BedWars plugin, int number_of_tries, String name, int team_size, int teams){
+        if (domain == null){
+            domain = new ServerStateDomain(
+                    name + "_" + Bukkit.getServer().getPort(),
+                    name,
+                    team_size*teams,
+                    team_size*teams,
+                    team_size,
+                    plugin.getPartiesCount()
+            );
+        }
+        else{
+            domain.setAvailableSlots(team_size*teams - Bukkit.getOnlinePlayers().size());
+            domain.setParties(plugin.getPartiesCount());
+        }
         new BukkitRunnable() {
             @Override
             public void run() {
                 try (Session session = HibernateUtil.getSessionFactory().openSession()){
                     Transaction transaction = session.beginTransaction();
-                    session.saveOrUpdate(new ServerStateDomain(
-                            "bedwars_" + Bukkit.getServer().getPort(),
-                            "bedwars",
-                            16,
-                            16,
-                            16
-                            ));
+                    session.saveOrUpdate(domain);
                     transaction.commit();
                 }
                 catch (HibernateException e){
@@ -36,7 +51,7 @@ public class ServerStateManager {
                         Bukkit.getLogger().info(
                                 "Trying to connect to the database for the "
                                         + (4-number_of_tries) + ". time...");
-                        sendServerState(plugin, number_of_tries-1);
+                        sendServerState(plugin, number_of_tries-1, name, team_size, teams);
                     }
                     else{
                         Bukkit.getServer().shutdown();
@@ -45,6 +60,7 @@ public class ServerStateManager {
                 }
             }
         }.runTaskAsynchronously(plugin);
+
     }
 
     public static ServerStateDomain getServerDomainByName(String serverName){

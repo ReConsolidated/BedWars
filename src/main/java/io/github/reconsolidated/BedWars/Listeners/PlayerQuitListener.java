@@ -19,6 +19,7 @@ public class PlayerQuitListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
         event.setQuitMessage("");
+
         Participant p = plugin.getParticipant(player);
         if (p == null) return;
         if (plugin.hasStarted){

@@ -36,6 +36,13 @@ public class BridgeEggRunnable extends BukkitRunnable {
             new EggRunnable(lastLocation.clone(), color).runTaskLater(plugin, 10L);
 
         lastLocation = egg.getLocation().clone().add(0, -2, 0);
+
+        if (lastLocation.getBlockX() > plugin.getGameBorderBiggestX()
+                || lastLocation.getBlockZ() > plugin.getGameBorderBiggestZ()
+                || lastLocation.getBlockX() < plugin.getGameBorderSmallestX()
+                || lastLocation.getBlockZ() < plugin.getGameBorderSmallestZ()){
+            this.cancel();
+        }
     }
 
     private static class EggRunnable extends BukkitRunnable{

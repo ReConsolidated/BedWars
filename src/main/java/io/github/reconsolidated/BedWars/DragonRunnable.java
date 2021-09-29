@@ -6,11 +6,13 @@ import org.bukkit.entity.EnderDragon;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.Random;
+
 public class DragonRunnable extends BukkitRunnable {
     private final BedWars plugin;
     private Location destination = null;
     private final int teamID;
-    private EnderDragon dragon;
+    private final EnderDragon dragon;
 
     public DragonRunnable(BedWars plugin, Team team, EnderDragon dragon){
         this.plugin = plugin;
@@ -20,19 +22,32 @@ public class DragonRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (destination == null || dragon.getLocation().distanceSquared(destination) < 10){
+        if (!dragon.getLocation().getChunk().isLoaded()){
+            dragon.getLocation().getChunk().load();
+        }
+        if (destination == null || dragon.getLocation().distanceSquared(destination) < 3){
             for (Participant p : plugin.getParticipants()){
                 if (p.getTeam().ID == teamID) continue;
-                destination = p.getPlayer().getLocation().clone();
+                Random random = new Random();
+                if (destination != null && random.nextBoolean()) continue;
+
+                if (random.nextBoolean()){
+                    destination = p.getPlayer().getLocation().clone();
+                }
+                else{
+                    destination = p.getPlayer().getLocation().clone().add(
+                            random.nextInt(150)-75,
+                            random.nextInt(50)-5,
+                            random.nextInt(150)-75);
+                }
+
             }
         }
         if (destination == null) return;
 
-        // OD TEGO MOMENTU NIE MUSISZ RUSZAC
         Location dir = destination.clone().subtract(dragon.getLocation().clone());
         Vector vdir = dir.toVector();
         vdir = vdir.normalize();
-        vdir = vdir.multiply(0.3);
         Location dragonNewLocation = dragon.getLocation().clone().add(vdir);
         vdir.multiply(-1);
         dragonNewLocation.setDirection(vdir);

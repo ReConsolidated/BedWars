@@ -11,6 +11,8 @@ import io.github.reconsolidated.BedWars.DataBase.PlayerDataManager;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Listeners.*;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -36,7 +38,13 @@ public class BedWars extends JavaPlugin implements Listener {
     public World world;
     public boolean hasStarted = false;
 
-    private int TEAMS = 4;
+    @Getter
+    private int TEAMS_COUNT = 4;
+    @Getter
+    private int TEAM_SIZE = 1;
+    @Getter
+    @Setter
+    private int partiesCount = 0;
 
     private static String currentWorldName = "bedwars_ancient"; //
 
@@ -53,6 +61,19 @@ public class BedWars extends JavaPlugin implements Listener {
 
     private JedisCommunicator jedis;
 
+    @Getter
+    private String serverName = "bedwars";
+
+
+    // These variables should be initiated in onStart() method, based on teams' beds locations.
+    @Getter
+    private int gameBorderSmallestX = 9999;
+    @Getter
+    private int gameBorderSmallestZ = 9999;
+    @Getter
+    private int gameBorderBiggestX = -9999;
+    @Getter
+    private int gameBorderBiggestZ = -9999;
 
     @Override
     public void onEnable() {
@@ -73,11 +94,14 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginCommand("w").setExecutor(commandsPlugin);
         getServer().getPluginManager().registerEvents(this, this);
 
-        String[] worlds = {"bedwars_ships", "bedwars_ancient",
-                "bedwars_forest", "bedwars_castle"};
+        List<String> worlds = getConfig().getStringList("maps");
+        TEAMS_COUNT = getConfig().getInt("team_number");
+        TEAM_SIZE = getConfig().getInt("team_size");
+
+        serverName = serverName + TEAM_SIZE;
 
         Random random = new Random();
-        currentWorldName = worlds[random.nextInt(worlds.length)]; // this will be random
+        currentWorldName = worlds.get(random.nextInt(worlds.size())); // this will be random
 
         world = Bukkit.createWorld(new WorldCreator(currentWorldName));
 
@@ -100,14 +124,6 @@ public class BedWars extends JavaPlugin implements Listener {
         currentConfig = loadCustomConfig(currentWorldName);
         if (!currentConfig.contains(currentWorldName)){
             currentConfig.createSection(currentWorldName);
-        }
-
-        if (currentConfig.contains("teams_number")){
-            TEAMS = currentConfig.getInt("teams_number");
-        }
-        else {
-            currentConfig.set("teams_number", TEAMS);
-            saveCustomConfig(currentWorldName, currentConfig);
         }
 
         participants = new ArrayList<>();
@@ -151,7 +167,8 @@ public class BedWars extends JavaPlugin implements Listener {
 
         jedis = new JedisCommunicator(this);
 
-        sendServerState(this);
+        new StartGameRunnable(this);
+        sendServerState(this, serverName, TEAM_SIZE, TEAMS_COUNT);
     }
 
     public void releasePlayer(Player player) {
@@ -201,14 +218,20 @@ public class BedWars extends JavaPlugin implements Listener {
         }
 
 
-        for (int i = 0; i<TEAMS; i++){
+        for (int i = 0; i< TEAMS_COUNT; i++){
             ConfigurationSection section = currentConfig.getConfigurationSection(currentWorldName + "." + i);
             if (section == null){
                 Bukkit.broadcastMessage("Nie są ustawione spawny teamów");
                 return;
             }
+            Location bedLocation = (Location) section.get("bedLocation");
+            gameBorderSmallestX = Math.min(gameBorderSmallestX, bedLocation.getBlockX() - 30);
+            gameBorderSmallestZ = Math.min(gameBorderSmallestZ, bedLocation.getBlockZ() - 30);
+            gameBorderBiggestX = Math.max(gameBorderBiggestX, bedLocation.getBlockX() + 30);
+            gameBorderBiggestZ = Math.max(gameBorderBiggestZ, bedLocation.getBlockZ() + 30);
+
             teams.add(new Team(
-                    (Location) section.get("bedLocation"),
+                    bedLocation,
                     (Location) section.get("spawnLocation"),
                     i,
                     this
@@ -490,5 +513,4 @@ public class BedWars extends JavaPlugin implements Listener {
             player.sendMessage(ChatColor.GREEN + "Teraz piszesz do wszystkich graczy.");
         }
     }
-
 }

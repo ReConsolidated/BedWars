@@ -3,6 +3,8 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.Participant;
+import io.github.reconsolidated.BedWars.Party.PartyDataManager;
+import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,6 +14,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
+
+import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.sendServerState;
 
 public class PlayerJoinListener implements Listener {
     private ArrayList<Participant> participants;
@@ -25,6 +29,16 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
+
+        // Updating serverStateDomain if there is a new party
+        PartyDomain party = PartyDataManager.getParty(event.getPlayer());
+        if (party != null) {
+            if (party.getOwner().equalsIgnoreCase(event.getPlayer().getName())){
+                plugin.setPartiesCount(plugin.getPartiesCount()+1);
+            }
+        }
+        sendServerState(plugin);
+
 
         Participant p = plugin.getInactiveParticipant(player);
         if (p != null){

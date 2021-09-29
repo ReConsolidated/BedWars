@@ -36,6 +36,13 @@ public class BlockPlaceListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (event.getBlock().getLocation().getBlockX() > plugin.getGameBorderBiggestX()
+                || event.getBlock().getLocation().getBlockZ() > plugin.getGameBorderBiggestZ()
+                || event.getBlock().getLocation().getBlockX() < plugin.getGameBorderSmallestX()
+                || event.getBlock().getLocation().getBlockZ() < plugin.getGameBorderSmallestZ()){
+            event.setCancelled(true);
+            return;
+        }
         Player player = event.getPlayer();
         Participant p = plugin.getParticipant(player);
         if (p == null)

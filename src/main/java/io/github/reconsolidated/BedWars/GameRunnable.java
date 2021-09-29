@@ -1,6 +1,8 @@
 package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
+import io.github.reconsolidated.BedWars.Party.PartyDataManager;
+import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import net.minecraft.server.v1_16_R2.Entity;
 import net.minecraft.server.v1_16_R2.EntityEnderDragon;
@@ -24,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameRunnable extends BukkitRunnable {
-    private BedWars plugin;
+    private final BedWars plugin;
     private int counter;
-    private ArrayList<Participant> participants;
-    private ArrayList<ItemSpawner> spawners;
+    private final ArrayList<Participant> participants;
+    private final ArrayList<ItemSpawner> spawners;
 
 
     public GameRunnable(BedWars plugin) {
@@ -64,70 +66,110 @@ public class GameRunnable extends BukkitRunnable {
         if (counter < 5){
             for (Participant p : participants){
                 p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 10, counter+2);
-                p.getPlayer().sendTitle("Start za " + (5-counter), "", 0, 21, 0);
+                p.getPlayer().sendTitle(ChatColor.GOLD + "Start za " + (5-counter), "", 0, 21, 0);
             }
         }
         // POCZĄTEK GRY
         if (counter == 5){
             plugin.hasStarted = true;
 
+
+            boolean[] teamHasParty = new boolean[plugin.getTeams().size()];
+            for (int i = 0; i<plugin.getTeams().size(); i++){
+                teamHasParty[i] = false;
+            }
+
             SpawnDestroyer.destroy(plugin.getSpawnLocation());
-            for (int i = 0; i<participants.size(); i++){
-                int minPlayers = plugin.getTeams().get(0).members.size();
-                int minPlayersTeamID = 0;
-                for (int j = 0; j<plugin.getTeams().size(); j++){
-                    if (minPlayers > plugin.getTeams().get(j).members.size()){
-                        minPlayers = plugin.getTeams().get(j).members.size();
-                        minPlayersTeamID = j;
+            for (Participant p : participants) {
+                if (p.getTeam() != null) {
+                    continue;
+                }
+                PartyDomain party = PartyDataManager.getParty(p.getPlayer());
+                if (party != null) {
+                    for (int j = 0; j < plugin.getTeams().size(); j++) {
+                        if (teamHasParty[j]) continue;
+                        teamHasParty[j] = true;
+                        Team team = plugin.getTeams().get(j);
+                        p.setTeam(team);
+                        team.addMember(p);
+                        Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(p.getPlayer().getDisplayName());
+
+                        for (String name : party.getMembers()) {
+                            Player player = Bukkit.getPlayer(name);
+                            if (player == null || !player.isOnline()) {
+                                continue;
+                            }
+                            Participant m = plugin.getParticipant(player);
+                            if (m == null) {
+                                continue;
+                            }
+                            m.setTeam(team);
+                            team.addMember(m);
+                            Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(m.getPlayer().getDisplayName());
+                        }
+                        break;
                     }
                 }
-
-                plugin.getTeams().get(minPlayersTeamID).addMember(participants.get(i));
-                Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + minPlayersTeamID).addEntry(participants.get(i).getPlayer().getDisplayName());
-                participants.get(i).setTeam(plugin.getTeams().get(minPlayersTeamID));
-                participants.get(i).onStart();
-                participants.get(i).setScoreboard(new ScoreScoreboard(plugin, plugin.getTeams(), participants.get(i)));
-                participants.get(i).getScoreboard().runTaskTimer(plugin, 0, 4);
             }
-            for (int i = 0; i<spawners.size(); i++){
-                spawners.get(i).start();
+
+            for (Participant p : participants) {
+                if (p.getTeam() == null) {
+                    int minPlayers = plugin.getTeams().get(0).members.size();
+                    int minPlayersTeamID = 0;
+                    for (int j = 0; j < plugin.getTeams().size(); j++) {
+                        if (minPlayers > plugin.getTeams().get(j).members.size()) {
+                            minPlayers = plugin.getTeams().get(j).members.size();
+                            minPlayersTeamID = j;
+                        }
+                    }
+                    p.setTeam(plugin.getTeams().get(minPlayersTeamID));
+                    plugin.getTeams().get(minPlayersTeamID).addMember(p);
+                    Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + minPlayersTeamID).addEntry(p.getPlayer().getDisplayName());
+                }
+
+                p.onStart();
+                p.setScoreboard(new ScoreScoreboard(plugin, plugin.getTeams(), p));
+                p.getScoreboard().runTaskTimer(plugin, 0, 4);
+            }
+            for (ItemSpawner spawner : spawners) {
+                spawner.start();
             }
 
 
         }
 
         if (counter == 365){
-            for (int i = 0; i<spawners.size(); i++){
-                if (spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
-                    spawners.get(i).setPeriod(plugin.currentConfig.getInt("DIAMOND_II"));
+            for (ItemSpawner spawner : spawners) {
+                if (spawner.getItem().getType().equals(Material.DIAMOND)) {
+                    spawner.setPeriod(plugin.currentConfig.getInt("DIAMOND_II"));
                 }
             }
         }
         if (counter == 725){
-            for (int i = 0; i<spawners.size(); i++){
-                if (spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
-                    spawners.get(i).setPeriod(plugin.currentConfig.getInt("DIAMOND_III"));
+            for (ItemSpawner spawner : spawners) {
+                if (spawner.getItem().getType().equals(Material.DIAMOND)) {
+                    spawner.setPeriod(plugin.currentConfig.getInt("DIAMOND_III"));
                 }
             }
         }
         if (counter == 1085){
-            for (int i = 0; i<spawners.size(); i++){
-                if (spawners.get(i).getTeamID() == -1 && spawners.get(i).getItem().getType().equals(Material.EMERALD)){
-                    spawners.get(i).setPeriod(plugin.currentConfig.getInt("EMERALD_II"));
+            for (ItemSpawner spawner : spawners) {
+                if (spawner.getTeamID() == -1 && spawner.getItem().getType().equals(Material.EMERALD)) {
+                    spawner.setPeriod(plugin.currentConfig.getInt("EMERALD_II"));
                 }
             }
         }
         if (counter == 1445){
-            for (int i = 0; i<spawners.size(); i++){
-                if (spawners.get(i).getItem().getType().equals(Material.DIAMOND)){
-                    spawners.get(i).setPeriod(plugin.currentConfig.getInt("DIAMOND_IV"));
+            for (ItemSpawner spawner : spawners) {
+                if (spawner.getItem().getType().equals(Material.DIAMOND)) {
+                    spawner.setPeriod(plugin.currentConfig.getInt("DIAMOND_IV"));
                 }
             }
         }
         if (counter == 1805){
-            for (int i = 0; i<spawners.size(); i++){
-                if (spawners.get(i).getTeamID() == -1 && spawners.get(i).getItem().getType().equals(Material.EMERALD)){
-                    spawners.get(i).setPeriod(plugin.currentConfig.getInt("EMERALD_III"));
+            for (ItemSpawner spawner : spawners) {
+                if (spawner.getTeamID() == -1 && spawner.getItem().getType().equals(Material.EMERALD)) {
+                    spawner.setPeriod(plugin.currentConfig.getInt("EMERALD_III"));
                 }
             }
         }
@@ -140,7 +182,7 @@ public class GameRunnable extends BukkitRunnable {
                     + ChatColor.GOLD + "ZNISZCZONE!");
 
         }
-        if (counter == 25){
+        if (counter == 2525){
             for (Team t : plugin.getTeams()){
                 boolean isAnyoneAlive = false;
                 for (Participant m : t.members){

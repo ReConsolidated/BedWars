@@ -32,7 +32,7 @@ public class BlockBreakListener implements Listener {
                 if (teams.get(i).getBedLocation().distance(event.getBlock().getLocation()) < 3){
                     if (p.getTeam() == teams.get(i)){
                         event.setCancelled(true);
-                        p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz zniszczyć swojego łóżka idioto");
+                        p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz zniszczyć swojego łóżka.");
                     }
                     else{
                         p.setBedsDestroyed(p.getBedsDestroyed() + 1);
