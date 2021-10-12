@@ -39,7 +39,6 @@ public class PlayerJoinListener implements Listener {
         }
         sendServerState(plugin);
 
-
         Participant p = plugin.getInactiveParticipant(player);
         if (p != null){
             p.setPlayer(player);
@@ -70,7 +69,8 @@ public class PlayerJoinListener implements Listener {
                 participants.add(p);
                 event.setJoinMessage(ChatColor.YELLOW + player.getName()
                         + " dołączył (" + ChatColor.AQUA + participants.size()
-                        + ChatColor.YELLOW + "/" + ChatColor.AQUA + "8"
+                        + ChatColor.YELLOW + "/" + ChatColor.AQUA
+                        + (plugin.getTEAMS_COUNT() * plugin.getTEAM_SIZE())
                         + ChatColor.YELLOW + ").");
                 player.setInvulnerable(true);
             }

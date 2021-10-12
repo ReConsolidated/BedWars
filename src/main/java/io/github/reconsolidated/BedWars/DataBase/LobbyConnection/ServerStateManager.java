@@ -16,10 +16,16 @@ public class ServerStateManager {
     private static ServerStateDomain domain = null;
 
     public static void sendServerState(BedWars plugin){
+        if (plugin.hasStarted){
+            return;
+        }
         sendServerState(plugin,0, plugin.getServerName(), plugin.getTEAM_SIZE(), plugin.getTEAMS_COUNT());
     }
 
     public static void sendServerState(BedWars plugin, String name, int team_size, int teams){
+        if (plugin.hasStarted){
+            return;
+        }
         sendServerState(plugin,0, name, team_size, teams);
     }
     private static void sendServerState(BedWars plugin, int number_of_tries, String name, int team_size, int teams){
