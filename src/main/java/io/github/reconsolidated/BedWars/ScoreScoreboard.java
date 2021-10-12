@@ -51,6 +51,17 @@ public class ScoreScoreboard extends BukkitRunnable {
 
         owner.getPlayer().setScoreboard(scoreboard);
 
+
+        // CREATING SCOREBOARD TEAMS
+        org.bukkit.scoreboard.Team scoreboardTeam = scoreboard.registerNewTeam("ALL_PLAYERS");
+        for (Player bukkitPlayer : Bukkit.getOnlinePlayers()){
+            scoreboardTeam.addEntry(bukkitPlayer.getName());
+        }
+        scoreboardTeam.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
+                org.bukkit.scoreboard.Team.OptionStatus.NEVER);
+
+
+
         new CountdownRunnable(plugin, this).runTaskTimer(plugin, 0L, 20L);
 
     }

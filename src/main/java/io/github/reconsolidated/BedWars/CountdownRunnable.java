@@ -17,6 +17,7 @@ public class CountdownRunnable extends BukkitRunnable {
         this.ssb = ssb;
         this.countdown = 0;
         this.isGoing = true;
+
     }
 
     public void start(){

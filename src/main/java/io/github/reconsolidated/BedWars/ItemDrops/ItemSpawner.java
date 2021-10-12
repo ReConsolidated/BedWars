@@ -7,14 +7,15 @@ import io.github.reconsolidated.BedWars.BedWars;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
+import org.bukkit.Sound;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemSpawner {
     private ItemStack item;  // Item spawned by spawner
@@ -114,12 +115,31 @@ public class ItemSpawner {
                     }
                 }
                 if (nearbyItems < maxAmount){
-                    Item dropped = location.getWorld().dropItemNaturally(location.clone().add(x_offset, 0, z_offset), item);
-                    dropped.setVelocity(new Vector(0, 0, 0));
-                    dropped.teleport(location);
+                    List<Player> playersNearby = new ArrayList<>();
+                    for (Entity e : location.getWorld().getNearbyEntities(location, 2, 5, 2)){
+                        if (e instanceof Player){
+                            playersNearby.add((Player) e);
+                        }
+                    }
+                    if (playersNearby.size() == 0){
+                        Item dropped = location.getWorld().dropItemNaturally(location.clone().add(x_offset, 0, z_offset), item);
+                        dropped.setVelocity(new Vector(0, 0, 0));
+                        dropped.teleport(location.clone().add(x_offset, 0, z_offset));
+                        counter = 0;
+                    }
+                    else {
+                        // if there are players nearby put items in their eq instead of dropping
+                        for (Player player : playersNearby){
+                            player.getInventory().addItem(item);
+                            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 5, 0);
+                        }
+                        // set counter to a negative value, so that it takes  longer to regenerate
+                        // after it gave away more items than it should have
+                        // if period is 20, and 4 players took 
+                        counter = period - playersNearby.size()  * period;
+                    }
                 }
 
-                counter = 0;
             }
             if (counterTextLine != null)
                 counterTextLine.setText(ChatColor.YELLOW + "Pojawi się za: " + ChatColor.RED + (period-counter)/20);

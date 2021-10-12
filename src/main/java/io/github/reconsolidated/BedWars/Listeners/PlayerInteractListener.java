@@ -13,6 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.block.data.type.Bed;
+import org.bukkit.block.data.type.BrewingStand;
+import org.bukkit.block.data.type.Furnace;
+import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
 import org.bukkit.entity.Fireball;
 import org.bukkit.event.EventHandler;
@@ -75,6 +78,14 @@ public class PlayerInteractListener implements Listener {
                 && !p.getPlayer().isSneaking()
                 && event.getClickedBlock() != null
                 && event.getClickedBlock().getBlockData() instanceof Bed){
+            event.setCancelled(true);
+        }
+
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+                && event.getClickedBlock() != null
+                && (event.getClickedBlock().getBlockData() instanceof BrewingStand
+                || event.getClickedBlock().getBlockData() instanceof TrapDoor
+                || event.getClickedBlock().getBlockData() instanceof Furnace)){
             event.setCancelled(true);
         }
 

@@ -36,7 +36,7 @@ public class Commands implements CommandExecutor {
             plugin.onStart();
             sender.sendMessage("Arena started.");
         }
-        if (commandName.equals("bdstop")){
+        if (commandName.equals("bdstop")) {
             sender.sendMessage("Arena stopped.");
         }
         if (commandName.equals("newshop1")){

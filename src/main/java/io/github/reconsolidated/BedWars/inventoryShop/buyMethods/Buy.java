@@ -8,16 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static io.github.reconsolidated.BedWars.Participant.unbreakable;
 
@@ -166,15 +161,6 @@ public class Buy {
         }
 
         player.getInventory().addItem(newItem);
-    }
-
-    private static boolean hasFullInventory(Player player) {
-        for (ItemStack item : player.getInventory().getContents()){
-            if (item == null || item.getType().equals(Material.AIR)){
-                return false;
-            }
-        }
-        return true;
     }
 
     private static boolean isPickaxe(ItemStack item){

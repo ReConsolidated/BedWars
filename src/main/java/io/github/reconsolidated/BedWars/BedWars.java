@@ -303,7 +303,7 @@ public class BedWars extends JavaPlugin implements Listener {
                 }
                 Bukkit.getServer().shutdown();
             }
-        }.runTaskLater(this, 20*30);
+        }.runTaskLater(this, 20*12);
 
     }
 
