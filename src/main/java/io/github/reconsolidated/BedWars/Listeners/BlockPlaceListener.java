@@ -33,6 +33,7 @@ public class BlockPlaceListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event){
         if (event.getBlock().getLocation().getBlockY() > 100){
+            event.setBuild(false);
             event.setCancelled(true);
             return;
         }
@@ -40,6 +41,7 @@ public class BlockPlaceListener implements Listener {
                 || event.getBlock().getLocation().getBlockZ() > plugin.getGameBorderBiggestZ()
                 || event.getBlock().getLocation().getBlockX() < plugin.getGameBorderSmallestX()
                 || event.getBlock().getLocation().getBlockZ() < plugin.getGameBorderSmallestZ()){
+            event.setBuild(false);
             event.setCancelled(true);
             return;
         }
@@ -51,6 +53,7 @@ public class BlockPlaceListener implements Listener {
         if (event.getBlockPlaced().getType().equals(Material.WATER)){
             if (event.getBlockPlaced().getLocation().distance(p.getTeam().getBedLocation()) > 30){
                 p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz wylać wody tak daleko od bazy.");
+                event.setBuild(false);
                 event.setCancelled(true);
                 return;
             }
@@ -59,6 +62,7 @@ public class BlockPlaceListener implements Listener {
 
 
         if (event.getBlockPlaced().getType().equals(Material.TNT)){
+            event.setBuild(false);
             event.setCancelled(true);
             removeItemFromInventory(event.getPlayer(), new ItemStack(Material.TNT, 1));
             double x = event.getBlockPlaced().getLocation().getBlockX() + 0.5;
@@ -70,8 +74,8 @@ public class BlockPlaceListener implements Listener {
             tnt.setVelocity(new Vector(0, 0.2, 0));
 
             // Change via NMS the source of the TNT by the player
-            EntityLiving nmsEntityLiving = (EntityLiving)(((CraftLivingEntity) player).getHandle());
-            EntityTNTPrimed nmsTNT = (EntityTNTPrimed) (((CraftTNTPrimed) tnt).getHandle());
+            EntityLiving nmsEntityLiving = ((CraftLivingEntity) player).getHandle();
+            EntityTNTPrimed nmsTNT = ((CraftTNTPrimed) tnt).getHandle();
             try {
                 Field sourceField = EntityTNTPrimed.class.getDeclaredField("source");
                 sourceField.setAccessible(true);
