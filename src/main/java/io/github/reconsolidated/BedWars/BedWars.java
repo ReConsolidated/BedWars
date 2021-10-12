@@ -513,4 +513,8 @@ public class BedWars extends JavaPlugin implements Listener {
             player.sendMessage(ChatColor.GREEN + "Teraz piszesz do wszystkich graczy.");
         }
     }
+
+    public int getMaxPlayers() {
+        return getTEAM_SIZE() * getTEAMS_COUNT();
+    }
 }

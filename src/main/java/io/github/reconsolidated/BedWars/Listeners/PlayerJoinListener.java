@@ -64,7 +64,7 @@ public class PlayerJoinListener implements Listener {
                 p2.showPlayer(plugin, player);
             }
 
-            if (!plugin.hasStarted){
+            if (!plugin.hasStarted && plugin.getMaxPlayers() > Bukkit.getOnlinePlayers().size()){
                 p = new Participant(player, plugin);
                 participants.add(p);
                 event.setJoinMessage(ChatColor.YELLOW + player.getName()
