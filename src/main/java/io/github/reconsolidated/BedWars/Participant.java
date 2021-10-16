@@ -49,6 +49,9 @@ public class Participant {
     private Team team;
 
     @Getter
+    private Integer gameLoseTime = null;
+
+    @Getter
     @Setter
     private ScoreScoreboard scoreboard;
     private final BedWars plugin;
@@ -220,6 +223,7 @@ public class Participant {
 
     // When player has lost the game, but he can still spectate
     public void onGameEnd(){
+        gameLoseTime = plugin.getGameTime();
         player.sendMessage(ChatColor.RED + "Twoje łóżko zostało zniszczone i już się nie odrodzisz.");
         CustomSpectator.setSpectator(plugin, player);
         player.teleport(player.getLocation().getWorld().getSpawnLocation());

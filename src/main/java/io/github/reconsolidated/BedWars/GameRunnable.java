@@ -39,6 +39,10 @@ public class GameRunnable extends BukkitRunnable {
         this.spawners = plugin.getSpawners();
     }
 
+    public int getGameTime(){
+        return counter;
+    }
+
     @Override
     public void run() {
 

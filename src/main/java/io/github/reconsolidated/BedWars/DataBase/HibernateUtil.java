@@ -35,6 +35,7 @@ public class HibernateUtil {
                 configuration.addAnnotatedClass(BedWarsPlayerDomain.class);
                 configuration.addAnnotatedClass(ServerStateDomain.class);
                 configuration.addAnnotatedClass(PartyDomain.class);
+                configuration.addAnnotatedClass(PlayerGlobalDataDomain.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();

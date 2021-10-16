@@ -8,6 +8,7 @@ import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.CustomSpectator.StopSpectatorSounds;
 import io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager;
 import io.github.reconsolidated.BedWars.DataBase.PlayerDataManager;
+import io.github.reconsolidated.BedWars.DataBase.PlayerGlobalDataManager;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Listeners.*;
 import io.github.reconsolidated.BedWars.Teams.Team;
@@ -285,6 +286,14 @@ public class BedWars extends JavaPlugin implements Listener {
             }
         }
         for (Participant p : participants){
+            int gold = p.getKills() * 10 + p.getFinalKills() * 40 + 50 + p.getBedsDestroyed() * 150;
+            if (!p.hasLost()) gold += 300;
+            PlayerGlobalDataManager.addGold(this, p.getPlayer(), gold);
+
+            int exp = p.getGameLoseTime() / 100;
+            if (!p.hasLost()) exp += 50;
+            PlayerGlobalDataManager.addExperience(this, p.getPlayer(), exp);
+
             if (!p.hasLost()){
                 PlayerDataManager.savePlayerData(this, p);
                 p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", "", 5, 100, 5);
@@ -294,6 +303,7 @@ public class BedWars extends JavaPlugin implements Listener {
             }
             CustomSpectator.setSpectator(this, p.getPlayer());
         }
+
 
         new BukkitRunnable() {
             @Override
@@ -516,5 +526,9 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public int getMaxPlayers() {
         return getTEAM_SIZE() * getTEAMS_COUNT();
+    }
+
+    public Integer getGameTime() {
+        return gameRunnable.getGameTime();
     }
 }
