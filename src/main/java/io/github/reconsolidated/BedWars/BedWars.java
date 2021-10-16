@@ -61,6 +61,7 @@ public class BedWars extends JavaPlugin implements Listener {
     public YamlConfiguration currentConfig;
 
     private JedisCommunicator jedis;
+    private Vanish vanish;
 
     @Getter
     private String serverName = "bedwars";
@@ -169,6 +170,8 @@ public class BedWars extends JavaPlugin implements Listener {
         jedis = new JedisCommunicator(this);
 
         new StartGameRunnable(this);
+
+        vanish = new Vanish(this);
         sendServerState(this, serverName, TEAM_SIZE, TEAMS_COUNT);
     }
 
@@ -183,6 +186,10 @@ public class BedWars extends JavaPlugin implements Listener {
             p2.hidePlayer(this, player);
             player.showPlayer(this, p2);
         }
+    }
+
+    public void vanishPlayer(Player player){
+        vanish.vanishPlayer(player);
     }
 
     @Override
@@ -278,11 +285,20 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public void onGameEnd(){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()){
+                    player.kickPlayer("Koniec gry");
+                }
+                Bukkit.getServer().shutdown();
+            }
+        }.runTaskLater(this, 20*12);
+
         Team winnerTeam = teams.get(0);
         for (Participant p : participants){
             if (!p.hasLost()){
                 winnerTeam = p.getTeam();
-
             }
         }
         for (Participant p : participants){
@@ -290,7 +306,13 @@ public class BedWars extends JavaPlugin implements Listener {
             if (!p.hasLost()) gold += 300;
             PlayerGlobalDataManager.addGold(this, p.getPlayer(), gold);
 
-            int exp = p.getGameLoseTime() / 100;
+            int exp = 0;
+            if (p.getGameLoseTime() == null){
+                exp += gameRunnable.getGameTime() / 100;
+            }
+            else{
+                exp += p.getGameLoseTime() / 100;
+            }
             if (!p.hasLost()) exp += 50;
             PlayerGlobalDataManager.addExperience(this, p.getPlayer(), exp);
 
@@ -303,17 +325,6 @@ public class BedWars extends JavaPlugin implements Listener {
             }
             CustomSpectator.setSpectator(this, p.getPlayer());
         }
-
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()){
-                    player.kickPlayer("Koniec gry");
-                }
-                Bukkit.getServer().shutdown();
-            }
-        }.runTaskLater(this, 20*12);
 
     }
 

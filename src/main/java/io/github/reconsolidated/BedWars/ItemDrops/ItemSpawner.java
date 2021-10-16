@@ -97,14 +97,6 @@ public class ItemSpawner {
         public void run() {
             counter++;
             if (counter >= period){
-                double x_offset = 0.5;
-                if (location.getBlockX() < 0){
-                    x_offset = -0.5;
-                }
-                double z_offset = 0.5;
-                if (location.getBlockZ() < 0){
-                    z_offset = -0.5;
-                }
                 int nearbyItems = 0;
                 for (Entity e : location.getWorld().getNearbyEntities(location, 4, 4, 4)){
                     if (e instanceof Item){
@@ -121,10 +113,11 @@ public class ItemSpawner {
                             playersNearby.add((Player) e);
                         }
                     }
-                    if (playersNearby.size() == 0){
-                        Item dropped = location.getWorld().dropItemNaturally(location.clone().add(x_offset, 0, z_offset), item);
+                    if (playersNearby.size() == 0
+                            || item.getType().equals(Material.EMERALD)
+                            || item.getType().equals(Material.DIAMOND)){
+                        Item dropped = location.getWorld().dropItem(location, item);
                         dropped.setVelocity(new Vector(0, 0, 0));
-                        dropped.teleport(location.clone().add(x_offset, 0, z_offset));
                         counter = 0;
                     }
                     else {

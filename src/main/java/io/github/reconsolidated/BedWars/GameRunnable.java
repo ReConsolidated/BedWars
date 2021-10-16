@@ -77,7 +77,6 @@ public class GameRunnable extends BukkitRunnable {
         if (counter == 5){
             plugin.hasStarted = true;
 
-
             boolean[] teamHasParty = new boolean[plugin.getTeams().size()];
             for (int i = 0; i<plugin.getTeams().size(); i++){
                 teamHasParty[i] = false;
@@ -215,7 +214,7 @@ public class GameRunnable extends BukkitRunnable {
 
     public String getNextEventName(){
         if (counter < 5) return "Start gry";
-        if (counter < 360 +5) return ChatColor.AQUA + "Diamenty II" + ChatColor.WHITE;
+        if (counter < 360+5) return ChatColor.AQUA + "Diamenty II" + ChatColor.WHITE;
         if (counter < 360*2+5) return ChatColor.AQUA + "Diamenty III" + ChatColor.WHITE;
         if (counter < 360*3+5) return ChatColor.GREEN + "Emeraldy II" + ChatColor.WHITE;
         if (counter < 360*4+5) return ChatColor.AQUA + "Diamenty IV" + ChatColor.WHITE;
@@ -227,7 +226,7 @@ public class GameRunnable extends BukkitRunnable {
 
     public int getNextEventTime(){
         if (counter < 5) return 5;
-        if (counter < 360 +5) return 360 +5;
+        if (counter < 360+5) return 360+5;
         if (counter < 360*2+5) return 360*2+5;
         if (counter < 360*3+5) return 360*3+5;
         if (counter < 360*4+5) return 360*4+5;

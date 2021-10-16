@@ -21,7 +21,10 @@ public class PlayerQuitListener implements Listener {
         event.setQuitMessage("");
 
         Participant p = plugin.getParticipant(player);
-        if (p == null) return;
+        if (p == null){
+            event.setQuitMessage(null);
+            return;
+        }
         if (plugin.hasStarted){
             if (!p.hasLost()){
                 p.onDeath();

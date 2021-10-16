@@ -30,6 +30,12 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
 
+        if (plugin.hasStarted){
+            plugin.vanishPlayer(player);
+            event.setJoinMessage(null);
+            return;
+        }
+
         // Updating serverStateDomain if there is a new party
         PartyDomain party = PartyDataManager.getParty(event.getPlayer());
         if (party != null) {

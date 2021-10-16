@@ -49,7 +49,7 @@ public class Participant {
     private Team team;
 
     @Getter
-    private Integer gameLoseTime = null;
+    private Integer gameLoseTime = 0;
 
     @Getter
     @Setter
