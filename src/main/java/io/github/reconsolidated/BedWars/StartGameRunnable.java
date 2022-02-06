@@ -20,7 +20,7 @@ public class StartGameRunnable extends BukkitRunnable {
         if (Bukkit.getOnlinePlayers().size() > 0){
             counter--;
         }
-        if (Bukkit.getOnlinePlayers().size() >= 0.5 * maxPlayers && counter > 60){
+        if (Bukkit.getOnlinePlayers().size() >= 0.25 * maxPlayers && counter > 60){
             counter = 60;
         }
         if (Bukkit.getOnlinePlayers().size() >= 0.75 * maxPlayers && counter > 30){
@@ -37,7 +37,7 @@ public class StartGameRunnable extends BukkitRunnable {
             Bukkit.broadcastMessage(ChatColor.YELLOW + "Gra wystartuje za " + counter + " sekund.");
         }
 
-        if (counter < 60 && Bukkit.getOnlinePlayers().size() < 0.5 * maxPlayers){
+        if (counter < 60 && Bukkit.getOnlinePlayers().size() < 0.25 * maxPlayers){
             Bukkit.broadcastMessage(ChatColor.RED + "Jest za mało graczy, przerywam odliczanie.");
             counter = 18000;
         }

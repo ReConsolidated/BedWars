@@ -109,7 +109,7 @@ public class Team {
     public void updateEnchants(){
         for (Participant p : members){
             if (p.getTeam().hasteLevel > 0){
-                p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 999999, hasteLevel));
+                p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 999999, hasteLevel-1));
             }
 
             if (protLevel > 0){

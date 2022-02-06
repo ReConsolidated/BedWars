@@ -34,7 +34,7 @@ public class CustomSpectator {
             }
 
         }
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 9999999, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 9999999, 2));
 
 
     }
@@ -51,7 +51,6 @@ public class CustomSpectator {
         player.setInvulnerable(false);
         player.setHealth(20);
         player.setSilent(false);
-
         for (PotionEffect eff : player.getActivePotionEffects()){
             player.removePotionEffect(eff.getType());
         }

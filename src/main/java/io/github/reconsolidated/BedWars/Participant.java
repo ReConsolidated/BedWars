@@ -150,7 +150,7 @@ public class Participant {
 
         CustomSpectator.setSpectator(plugin, player);
 
-        if (team.isBedAlive()){
+        if (team != null && team.isBedAlive()){
             isRespawning = true;
             new RespawnRunnable(plugin, 5, this).runTaskTimer(plugin, 0L, 20L);
         }

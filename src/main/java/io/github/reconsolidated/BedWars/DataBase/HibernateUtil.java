@@ -21,7 +21,7 @@ public class HibernateUtil {
                 // Hibernate settings equivalent to hibernate.cfg.xml's properties
                 Properties settings = new Properties();
                 settings.put(Environment.DRIVER, "org.postgresql.Driver");
-                settings.put(Environment.URL, "jdbc:postgresql://164.90.180.62:5432/hibernate_db?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true");
+                settings.put(Environment.URL, "jdbc:postgresql://51.89.7.195:5432/hibernate_db?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true");
                 settings.put(Environment.USER, "postgres");
                 settings.put(Environment.PASS, "docker");
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQL82Dialect");

@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.sendServerState;
+
 public class PlayerQuitListener implements Listener {
     private BedWars plugin;
 
@@ -29,15 +31,14 @@ public class PlayerQuitListener implements Listener {
             if (!p.hasLost()){
                 p.onDeath();
                 plugin.setParticipantInactive(p);
-                event.setQuitMessage(p.getChatColor() + p.getPlayer().getName() + ChatColor.YELLOW + " wyszedł z gry.");
+                event.setQuitMessage(null);
             }
         }
         else{
             plugin.getParticipants().remove(p);
-            event.setQuitMessage(ChatColor.YELLOW +
-                    player.getName() + " wyszedł ("
-                    + ChatColor.AQUA + plugin.getParticipants().size()
-                    + ChatColor.YELLOW + "/" + ChatColor.AQUA + "8" + ChatColor.YELLOW + ").");
+            event.setQuitMessage(null);
+            sendServerState(plugin);
         }
+
     }
 }

@@ -1,8 +1,6 @@
 package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.Chat.ChatMessageListener;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.CustomSpectator.StopSpectatorSounds;
@@ -54,9 +52,6 @@ public class BedWars extends JavaPlugin implements Listener {
     private ArrayList<Team> teams;
     private ArrayList<ItemSpawner> spawners;
     private GameRunnable gameRunnable;
-
-    private ArrayList<CustomIronGolem> golems = new ArrayList<>();
-    private ArrayList<CustomSilverFish> silverFish = new ArrayList<>();
 
     public YamlConfiguration currentConfig;
 
@@ -301,20 +296,11 @@ public class BedWars extends JavaPlugin implements Listener {
                 winnerTeam = p.getTeam();
             }
         }
+        for (Participant p : inactiveParticipants){
+            handleParticipant(p);
+        }
         for (Participant p : participants){
-            int gold = p.getKills() * 10 + p.getFinalKills() * 40 + 50 + p.getBedsDestroyed() * 150;
-            if (!p.hasLost()) gold += 300;
-            PlayerGlobalDataManager.addGold(this, p.getPlayer(), gold);
-
-            int exp = 0;
-            if (p.getGameLoseTime() == null){
-                exp += gameRunnable.getGameTime() / 100;
-            }
-            else{
-                exp += p.getGameLoseTime() / 100;
-            }
-            if (!p.hasLost()) exp += 50;
-            PlayerGlobalDataManager.addExperience(this, p.getPlayer(), exp);
+            handleParticipant(p);
 
             if (!p.hasLost()){
                 PlayerDataManager.savePlayerData(this, p);
@@ -328,28 +314,33 @@ public class BedWars extends JavaPlugin implements Listener {
 
     }
 
-    public ArrayList<CustomIronGolem> getGolems(){
-        return golems;
+    private void handleParticipant(Participant p) {
+        int gold = p.getKills() * 50 + p.getFinalKills() * 100 + 50 + p.getBedsDestroyed() * 300;
+        if (!p.hasLost()) gold += 300;
+        PlayerGlobalDataManager.addGold(this, p.getPlayer(), gold);
+
+        int exp = 0;
+        if (p.getGameLoseTime() == null){
+            exp += gameRunnable.getGameTime() / 100;
+        }
+        else{
+            exp += p.getGameLoseTime() / 100;
+        }
+        if (!p.hasLost()) exp += 50;
+        PlayerGlobalDataManager.addExperience(this, p.getPlayer(), exp);
+
     }
 
-    public ArrayList<CustomSilverFish> getSilverFish(){
-        return silverFish;
-    }
-
-    public void addSilverfish(CustomSilverFish sf){
-        silverFish.add(sf);
+    public void addSilverfish(Silverfish sf){
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            silverFish.remove(sf);
-            sf.killEntity();
+            sf.damage(10000);
         }, 20L * 15);
     }
 
 
-    public void addGolem(CustomIronGolem golem){
-        golems.add(golem);
+    public void addGolem(IronGolem golem){
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            golems.remove(golem);
-            golem.killEntity();
+            golem.damage(10000);
         }, 20L * 120);
     }
 
@@ -457,6 +448,14 @@ public class BedWars extends JavaPlugin implements Listener {
             }
         }
         return null;
+    }
+
+    public Participant getParticipant(String name){
+        Player player = Bukkit.getPlayer(name);
+        if (player == null) {
+            return null;
+        }
+        return getParticipant(player);
     }
 
     public ArrayList<Participant> getParticipants(){

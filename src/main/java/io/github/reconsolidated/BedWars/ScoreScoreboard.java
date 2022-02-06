@@ -57,6 +57,7 @@ public class ScoreScoreboard extends BukkitRunnable {
         for (Player bukkitPlayer : Bukkit.getOnlinePlayers()){
             scoreboardTeam.addEntry(bukkitPlayer.getName());
         }
+        scoreboardTeam.setCanSeeFriendlyInvisibles(false);
         scoreboardTeam.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
                 org.bukkit.scoreboard.Team.OptionStatus.NEVER);
 

@@ -4,26 +4,13 @@ import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
 import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import io.github.reconsolidated.BedWars.Teams.Team;
-import net.minecraft.server.v1_16_R2.Entity;
-import net.minecraft.server.v1_16_R2.EntityEnderDragon;
-import net.minecraft.server.v1_16_R2.EntityInsentient;
-import net.minecraft.server.v1_16_R2.Navigation;
 import org.bukkit.*;
-import org.bukkit.block.data.type.Bed;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftEnderDragon;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.memory.MemoryKey;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class GameRunnable extends BukkitRunnable {
     private final BedWars plugin;
@@ -51,10 +38,12 @@ public class GameRunnable extends BukkitRunnable {
             boolean isPlaying = false;
             for (Participant m : t.members){
                 if (!m.hasLost() && m.getPlayer().isOnline()){
-                    teamsPlaying++;
                     isPlaying = true;
                     break;
                 }
+            }
+            if (isPlaying){
+                teamsPlaying++;
             }
             if (counter > 5 && !isPlaying){
                 t.destroyBed();
@@ -205,11 +194,6 @@ public class GameRunnable extends BukkitRunnable {
 
         //
         counter++;
-    }
-
-    private void moveTo(LivingEntity l, Location loc, double velocity) {
-        EntityInsentient e = (EntityInsentient) ((CraftLivingEntity)l).getHandle();
-        e.getNavigation().a(loc.getX(), loc.getY(), loc.getZ(), velocity);
     }
 
     public String getNextEventName(){

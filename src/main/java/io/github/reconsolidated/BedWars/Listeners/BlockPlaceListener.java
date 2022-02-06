@@ -3,15 +3,9 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.PopupTower;
-import net.minecraft.server.v1_16_R2.EntityLiving;
-import net.minecraft.server.v1_16_R2.EntityTNTPrimed;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Ladder;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftTNTPrimed;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -20,8 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import java.lang.reflect.Field;
 
 
 public class BlockPlaceListener implements Listener {
@@ -73,16 +65,7 @@ public class BlockPlaceListener implements Listener {
                     EntityType.PRIMED_TNT);
             tnt.setVelocity(new Vector(0, 0.2, 0));
 
-            // Change via NMS the source of the TNT by the player
-            EntityLiving nmsEntityLiving = ((CraftLivingEntity) player).getHandle();
-            EntityTNTPrimed nmsTNT = ((CraftTNTPrimed) tnt).getHandle();
-            try {
-                Field sourceField = EntityTNTPrimed.class.getDeclaredField("source");
-                sourceField.setAccessible(true);
-                sourceField.set(nmsTNT, nmsEntityLiving);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            tnt.setSource(player);
         }
 
         if (event.getBlockPlaced().getType().equals(Material.CHEST)){

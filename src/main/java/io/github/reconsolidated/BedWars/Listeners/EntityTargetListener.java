@@ -1,10 +1,8 @@
 package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
 import io.github.reconsolidated.BedWars.Participant;
-import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +10,7 @@ import org.bukkit.entity.Silverfish;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 public class EntityTargetListener implements Listener {
     private BedWars plugin;
@@ -27,19 +26,9 @@ public class EntityTargetListener implements Listener {
             if (event.getTarget() instanceof Player){
                 Participant p = plugin.getParticipant((Player) event.getTarget());
                 if (p != null && p.getTeam() != null){
-                    for (CustomIronGolem golem : plugin.getGolems()){
-                        if (le.getEntityId() == golem.getBukkitEntity().getEntityId()){
-                            if (golem.teamID == p.getTeam().ID){
-                                event.setCancelled(true);
-                            }
-                        }
-                    }
-                    for (CustomSilverFish sf : plugin.getSilverFish()){
-                        if (le.getEntityId() == sf.getBukkitEntity().getEntityId()){
-                            if (sf.teamID == p.getTeam().ID){
-                                event.setCancelled(true);
-                            }
-                        }
+                    Integer teamID = le.getPersistentDataContainer().get(new NamespacedKey(plugin, "team_id"), PersistentDataType.INTEGER);
+                    if (teamID != null && teamID == p.getTeam().ID) {
+                        event.setCancelled(true);
                     }
                 }
             };

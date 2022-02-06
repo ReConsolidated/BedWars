@@ -54,7 +54,7 @@ public class CompassMenu implements Listener {
         switch (type){
             case "main" ->{
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.EMERALD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
-                this.inv.setItem(24, CustomItemStack.createCustomItemStack(Material.COMPASS, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
+                this.inv.setItem(23, CustomItemStack.createCustomItemStack(Material.COMPASS, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));
             }
             case "comms" -> {
                 this.inv.setItem(1, CustomItemStack.createCustomItemStack(Material.SHIELD, 1, Material.DIAMOND, -1, "cmp", new ArrayList<>(), player));

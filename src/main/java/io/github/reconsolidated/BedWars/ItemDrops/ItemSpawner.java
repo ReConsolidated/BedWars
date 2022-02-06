@@ -4,10 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import io.github.reconsolidated.BedWars.BedWars;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -97,6 +94,7 @@ public class ItemSpawner {
         public void run() {
             counter++;
             if (counter >= period){
+                counter = 0;
                 int nearbyItems = 0;
                 for (Entity e : location.getWorld().getNearbyEntities(location, 4, 4, 4)){
                     if (e instanceof Item){
@@ -110,7 +108,11 @@ public class ItemSpawner {
                     List<Player> playersNearby = new ArrayList<>();
                     for (Entity e : location.getWorld().getNearbyEntities(location, 2, 5, 2)){
                         if (e instanceof Player){
-                            playersNearby.add((Player) e);
+                            Player player = (Player) e;
+                            if (player.getGameMode().equals(GameMode.SURVIVAL)){
+                                playersNearby.add((Player) e);
+                            }
+
                         }
                     }
                     if (playersNearby.size() == 0
@@ -134,8 +136,12 @@ public class ItemSpawner {
                 }
 
             }
-            if (counterTextLine != null)
-                counterTextLine.setText(ChatColor.YELLOW + "Pojawi się za: " + ChatColor.RED + (period-counter)/20);
+            if (counterTextLine != null){
+                int showIn = (period-counter)/20;
+                showIn = Math.max(showIn, 0);
+                counterTextLine.setText(ChatColor.YELLOW + "Pojawi się za: " + ChatColor.RED + showIn);
+            }
+
 
         }
     }

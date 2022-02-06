@@ -15,7 +15,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
 
+import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.removeServerFromList;
 import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.sendServerState;
+import static io.github.reconsolidated.BedWars.DataBase.PlayerGlobalDataManager.getRankDisplayName;
 
 public class PlayerJoinListener implements Listener {
     private ArrayList<Participant> participants;
@@ -31,8 +33,13 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
 
         if (plugin.hasStarted){
-            plugin.vanishPlayer(player);
             event.setJoinMessage(null);
+            if (player.hasPermission("moderator")){
+                plugin.vanishPlayer(player);
+            } else {
+                player.kickPlayer(ChatColor.RED + "Spróbuj ponownie za chwilę...");
+                removeServerFromList();
+            }
             return;
         }
 
@@ -73,7 +80,7 @@ public class PlayerJoinListener implements Listener {
             if (!plugin.hasStarted && plugin.getMaxPlayers() > Bukkit.getOnlinePlayers().size()){
                 p = new Participant(player, plugin);
                 participants.add(p);
-                event.setJoinMessage(ChatColor.YELLOW + player.getName()
+                event.setJoinMessage(getRankDisplayName(event.getPlayer()) + ChatColor.YELLOW + player.getName()
                         + " dołączył (" + ChatColor.AQUA + participants.size()
                         + ChatColor.YELLOW + "/" + ChatColor.AQUA
                         + (plugin.getTEAMS_COUNT() * plugin.getTEAM_SIZE())

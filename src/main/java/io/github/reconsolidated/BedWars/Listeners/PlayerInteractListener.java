@@ -2,12 +2,9 @@ package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Compass.CompassMenu;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import io.github.reconsolidated.BedWars.inventoryShop.buyMethods.Buy;
-import net.minecraft.server.v1_16_R2.EntityTypes;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,8 +13,9 @@ import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.BrewingStand;
 import org.bukkit.block.data.type.Furnace;
 import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.IronGolem;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -59,8 +57,9 @@ public class PlayerInteractListener implements Listener {
                 p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz stworzyć golema tak daleko od bazy.");
                 return;
             }
-            CustomIronGolem golem = new CustomIronGolem(EntityTypes.IRON_GOLEM, ((CraftWorld) location.getWorld()).getHandle());
-            golem.spawn(p.getTeam().ID, location, p);
+            IronGolem golem = (IronGolem) location.getWorld().spawnEntity(location, EntityType.IRON_GOLEM);
+            golem.setCustomName(p.getChatColor() + "Golem");
+            golem.setCustomNameVisible(true);
             plugin.addGolem(golem);
             Buy.charge(p.getPlayer(), new ItemStack(Material.POLAR_BEAR_SPAWN_EGG));
         }

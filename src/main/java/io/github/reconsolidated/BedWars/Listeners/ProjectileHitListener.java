@@ -1,16 +1,14 @@
 package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.ScoreScoreboard;
-import net.minecraft.server.v1_16_R2.EntityTypes;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 
@@ -47,8 +45,11 @@ public class ProjectileHitListener implements Listener {
 
         if (event.getEntityType().equals(EntityType.SNOWBALL)){
             Participant p = plugin.getParticipant((Player) event.getEntity().getShooter());
-            CustomSilverFish sf = new CustomSilverFish(EntityTypes.SILVERFISH, ((CraftWorld) event.getEntity().getLocation().getWorld()).getHandle());
-            sf.spawn(shooter.getTeam().ID, event.getEntity().getLocation(), p);
+            Silverfish sf = (Silverfish) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.SILVERFISH);
+            sf.setCustomName(p.getChatColor() + "Silverfish");
+            sf.setCustomNameVisible(true);
+            sf.getPersistentDataContainer().set(new NamespacedKey(plugin, "team_id"), PersistentDataType.INTEGER, shooter.getTeam().ID);
+            sf.getPersistentDataContainer().set(new NamespacedKey(plugin, "owner_name"), PersistentDataType.STRING, p.getPlayer().getName());
             plugin.addSilverfish(sf);
             event.getEntity().remove();
             return;

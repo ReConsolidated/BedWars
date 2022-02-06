@@ -1,24 +1,20 @@
 package io.github.reconsolidated.BedWars.inventoryShop;
 
-import net.minecraft.server.v1_16_R2.NBTTagCompound;
-import net.minecraft.server.v1_16_R2.NBTTagString;
-import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 public class NbtWrapper {
     public static ItemStack setNBTTag(String tagName, String value, ItemStack itemStack){
-        net.minecraft.server.v1_16_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tagCompound = nmsStack.getOrCreateTag();
-        tagCompound.setString(tagName, value);
-        itemStack = CraftItemStack.asBukkitCopy(nmsStack);
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("BedWars");
+        itemStack.getItemMeta().getPersistentDataContainer().set(new NamespacedKey(plugin, tagName), PersistentDataType.STRING, value);
         return itemStack;
     }
 
     public static String getNBTTag(String key, ItemStack itemStack){
-        net.minecraft.server.v1_16_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tagCompound = nmsStack.getTag();
-        if (tagCompound == null)
-            return null;
-        return tagCompound.getString(key);
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("BedWars");
+        return itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, key), PersistentDataType.STRING);
     }
 }

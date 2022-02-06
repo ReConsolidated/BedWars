@@ -1,15 +1,15 @@
 package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomIronGolem;
-import io.github.reconsolidated.BedWars.CustomEntities.CustomSilverFish;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.Participant;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
 
@@ -69,17 +69,23 @@ public class EntityDamageByEntityListener implements Listener {
             }
 
             if (event.getDamager() instanceof IronGolem){
-                for (CustomIronGolem golem : plugin.getGolems()){
-                    if (event.getDamager().getEntityId() == golem.getBukkitEntity().getEntityId()){
-                        p1.setLastHitBy(golem.owner);
+                IronGolem golem = (IronGolem) event.getDamager();
+                String owner = golem.getPersistentDataContainer().get(new NamespacedKey(plugin, "owner_name"), PersistentDataType.STRING);
+                if (owner != null) {
+                    Participant p2 = plugin.getParticipant(owner);
+                    if (p2 != null) {
+                        p1.setLastHitBy(p2);
                     }
                 }
             }
 
             if (event.getDamager() instanceof Silverfish){
-                for (CustomSilverFish sf : plugin.getSilverFish()){
-                    if (event.getDamager().getEntityId() == sf.getBukkitEntity().getEntityId()){
-                        p1.setLastHitBy(sf.owner);
+                Silverfish sf = (Silverfish) event.getDamager();
+                String owner = sf.getPersistentDataContainer().get(new NamespacedKey(plugin, "owner_name"), PersistentDataType.STRING);
+                if (owner != null) {
+                    Participant p2 = plugin.getParticipant(owner);
+                    if (p2 != null) {
+                        p1.setLastHitBy(p2);
                     }
                 }
             }
