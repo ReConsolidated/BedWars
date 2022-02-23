@@ -2,8 +2,6 @@ package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
-import io.github.reconsolidated.BedWars.ScoreScoreboard;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -14,14 +12,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class EntityDamageListener implements Listener {
-    private ArrayList<Participant> participants;
     private BedWars plugin;
     public EntityDamageListener(BedWars plugin){
         this.plugin = plugin;
-        this.participants = plugin.getParticipants();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -40,6 +36,7 @@ public class EntityDamageListener implements Listener {
         if (event.getEntity() instanceof Player && !(event instanceof EntityDamageByEntityEvent)
                 && !(event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_EXPLOSION))) {
             Player player = (Player) event.getEntity();
+            List<Participant> participants = plugin.getParticipants();
             for (int i = 0; i<participants.size(); i++){
                 Participant p = participants.get(i);
                 if (p.getPlayer().equals(player)){

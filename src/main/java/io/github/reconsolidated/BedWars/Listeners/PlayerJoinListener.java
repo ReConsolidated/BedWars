@@ -10,35 +10,29 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.removeServerFromList;
-import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.sendServerState;
-import static io.github.reconsolidated.BedWars.DataBase.PlayerGlobalDataManager.getRankDisplayName;
 
 public class PlayerJoinListener implements Listener {
-    private ArrayList<Participant> participants;
     private BedWars plugin;
 
     public PlayerJoinListener(BedWars plugin){
-        this.participants = plugin.getParticipants();
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
-
+        List<Participant> participants = plugin.getParticipants();
         if (plugin.hasStarted){
             event.setJoinMessage(null);
             if (player.hasPermission("moderator")){
                 plugin.vanishPlayer(player);
             } else {
                 player.kickPlayer(ChatColor.RED + "Spróbuj ponownie za chwilę...");
-                removeServerFromList();
             }
             return;
         }
@@ -50,7 +44,6 @@ public class PlayerJoinListener implements Listener {
                 plugin.setPartiesCount(plugin.getPartiesCount()+1);
             }
         }
-        sendServerState(plugin);
 
         Participant p = plugin.getInactiveParticipant(player);
         if (p != null){
@@ -80,7 +73,7 @@ public class PlayerJoinListener implements Listener {
             if (!plugin.hasStarted && plugin.getMaxPlayers() > Bukkit.getOnlinePlayers().size()){
                 p = new Participant(player, plugin);
                 participants.add(p);
-                event.setJoinMessage(getRankDisplayName(event.getPlayer()) + ChatColor.YELLOW + player.getName()
+                event.setJoinMessage(event.getPlayer().displayName().toString() + ChatColor.YELLOW + player.getName()
                         + " dołączył (" + ChatColor.AQUA + participants.size()
                         + ChatColor.YELLOW + "/" + ChatColor.AQUA
                         + (plugin.getTEAMS_COUNT() * plugin.getTEAM_SIZE())

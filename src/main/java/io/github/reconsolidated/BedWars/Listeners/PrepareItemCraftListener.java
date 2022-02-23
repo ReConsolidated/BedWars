@@ -8,10 +8,8 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class PrepareItemCraftListener implements Listener {
-    private BedWars plugin;
 
-    public PrepareItemCraftListener(BedWars plugin) {
-        this.plugin = plugin;
+    public PrepareItemCraftListener() {
     }
 
     @EventHandler

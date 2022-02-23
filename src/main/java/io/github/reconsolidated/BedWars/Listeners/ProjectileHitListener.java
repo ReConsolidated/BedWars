@@ -2,7 +2,6 @@ package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
-import io.github.reconsolidated.BedWars.ScoreScoreboard;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -10,11 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-
 public class ProjectileHitListener implements Listener {
-    private ScoreScoreboard myScoreboard;
-    private ArrayList<Participant> participants;
     private BedWars plugin;
 
     public ProjectileHitListener(BedWars plugin){

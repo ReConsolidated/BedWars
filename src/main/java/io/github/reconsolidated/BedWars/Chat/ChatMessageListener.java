@@ -1,7 +1,6 @@
 package io.github.reconsolidated.BedWars.Chat;
 
 import io.github.reconsolidated.BedWars.BedWars;
-import io.github.reconsolidated.BedWars.DataBase.PlayerGlobalDataManager;
 import io.github.reconsolidated.BedWars.Participant;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -24,7 +23,7 @@ public class ChatMessageListener implements Listener {
         }
         if (p.getTeamChat()){
             event.setCancelled(true);
-            event.setFormat(PlayerGlobalDataManager.getRankDisplayName(p.getPlayer()) + p.getTeam().getChatColor() +
+            event.setFormat(p.getPlayer().displayName().toString() + p.getTeam().getChatColor() +
                     "%s" + ChatColor.GRAY + " >> DRUŻYNA: " + ChatColor.WHITE + "%s");
             for (Participant t : p.getTeam().members){
                 t.getPlayer().sendMessage(p.getTeam().getChatColor() +

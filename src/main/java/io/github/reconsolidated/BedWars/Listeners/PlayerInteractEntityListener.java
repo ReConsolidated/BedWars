@@ -11,13 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerInteractEntityListener implements Listener {
-    private ArrayList<Participant> participants;
     private BedWars plugin;
 
-    public PlayerInteractEntityListener(ArrayList<Participant> participants, BedWars plugin){
-        this.participants = participants;
+    public PlayerInteractEntityListener(BedWars plugin){
+
         this.plugin = plugin;
     }
 

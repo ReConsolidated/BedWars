@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: io.github.reconsolidated:jediscommunicator:1.03">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/github/reconsolidated/jediscommunicator/1.03/jediscommunicator-1.03.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/io/github/reconsolidated/jediscommunicator/1.03/jediscommunicator-1.03-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/github/reconsolidated/jediscommunicator/1.03/jediscommunicator-1.03-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

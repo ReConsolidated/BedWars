@@ -4,6 +4,7 @@ import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
 import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
@@ -15,15 +16,17 @@ import java.util.ArrayList;
 public class GameRunnable extends BukkitRunnable {
     private final BedWars plugin;
     private int counter;
-    private final ArrayList<Participant> participants;
-    private final ArrayList<ItemSpawner> spawners;
+    private ArrayList<Participant> participants;
+    private ArrayList<ItemSpawner> spawners;
+
+    @Getter
+    private int teamsPlaying;
 
 
     public GameRunnable(BedWars plugin) {
         this.plugin = plugin;
         this.counter = 0;
-        this.participants = plugin.getParticipants();
-        this.spawners = plugin.getSpawners();
+
     }
 
     public int getGameTime(){
@@ -32,8 +35,9 @@ public class GameRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-
-        int teamsPlaying = 0;
+        this.participants = plugin.getParticipants();
+        this.spawners = plugin.getSpawners();
+        teamsPlaying = 0;
         for (Team t : plugin.getTeams()){
             boolean isPlaying = false;
             for (Participant m : t.members){
@@ -70,8 +74,10 @@ public class GameRunnable extends BukkitRunnable {
             for (int i = 0; i<plugin.getTeams().size(); i++){
                 teamHasParty[i] = false;
             }
-
+            Bukkit.getLogger().info("1");
             SpawnDestroyer.destroy(plugin.getSpawnLocation());
+            Bukkit.getLogger().info("2");
+
             for (Participant p : participants) {
                 if (p.getTeam() != null) {
                     continue;

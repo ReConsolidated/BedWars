@@ -11,6 +11,22 @@ public class Commands implements CommandExecutor {
 
     public Commands(BedWars plugin) {
         this.plugin = plugin;
+        plugin.getServer().getPluginCommand("bedwars").setExecutor(this);
+        plugin.getServer().getPluginCommand("helpbedwars").setExecutor(this);
+        plugin.getServer().getPluginCommand("bdstart").setExecutor(this);
+        plugin.getServer().getPluginCommand("bdstop").setExecutor(this);
+        plugin.getServer().getPluginCommand("itemspawner").setExecutor(this);
+        plugin.getServer().getPluginCommand("newspawn").setExecutor(this);
+        plugin.getServer().getPluginCommand("setspawn").setExecutor(this);
+        plugin.getServer().getPluginCommand("setbed").setExecutor(this);
+        plugin.getServer().getPluginCommand("newshop1").setExecutor(this);
+        plugin.getServer().getPluginCommand("newshop2").setExecutor(this);
+        plugin.getServer().getPluginCommand("release").setExecutor(this);
+        plugin.getServer().getPluginCommand("team").setExecutor(this);
+        plugin.getServer().getPluginCommand("d").setExecutor(this);
+        plugin.getServer().getPluginCommand("all").setExecutor(this);
+        plugin.getServer().getPluginCommand("w").setExecutor(this);
+
     }
 
     @Override
@@ -19,6 +35,15 @@ public class Commands implements CommandExecutor {
             sender.sendMessage("Only players may execute this command");
             return true;
         }
+
+        if (s.equalsIgnoreCase("bedwars")) {
+            if (args.length == 1) {
+                if (args[0].equalsIgnoreCase("restart")) {
+                    plugin.setup();
+                }
+            }
+        }
+
 
         String commandName = command.getName().toLowerCase();
 

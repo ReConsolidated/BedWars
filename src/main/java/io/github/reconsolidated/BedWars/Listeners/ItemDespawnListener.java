@@ -6,11 +6,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
 public class ItemDespawnListener implements Listener {
-    private BedWars plugin;
-
-    public ItemDespawnListener(BedWars plugin){
-        this.plugin = plugin;
-    }
 
     @EventHandler
     public void onItemDespawn(ItemDespawnEvent event){

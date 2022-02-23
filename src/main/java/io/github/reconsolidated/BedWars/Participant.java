@@ -2,12 +2,13 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
-import io.github.reconsolidated.BedWars.DataBase.BedWarsPlayerDomain;
-import io.github.reconsolidated.BedWars.DataBase.PlayerDataManager;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,18 +18,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Participant {
     @Getter
     @Setter
     private Player player;
     private Participant lastHitBy;
-
-    @Getter
-    @Setter
-    private BedWarsPlayerDomain domain;
 
     @Getter
     @Setter
@@ -43,6 +38,9 @@ public class Participant {
     private int bedsDestroyed = 0;
 
     private int deaths = 0;
+
+    @Getter
+    private int place = 100;
 
     @Getter
     @Setter
@@ -155,6 +153,7 @@ public class Participant {
             new RespawnRunnable(plugin, 5, this).runTaskTimer(plugin, 0L, 20L);
         }
         else{
+            place = plugin.getTeamsLeft();
             hasLost = true;
             onGameEnd();
         }
@@ -227,7 +226,6 @@ public class Participant {
         player.sendMessage(ChatColor.RED + "Twoje łóżko zostało zniszczone i już się nie odrodzisz.");
         CustomSpectator.setSpectator(plugin, player);
         player.teleport(player.getLocation().getWorld().getSpawnLocation());
-        PlayerDataManager.savePlayerData(plugin, this);
     }
 
     // ChatColor and Color depend on the team, not really needed here, but it's handful
@@ -495,33 +493,6 @@ public class Participant {
     }
     public void setTeamChat(boolean teamChat) {
         this.teamChat = teamChat;
-    }
-
-    // Update domain is a function used to correctly save all
-    // of the information to the database.
-    public void updateDomain() {
-        domain.setKills(domain.getKills() + kills);
-        domain.setFinalKills(domain.getFinalKills() + finalKills);
-        domain.setDeaths(domain.getDeaths() + deaths);
-        domain.setBedsDestroyed(domain.getBedsDestroyed() + bedsDestroyed);
-        domain.setGamesPlayed(domain.getGamesPlayed() + 1);
-
-        int teamsPlaying = 0;
-        for (Team t : plugin.getTeams()){
-            for (Participant m : t.members){
-                if (!m.hasLost && m.player.isOnline()){
-                    teamsPlaying++;
-                    break;
-                }
-            }
-        }
-        if (hasLost) {
-            teamsPlaying++;
-        }
-        else{
-            domain.setWins(domain.getWins()+1);
-        }
-        domain.setSumOfPlaces(domain.getSumOfPlaces() + teamsPlaying);
     }
 
     public boolean isRespawning() {

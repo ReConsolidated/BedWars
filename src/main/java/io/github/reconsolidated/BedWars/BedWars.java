@@ -4,14 +4,15 @@ import io.github.reconsolidated.BedWars.Chat.ChatMessageListener;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.CustomSpectator.StopSpectatorSounds;
-import io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager;
-import io.github.reconsolidated.BedWars.DataBase.PlayerDataManager;
-import io.github.reconsolidated.BedWars.DataBase.PlayerGlobalDataManager;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Listeners.*;
+import io.github.reconsolidated.BedWars.PostgreDB.DatabaseConnector;
+import io.github.reconsolidated.BedWars.PostgreDB.DatabaseFunctions;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import io.github.reconsolidated.jediscommunicator.JedisCommunicator;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,20 +21,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 import static io.github.reconsolidated.BedWars.CustomConfig.loadCustomConfig;
 import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
-import static io.github.reconsolidated.BedWars.DataBase.LobbyConnection.ServerStateManager.sendServerState;
 import static io.github.reconsolidated.BedWars.Participant.unbreakable;
 
 public class BedWars extends JavaPlugin implements Listener {
-
     public World world;
     public boolean hasStarted = false;
 
@@ -52,15 +51,20 @@ public class BedWars extends JavaPlugin implements Listener {
     private ArrayList<Team> teams;
     private ArrayList<ItemSpawner> spawners;
     private GameRunnable gameRunnable;
+    private StartGameRunnable startGameRunnable;
+
+    @Getter
+    @Setter
+    private boolean isOpen;
 
     public YamlConfiguration currentConfig;
 
-    private JedisCommunicator jedis;
     private Vanish vanish;
 
     @Getter
     private String serverName = "bedwars";
 
+    private JedisCommunicator communicator;
 
     // These variables should be initiated in onStart() method, based on teams' beds locations.
     @Getter
@@ -74,61 +78,17 @@ public class BedWars extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Commands commandsPlugin = new Commands(this);
-        getServer().getPluginCommand("helpbedwars").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("bdstart").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("bdstop").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("itemspawner").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("newspawn").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("setspawn").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("setbed").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("newshop1").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("newshop2").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("release").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("team").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("d").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("all").setExecutor(commandsPlugin);
-        getServer().getPluginCommand("w").setExecutor(commandsPlugin);
+        new Commands(this);
         getServer().getPluginManager().registerEvents(this, this);
 
-        List<String> worlds = getConfig().getStringList("maps");
         TEAMS_COUNT = getConfig().getInt("team_number");
         TEAM_SIZE = getConfig().getInt("team_size");
 
-        serverName = serverName + TEAM_SIZE;
+        serverName = serverName + TEAM_SIZE + "_" + getServer().getPort();
 
-        Random random = new Random();
-        currentWorldName = worlds.get(random.nextInt(worlds.size())); // this will be random
-
-        world = Bukkit.createWorld(new WorldCreator(currentWorldName));
-
-        world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        world.setGameRule(GameRule.DO_INSOMNIA, false);
-        world.setGameRule(GameRule.DO_FIRE_TICK, false);
-        world.setTicksPerMonsterSpawns(0);
-        world.setMonsterSpawnLimit(128);
-        world.setDifficulty(Difficulty.NORMAL);
-        world.setFullTime(0);
-
-        Bukkit.getScheduler().runTaskTimer(this, () ->{
-            world.setFullTime(0);
-        }, 20L, 20L);
-
-
-        currentConfig = loadCustomConfig(currentWorldName);
-        if (!currentConfig.contains(currentWorldName)){
-            currentConfig.createSection(currentWorldName);
+        if (getConfig().contains("map_name")) {
+            currentWorldName = getConfig().getString("map_name");
         }
-
-        participants = new ArrayList<>();
-        inactiveParticipants = new ArrayList<>();
-        teams = new ArrayList<>();
-        spawners = new ArrayList<>();
-
-        gameRunnable = new GameRunnable(this);
 
         new MakeArmorsInvisible(this).run();
         new StopSpectatorSounds(this).run();
@@ -137,7 +97,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerInteractEntityListener(participants, this), this);
+        getServer().getPluginManager().registerEvents(new PlayerInteractEntityListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerItemConsumeListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDropItemListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerPickupArrowListener(this), this);
@@ -151,10 +111,10 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new BlockDropItemListener(), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new ProjectileLaunchListener(this), this);
-        getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(this), this);
+        getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
-        getServer().getPluginManager().registerEvents(new ItemDespawnListener(this), this);
+        getServer().getPluginManager().registerEvents(new ItemDespawnListener(), this);
         getServer().getPluginManager().registerEvents(new InventoryCloseListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerBucketEmptyListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockCanBuildListener(this), this);
@@ -162,12 +122,63 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new LimitItemPickup(this), this);
         getServer().getPluginManager().registerEvents(new CreatureSpawnListener(), this);
 
-        jedis = new JedisCommunicator(this);
+        communicator = this.getServer().getServicesManager().load(JedisCommunicator.class);
+        if (communicator != null) {
+            new JedisRunnable(this, communicator);
+        } else {
+            Bukkit.getLogger().severe("Couldn't get access to JedisCommunicator API. Not connecting to the database.");
+        }
 
-        new StartGameRunnable(this);
 
         vanish = new Vanish(this);
-        sendServerState(this, serverName, TEAM_SIZE, TEAMS_COUNT);
+        DatabaseConnector.connect();
+        setup();
+    }
+
+    public void setup() {
+        hasStarted = false;
+        Bukkit.getOnlinePlayers().forEach( (player) -> player.kick(Component.text("Tryb jest resetowany.")));
+
+        Bukkit.unloadWorld(currentWorldName, false);
+
+        File worldFolder = new File(getDataFolder().getParentFile().getParentFile(), currentWorldName + "_original");
+        File copyFolder = new File(getDataFolder().getParentFile().getParentFile(), currentWorldName);
+        deleteFolder(copyFolder);
+        copyWorld(worldFolder, copyFolder);
+
+        world = Bukkit.createWorld(new WorldCreator(currentWorldName));
+        world.setAutoSave(false);
+        world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.DO_INSOMNIA, false);
+        world.setGameRule(GameRule.DO_FIRE_TICK, false);
+        world.setTicksPerMonsterSpawns(0);
+        world.setMonsterSpawnLimit(128);
+        world.setDifficulty(Difficulty.NORMAL);
+        world.setFullTime(0);
+
+        currentConfig = loadCustomConfig(currentWorldName);
+        if (!currentConfig.contains(currentWorldName)){
+            currentConfig.createSection(currentWorldName);
+        }
+
+        participants = new ArrayList<>();
+        inactiveParticipants = new ArrayList<>();
+        teams = new ArrayList<>();
+        spawners = new ArrayList<>();
+
+        vanish.clean();
+
+        if (gameRunnable != null && !gameRunnable.isCancelled()) {
+            gameRunnable.cancel();
+        }
+        gameRunnable = new GameRunnable(this);
+        if (startGameRunnable != null && !startGameRunnable.isCancelled()) {
+            startGameRunnable.cancel();
+        }
+        startGameRunnable = new StartGameRunnable(this);
     }
 
     public void releasePlayer(Player player) {
@@ -189,15 +200,10 @@ public class BedWars extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable(){
-        jedis.remove();
+        Bukkit.unloadWorld(currentWorldName, false);
     }
 
     public void onStart(){
-        ServerStateManager.removeServerFromList();
-        Bukkit.getScheduler().runTaskAsynchronously(this, () ->{
-            PlayerDataManager.fetchPlayersData(participants);
-        });
-
         if (!currentConfig.contains(currentWorldName + ".shop")){
             currentConfig.createSection(currentWorldName + ".shop");
         }
@@ -245,8 +251,6 @@ public class BedWars extends JavaPlugin implements Listener {
             } catch (Exception ignored){
 
             }
-
-
         }
 
         int spawnersCounter = currentConfig.getConfigurationSection(currentWorldName).getInt("spawners_counter");
@@ -286,7 +290,7 @@ public class BedWars extends JavaPlugin implements Listener {
                 for (Player player : Bukkit.getOnlinePlayers()){
                     player.kickPlayer("Koniec gry");
                 }
-                Bukkit.getServer().shutdown();
+                setup();
             }
         }.runTaskLater(this, 20*12);
 
@@ -303,7 +307,6 @@ public class BedWars extends JavaPlugin implements Listener {
             handleParticipant(p);
 
             if (!p.hasLost()){
-                PlayerDataManager.savePlayerData(this, p);
                 p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", "", 5, 100, 5);
             }
             else{
@@ -317,7 +320,7 @@ public class BedWars extends JavaPlugin implements Listener {
     private void handleParticipant(Participant p) {
         int gold = p.getKills() * 50 + p.getFinalKills() * 100 + 50 + p.getBedsDestroyed() * 300;
         if (!p.hasLost()) gold += 300;
-        PlayerGlobalDataManager.addGold(this, p.getPlayer(), gold);
+        DatabaseFunctions.addGold(this, p.getPlayer(), gold);
 
         int exp = 0;
         if (p.getGameLoseTime() == null){
@@ -327,7 +330,7 @@ public class BedWars extends JavaPlugin implements Listener {
             exp += p.getGameLoseTime() / 100;
         }
         if (!p.hasLost()) exp += 50;
-        PlayerGlobalDataManager.addExperience(this, p.getPlayer(), exp);
+        DatabaseFunctions.addExperience(this, p.getPlayer(), exp);
 
     }
 
@@ -540,5 +543,59 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public Integer getGameTime() {
         return gameRunnable.getGameTime();
+    }
+
+
+
+    public void copyWorld(File source, File target){
+        try {
+            ArrayList<String> ignore = new ArrayList<String>(Arrays.asList("uid.dat", "session.dat"));
+            if(!ignore.contains(source.getName())) {
+                if(source.isDirectory()) {
+                    if(!target.exists())
+                        target.mkdirs();
+                    String files[] = source.list();
+                    for (String file : files) {
+                        File srcFile = new File(source, file);
+                        File destFile = new File(target, file);
+                        copyWorld(srcFile, destFile);
+                    }
+                } else {
+                    InputStream in = new FileInputStream(source);
+                    OutputStream out = new FileOutputStream(target);
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = in.read(buffer)) > 0)
+                        out.write(buffer, 0, length);
+                    in.close();
+                    out.close();
+                }
+            }
+        } catch (IOException e) {
+
+        }
+    }
+
+    public boolean deleteFolder(File path) {
+        if(path.exists()) {
+            File files[] = path.listFiles();
+            for(int i=0; i<files.length; i++) {
+                if(files[i].isDirectory()) {
+                    deleteFolder(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        return(path.delete());
+    }
+
+    public List<Participant> getInactiveParticipants() {
+        return inactiveParticipants;
+    }
+
+
+    public int getTeamsLeft() {
+        return gameRunnable.getTeamsPlaying();
     }
 }

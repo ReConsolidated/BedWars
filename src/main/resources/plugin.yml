@@ -2,8 +2,12 @@ name: BedWars
 main: io.github.reconsolidated.BedWars.BedWars
 version: 1.0
 api-version: 1.16
-depend: [HolographicDisplays]
+depend: [HolographicDisplays, JedisCommunicator]
 commands:
+  bedwars:
+    description: BedWars command;
+    permission: BedWars.Admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
   helpbedwars:
     description: BedWars help command.
     permission: BedWars.player

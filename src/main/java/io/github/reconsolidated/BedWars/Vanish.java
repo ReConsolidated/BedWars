@@ -16,13 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Vanish implements Listener {
-    private final List<Player> vanishedPlayers;
+    private List<Player> vanishedPlayers;
     private final Plugin plugin;
 
     public Vanish(Plugin plugin){
         vanishedPlayers = new ArrayList<>();
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public void clean() {
+        vanishedPlayers = new ArrayList<>();
     }
 
     public void vanishPlayer(Player player){
