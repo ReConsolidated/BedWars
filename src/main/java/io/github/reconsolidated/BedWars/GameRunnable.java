@@ -19,9 +19,12 @@ public class GameRunnable extends BukkitRunnable {
     private ArrayList<Participant> participants;
     private ArrayList<ItemSpawner> spawners;
 
+
     @Getter
     private int teamsPlaying;
 
+
+    private boolean isRunning;
 
     public GameRunnable(BedWars plugin) {
         this.plugin = plugin;
@@ -35,6 +38,8 @@ public class GameRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
+        isRunning = true;
+
         this.participants = plugin.getParticipants();
         this.spawners = plugin.getSpawners();
         teamsPlaying = 0;
@@ -74,9 +79,7 @@ public class GameRunnable extends BukkitRunnable {
             for (int i = 0; i<plugin.getTeams().size(); i++){
                 teamHasParty[i] = false;
             }
-            Bukkit.getLogger().info("1");
             SpawnDestroyer.destroy(plugin.getSpawnLocation());
-            Bukkit.getLogger().info("2");
 
             for (Participant p : participants) {
                 if (p.getTeam() != null) {
@@ -226,5 +229,9 @@ public class GameRunnable extends BukkitRunnable {
         if (counter < 360*8+5) return 360*8+5;
         if (counter < 360*9+5) return 360*9+5;
         return 0;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 }

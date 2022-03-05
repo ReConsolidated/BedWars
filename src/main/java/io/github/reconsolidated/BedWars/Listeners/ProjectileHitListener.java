@@ -24,8 +24,9 @@ public class ProjectileHitListener implements Listener {
         Participant shooter = plugin.getParticipant((Player) event.getEntity().getShooter());
         if (shooter == null) return;
 
-        if (event.getEntity() instanceof Fireball){
-            event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 1, false, true, (Entity) event.getEntity().getShooter());
+        if (event.getEntity() instanceof Fireball) {
+            event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 2, false, true);
+            // (Entity) event.getEntity().getShooter()
         }
 
         if (event.getHitEntity() instanceof Player){

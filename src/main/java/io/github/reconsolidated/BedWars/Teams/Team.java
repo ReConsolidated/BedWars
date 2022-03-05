@@ -254,4 +254,20 @@ public class Team {
         }, 5L);
         onBedDestroy();
     }
+
+    public int getBedsDestroyed() {
+        int beds = 0;
+        for (Participant p : members) {
+            beds += p.getBedsDestroyed();
+        }
+        return beds;
+    }
+
+    public int getFinalKills() {
+        int kills = 0;
+        for (Participant p : members) {
+            kills += p.getFinalKills();
+        }
+        return kills;
+    }
 }

@@ -31,6 +31,10 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
 
+        <repository>
+            <id>simonsators Repo</id>
+            <url>https://simonsator.de/repo</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -39,6 +43,13 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.18.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.simonsator</groupId>
+            <artifactId>BungeecordPartyAndFriends</artifactId>
+            <version>1.0.86</version>
             <scope>provided</scope>
         </dependency>
 
@@ -94,8 +105,7 @@
         <dependency>
             <groupId>io.github.reconsolidated</groupId>
             <artifactId>jediscommunicator</artifactId>
-            <version>1.03</version>
-            <scope>provided</scope>
+            <version>1.06</version>
         </dependency>
 
 

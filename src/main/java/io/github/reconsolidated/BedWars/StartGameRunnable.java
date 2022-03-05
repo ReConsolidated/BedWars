@@ -16,6 +16,7 @@ public class StartGameRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
+
         int maxPlayers = plugin.getTEAM_SIZE() * plugin.getTEAMS_COUNT();
         if (Bukkit.getOnlinePlayers().size() > 0){
             counter--;
@@ -49,6 +50,8 @@ public class StartGameRunnable extends BukkitRunnable {
         if (counter <= 5){
             plugin.onStart();
             this.cancel();
+        } else {
+            plugin.setOpen(true);
         }
 
     }

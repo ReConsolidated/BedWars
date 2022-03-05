@@ -2,6 +2,7 @@ package io.github.reconsolidated.BedWars.Listeners;
 
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -25,6 +26,11 @@ public class EntityDamageListener implements Listener {
         if (event.getEntity() instanceof Villager || event.getEntity() instanceof Zombie){
             event.setCancelled(true);
         }
+
+        if (event.getCause().equals(EntityDamageEvent.DamageCause.BLOCK_EXPLOSION)) {
+            event.setDamage(3);
+        }
+
         if (event.getEntity() instanceof Player){
             Participant p = plugin.getParticipant((Player) event.getEntity());
 

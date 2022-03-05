@@ -12,7 +12,6 @@ import io.github.reconsolidated.BedWars.Teams.Team;
 import io.github.reconsolidated.jediscommunicator.JedisCommunicator;
 import lombok.Getter;
 import lombok.Setter;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,12 +20,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import static io.github.reconsolidated.BedWars.CustomConfig.loadCustomConfig;
 import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
@@ -64,6 +65,7 @@ public class BedWars extends JavaPlugin implements Listener {
     @Getter
     private String serverName = "bedwars";
 
+    @Getter
     private JedisCommunicator communicator;
 
     // These variables should be initiated in onStart() method, based on teams' beds locations.
@@ -122,12 +124,8 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new LimitItemPickup(this), this);
         getServer().getPluginManager().registerEvents(new CreatureSpawnListener(), this);
 
-        communicator = this.getServer().getServicesManager().load(JedisCommunicator.class);
-        if (communicator != null) {
-            new JedisRunnable(this, communicator);
-        } else {
-            Bukkit.getLogger().severe("Couldn't get access to JedisCommunicator API. Not connecting to the database.");
-        }
+        communicator = new JedisCommunicator();
+        new JedisRunnable(this, communicator);
 
 
         vanish = new Vanish(this);
@@ -137,7 +135,7 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public void setup() {
         hasStarted = false;
-        Bukkit.getOnlinePlayers().forEach( (player) -> player.kick(Component.text("Tryb jest resetowany.")));
+        Bukkit.getOnlinePlayers().forEach( (player) -> player.kickPlayer("Tryb jest resetowany."));
 
         Bukkit.unloadWorld(currentWorldName, false);
 
@@ -171,7 +169,7 @@ public class BedWars extends JavaPlugin implements Listener {
 
         vanish.clean();
 
-        if (gameRunnable != null && !gameRunnable.isCancelled()) {
+        if (gameRunnable != null && !gameRunnable.isCancelled() && gameRunnable.isRunning()) {
             gameRunnable.cancel();
         }
         gameRunnable = new GameRunnable(this);
@@ -204,6 +202,7 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public void onStart(){
+        setOpen(false);
         if (!currentConfig.contains(currentWorldName + ".shop")){
             currentConfig.createSection(currentWorldName + ".shop");
         }
@@ -307,12 +306,18 @@ public class BedWars extends JavaPlugin implements Listener {
             handleParticipant(p);
 
             if (!p.hasLost()){
+                p.setPlace(1);
                 p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", "", 5, 100, 5);
             }
             else{
                 p.getPlayer().sendTitle("", ChatColor.GOLD + "Wygrała drużyna " + winnerTeam.getChatColor() + winnerTeam.getName(), 5, 100, 5);
             }
             CustomSpectator.setSpectator(this, p.getPlayer());
+        }
+        try {
+            RankedHandler.handleRanked(this);
+        } catch (Exception e) {
+            Bukkit.broadcastMessage(ChatColor.RED + "Rozgrywka rankingowa nie została zapisana, ze względu na błąd połączenia z bazą danych.");
         }
 
     }

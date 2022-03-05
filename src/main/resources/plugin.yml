@@ -1,8 +1,8 @@
 name: BedWars
 main: io.github.reconsolidated.BedWars.BedWars
 version: 1.0
-api-version: 1.16
-depend: [HolographicDisplays, JedisCommunicator]
+api-version: 1.18
+depend: [HolographicDisplays]
 commands:
   bedwars:
     description: BedWars command;

@@ -48,6 +48,13 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-commons:9.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-tree:9.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-analysis:9.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.simonsator:BungeecordPartyAndFriends:1.0.86" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-bungeecord:2.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-base:2.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.mchange:c3p0:0.9.5.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.mchange:mchange-commons-java:0.2.19" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.simonsator:UpdateChecker:1.0.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.zaxxer:HikariCP:4.0.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldedit.worldedit-libs:bukkit:7.2.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT" level="project" />
@@ -110,6 +117,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.22" level="project" />
     <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.3.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.github.reconsolidated:jediscommunicator:1.03" level="project" />
+    <orderEntry type="library" name="Maven: io.github.reconsolidated:jediscommunicator:1.06" level="project" />
   </component>
 </module>

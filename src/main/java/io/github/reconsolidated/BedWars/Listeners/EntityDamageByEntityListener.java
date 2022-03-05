@@ -3,12 +3,14 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.Participant;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
@@ -97,4 +99,5 @@ public class EntityDamageByEntityListener implements Listener {
             }
         }
     }
+
 }

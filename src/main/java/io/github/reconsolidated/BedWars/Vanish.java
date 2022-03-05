@@ -6,9 +6,9 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -32,7 +32,7 @@ public class Vanish implements Listener {
     public void vanishPlayer(Player player){
         if (vanishedPlayers.contains(player)){
             for (Player p2 : Bukkit.getOnlinePlayers()){
-                p2.showPlayer(plugin, player);
+                p2.showPlayer(player);
             }
             vanishedPlayers.remove(player);
             player.sendMessage(ChatColor.GREEN + "Wyłączono vanisha");
@@ -40,7 +40,7 @@ public class Vanish implements Listener {
         }
         vanishedPlayers.add(player);
         for (Player p2 : Bukkit.getOnlinePlayers()){
-            p2.hidePlayer(plugin, player);
+            p2.hidePlayer(player);
         }
         player.setGameMode(GameMode.CREATIVE);
         player.sendMessage(ChatColor.GREEN + "Włączono vanisha");
@@ -54,18 +54,19 @@ public class Vanish implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
         for (Player player : vanishedPlayers){
-            event.getPlayer().hidePlayer(plugin, player);
+            event.getPlayer().hidePlayer(player);
         }
     }
 
     @EventHandler
-    public void onItemPickup(EntityPickupItemEvent event){
+    public void onItemPickup(PlayerPickupItemEvent event){
         for (Player player : vanishedPlayers){
-            if (event.getEntity().getUniqueId().equals(player.getUniqueId())){
+            if (event.getPlayer().getUniqueId().equals(player.getUniqueId())){
                 event.setCancelled(true);
             }
         }
     }
+
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event){

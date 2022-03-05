@@ -500,4 +500,7 @@ public class Participant {
     }
 
 
+    public void setPlace(int i) {
+        place = i;
+    }
 }

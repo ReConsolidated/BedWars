@@ -3,7 +3,7 @@ package io.github.reconsolidated.BedWars;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Ladder;
+import org.bukkit.material.Ladder;
 import org.bukkit.util.Vector;
 
 public class PopupTower {
@@ -36,7 +36,8 @@ public class PopupTower {
 
     private static void buildPopupTower(Location center, Vector direction, Material material){
         Vector forward = direction.clone();
-        Vector left = direction.clone().rotateAroundY(Math.PI /2);
+        Vector left = rotateY(direction.clone());
+        //Vector left = direction.clone().rotateAroundY(Math.PI /2);
         left.setX((int)left.getX());
         left.setY((int)left.getY());
         left.setZ((int)left.getZ());
@@ -231,24 +232,28 @@ public class PopupTower {
         pos.add(forward);
         for (int i = 0; i<5; i++){
             center.getWorld().getBlockAt(pos).setType(Material.LADDER);
-            Ladder ladder = (Ladder) center.getWorld().getBlockAt(pos).getBlockData();
+            Ladder ladder = (Ladder) center.getWorld().getBlockAt(pos);
             if (forward.getX() == -1){
-                ladder.setFacing(BlockFace.EAST);
+                ladder.setFacingDirection(BlockFace.EAST);
             }
             if (forward.getX() == 1){
-                ladder.setFacing(BlockFace.WEST);
+                ladder.setFacingDirection(BlockFace.WEST);
             }
             if (forward.getZ() == -1){
-                ladder.setFacing(BlockFace.SOUTH);
+                ladder.setFacingDirection(BlockFace.SOUTH);
             }
             if (forward.getZ() == 1){
-                ladder.setFacing(BlockFace.NORTH);
+                ladder.setFacingDirection(BlockFace.NORTH);
             }
-            center.getWorld().getBlockAt(pos).setBlockData(ladder);
             pos.add(new Vector(0, 1, 0));
-
         }
 
 
+    }
+
+    private static Vector rotateY(Vector vec) {
+        float x1 = (float)(vec.getX() * Math.cos(Math.PI/2) + vec.getZ() * Math.sin(Math.PI/2));
+        float z1 = (float)(-1 * vec.getX() * Math.sin(Math.PI/2) + vec.getZ() * Math.cos(Math.PI/2));
+        return new Vector(x1, vec.getY(), z1);
     }
 }
