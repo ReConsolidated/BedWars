@@ -3,10 +3,7 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.IronGolem;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Silverfish;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -31,7 +28,12 @@ public class EntityTargetListener implements Listener {
                         event.setCancelled(true);
                     }
                 }
-            };
+            }
+            if (event.getTarget() != null && event.getTarget().getType().equals(EntityType.ZOMBIE)) {
+                event.setCancelled(true);
+            }
+
+
         }
     }
 }

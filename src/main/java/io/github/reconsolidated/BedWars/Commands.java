@@ -22,7 +22,7 @@ public class Commands implements CommandExecutor {
         plugin.getServer().getPluginCommand("newshop1").setExecutor(this);
         plugin.getServer().getPluginCommand("newshop2").setExecutor(this);
         plugin.getServer().getPluginCommand("release").setExecutor(this);
-        plugin.getServer().getPluginCommand("team").setExecutor(this);
+        plugin.getServer().getPluginCommand("teamchat").setExecutor(this);
         plugin.getServer().getPluginCommand("d").setExecutor(this);
         plugin.getServer().getPluginCommand("all").setExecutor(this);
         plugin.getServer().getPluginCommand("w").setExecutor(this);
@@ -114,7 +114,7 @@ public class Commands implements CommandExecutor {
             }
         }
 
-        if (commandName.equals("team") || commandName.equals("d")){
+        if (commandName.equals("teamchat") || commandName.equals("d")){
             plugin.setTeamChat((Player)sender, true);
         }
 

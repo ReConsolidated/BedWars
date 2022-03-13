@@ -4,10 +4,13 @@ import io.github.reconsolidated.BedWars.BedWars;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,10 +21,7 @@ import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.github.reconsolidated.BedWars.inventoryShop.buyMethods.Buy.canAfford;
 
@@ -37,6 +37,10 @@ public class CustomItemStack {
 
     public static ItemStack createCustomItemStack(Material material, int amount, Material costMaterial, int cost, String category, List<String> lore, Player player){
         ItemStack itemStack = new ItemStack(material, amount);
+
+        changeSwordDamage(itemStack);
+
+
         itemStack = NbtWrapper.setNBTTag("category", category, itemStack);
         if (cost > 0){
             itemStack = NbtWrapper.setNBTTag("cost_amount", Integer.toString(cost), itemStack);
@@ -81,6 +85,27 @@ public class CustomItemStack {
         }
 
         return itemStack;
+    }
+
+    private static void changeSwordDamage(ItemStack item) {
+//        if (item.getType() == Material.STONE_SWORD) {
+//            ItemMeta meta = item.getItemMeta();
+//            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE,
+//                    new AttributeModifier(UUID.randomUUID(),"old_damage", 6, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND));
+//            item.setItemMeta(meta);
+//        }
+//        if (item.getType() == Material.IRON_SWORD) {
+//            ItemMeta meta = item.getItemMeta();
+//            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE,
+//                    new AttributeModifier(UUID.randomUUID(),"old_damage", 7, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND));
+//            item.setItemMeta(meta);
+//        }
+//        if (item.getType() == Material.DIAMOND_SWORD) {
+//            ItemMeta meta = item.getItemMeta();
+//            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE,
+//                    new AttributeModifier(UUID.randomUUID(),"old_damage", 8, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND));
+//            item.setItemMeta(meta);
+//        }
     }
 
     private static String getCompassName(ItemStack item){

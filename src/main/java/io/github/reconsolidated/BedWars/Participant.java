@@ -5,10 +5,13 @@ import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Material;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.Title;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -73,12 +76,27 @@ public class Participant {
     // onStart() initializes the player, teleports him to his bed and sets his inventory
     public void onStart(){
         player.setPlayerListName(getChatColor() + player.getName() + ChatColor.WHITE);
+
+        double elo = RankedHandler.getPlayerElo(player.getName());
+        int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
+        TextComponent shortRankDisplayName = RankedHandler.getRankDisplayName(elo, gamesPlayed);
+        if (shortRankDisplayName.content().length() > 0) {
+            player.displayName(Component.text("[").color(TextColor.color(166,163,154))
+                    .append(
+                            shortRankDisplayName
+                                    .append(Component.text("] ").color(TextColor.color(166,163,154))
+                                            .append(Component.text(team.getChatColor() + player.getName())))));
+        } else {
+            player.displayName(Component.text(player.getName()).color(TextColor.color(255, 255, 255)));
+        }
+
+
         player.teleport(team.getSpawnLocation());
         player.setInvulnerable(false);
         CustomSpectator.endSpectator(plugin, player);
 
         player.getInventory().clear();
-        player.setDisplayName(team.getChatColor() + player.getName());
+   //     player.setDisplayName(team.getChatColor() + player.getName());
 
         getColor();
         ItemStack[] armor = new ItemStack[4];
@@ -96,7 +114,7 @@ public class Participant {
 
         player.getInventory().setArmorContents(armor);
 
-        player.getInventory().addItem(unbreakable(new ItemStack(Material.WOODEN_SWORD)));
+        player.getInventory().addItem(unbreakable(plugin.getWoodenSword()));
         player.getInventory().setItem(8, new ItemStack(Material.COMPASS));
 
     }
@@ -123,7 +141,7 @@ public class Participant {
                 }
             }
             if (team.isBedAlive()){
-                Bukkit.broadcastMessage(getLastHitBy().player.getDisplayName() + " zabił " + player.getDisplayName());
+                Bukkit.broadcastMessage(getLastHitBy().player.getDisplayName() + ChatColor.WHITE + " zabił " + player.getDisplayName());
             }
             else{
                 Bukkit.broadcastMessage(ChatColor.RED + "FINAL KILL! "
@@ -180,7 +198,7 @@ public class Participant {
         player.getInventory().clear();
         player.getInventory().setItem(8, new ItemStack(Material.COMPASS));
         player.getInventory().setArmorContents(armor);
-        player.getInventory().addItem(unbreakable(new ItemStack(Material.WOODEN_SWORD)));
+        player.getInventory().addItem(unbreakable(plugin.getWoodenSword()));
         player.getInventory().addItem(unbreakable(getPickaxe()));
         player.getInventory().addItem(unbreakable(getAxe()));
         player.getInventory().addItem(unbreakable(getShears()));
@@ -196,6 +214,7 @@ public class Participant {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.setFireTicks(0), 2L);
     }
+
 
     // Player is in spectating mode after his death (for 5 seconds) or if he has lost the game.
     public void setIsSpectating(boolean value) {

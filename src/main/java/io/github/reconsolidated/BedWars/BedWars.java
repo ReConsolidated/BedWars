@@ -1,5 +1,7 @@
 package io.github.reconsolidated.BedWars;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.github.reconsolidated.BedWars.Chat.ChatMessageListener;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
@@ -12,22 +14,27 @@ import io.github.reconsolidated.BedWars.Teams.Team;
 import io.github.reconsolidated.jediscommunicator.JedisCommunicator;
 import lombok.Getter;
 import lombok.Setter;
+import net.milkbowl.vault.chat.Chat;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.logging.log4j.util.IndexedReadOnlyStringMap;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static io.github.reconsolidated.BedWars.CustomConfig.loadCustomConfig;
 import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
@@ -78,8 +85,18 @@ public class BedWars extends JavaPlugin implements Listener {
     @Getter
     private int gameBorderBiggestZ = -9999;
 
+    public static Chat chat = null;
+    private List<IronGolem> golems;
+
     @Override
     public void onEnable() {
+        if (!setupChat()) {
+            Bukkit.getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+
         new Commands(this);
         getServer().getPluginManager().registerEvents(this, this);
 
@@ -94,6 +111,8 @@ public class BedWars extends JavaPlugin implements Listener {
 
         new MakeArmorsInvisible(this).run();
         new StopSpectatorSounds(this).run();
+
+
 
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
@@ -126,6 +145,7 @@ public class BedWars extends JavaPlugin implements Listener {
 
         communicator = new JedisCommunicator();
         new JedisRunnable(this, communicator);
+        new IronGolemRunnable(this);
 
 
         vanish = new Vanish(this);
@@ -133,7 +153,24 @@ public class BedWars extends JavaPlugin implements Listener {
         setup();
     }
 
+    private boolean setupChat() {
+        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        chat = rsp.getProvider();
+        return chat != null;
+    }
+
     public void setup() {
+        getServer().setWhitelist(true);
+        getServer().setWhitelistEnforced(true);
+        getServer().reloadWhitelist();
+
+        HologramsAPI.getHolograms(this).forEach(Hologram::delete);
+
+        for (org.bukkit.scoreboard.Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
+            t.unregister();
+        }
+
+        golems = new ArrayList<>();
         hasStarted = false;
         Bukkit.getOnlinePlayers().forEach( (player) -> player.kickPlayer("Tryb jest resetowany."));
 
@@ -177,6 +214,12 @@ public class BedWars extends JavaPlugin implements Listener {
             startGameRunnable.cancel();
         }
         startGameRunnable = new StartGameRunnable(this);
+
+        getServer().setWhitelist(false);
+        getServer().reloadWhitelist();
+
+
+
     }
 
     public void releasePlayer(Player player) {
@@ -347,8 +390,10 @@ public class BedWars extends JavaPlugin implements Listener {
 
 
     public void addGolem(IronGolem golem){
+        golems.add(golem);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             golem.damage(10000);
+            golems.remove(golem);
         }, 20L * 120);
     }
 
@@ -504,6 +549,11 @@ public class BedWars extends JavaPlugin implements Listener {
         participants.add(p);
     }
 
+    public ItemStack getWoodenSword() {
+        ItemStack item = new ItemStack(Material.WOODEN_SWORD);
+        return item;
+    }
+
     public void checkSwords(Player player) {
         int swordsCount = 0;
         for (ItemStack itemStack : player.getInventory().getContents()){
@@ -512,14 +562,14 @@ public class BedWars extends JavaPlugin implements Listener {
             }
         }
         if (swordsCount < 1){
-            player.getInventory().addItem(unbreakable(new ItemStack(Material.WOODEN_SWORD)));
+            player.getInventory().addItem(unbreakable(getWoodenSword()));
         }
         if (swordsCount > 1){
             player.getInventory().remove(Material.WOODEN_SWORD);
         }
     }
 
-    private boolean isSword(ItemStack item){
+    public static boolean isSword(ItemStack item){
         if (item == null) return false;
         if (item.getType().equals(Material.WOODEN_SWORD)
                 || item.getType().equals(Material.STONE_SWORD)
@@ -602,5 +652,9 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public int getTeamsLeft() {
         return gameRunnable.getTeamsPlaying();
+    }
+
+    public List<IronGolem> getGolems() {
+        return golems;
     }
 }

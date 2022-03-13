@@ -48,7 +48,7 @@ commands:
     description: Go spectator
     permission: BedWars.admin
     permission-message: Nie posiadasz uprawnień do tej komendy.
-  team:
+  teamchat:
     description: Przełącz na czat drużynowy.
     permission: BedWars.player
     permission-message: Nie posiadasz uprawnień do tej komendy.

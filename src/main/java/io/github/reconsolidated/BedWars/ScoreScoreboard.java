@@ -33,20 +33,20 @@ public class ScoreScoreboard extends BukkitRunnable {
         manager = Bukkit.getScoreboardManager();
         scoreboard = manager.getNewScoreboard();
 
-        objective = scoreboard.registerNewObjective("Drużyny", "dummy", "Score");
+        objective = scoreboard.registerNewObjective("Druzyny", "dummy", "Score");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        scoreboard.getObjective("Drużyny").setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "BEDWARS");
-        Score funFactScore = scoreboard.getObjective("Drużyny").getScore(ChatColor.GREEN + "grypciocraft.pl");
+        scoreboard.getObjective("Druzyny").setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "BEDWARS");
+        Score funFactScore = scoreboard.getObjective("Druzyny").getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "Grypciocraft.pl");
         funFactScore.setScore(12);
-        Score spaceScore = scoreboard.getObjective("Drużyny").getScore("    ");
+        Score spaceScore = scoreboard.getObjective("Druzyny").getScore("    ");
         spaceScore.setScore(11);
 
         // on Score 10 there is the countdown runnable
 
-        spaceScore = scoreboard.getObjective("Drużyny").getScore(" ");
+        spaceScore = scoreboard.getObjective("Druzyny").getScore(" ");
         spaceScore.setScore(9);
-        spaceScore = scoreboard.getObjective("Drużyny").getScore("      ");
+        spaceScore = scoreboard.getObjective("Druzyny").getScore("      ");
         spaceScore.setScore(-1);
 
         owner.getPlayer().setScoreboard(scoreboard);
@@ -114,7 +114,7 @@ public class ScoreScoreboard extends BukkitRunnable {
                 lastScoreboardStrings[t.ID] = name;
             }
 
-            Score teamScore = scoreboard.getObjective("Drużyny").getScore(name);
+            Score teamScore = scoreboard.getObjective("Druzyny").getScore(name);
             teamScore.setScore(7-i);
         }
 

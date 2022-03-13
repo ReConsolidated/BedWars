@@ -60,6 +60,12 @@ public class RankedHandler {
 
             double eloValue = getEloValue(elo, averageElo, place <= teamsNumber/2);
 
+            if (finalKills == 0) {
+                finalKills = 1;
+            }
+            if (bedsDestroyed == 0) {
+                bedsDestroyed = 1;
+            }
             double eloGain = rankFlexibility * eloValue * (teamKills / finalKills * 10
                     * teamsNumber / 4 + teamBeds / bedsDestroyed * 10 * teamsNumber / 4 + baseValue);
 
@@ -133,7 +139,7 @@ public class RankedHandler {
         }
     }
 
-    private static int getPlayerGamesPlayed(String name) {
+    public static int getPlayerGamesPlayed(String name) {
         if (DatabaseConnector.getSql() == null) {
             Bukkit.getLogger().warning("Database is not connected.");
             return -1;
@@ -157,7 +163,7 @@ public class RankedHandler {
     }
 
 
-    private static double getPlayerElo(String playerName) {
+    public static double getPlayerElo(String playerName) {
         if (DatabaseConnector.getSql() == null) {
             Bukkit.getLogger().warning("Database is not connected.");
             return 0;
@@ -204,14 +210,32 @@ public class RankedHandler {
     }
 
 
-    public static TextComponent getRankDisplayName(double elo) {
+    public static TextComponent getRankDisplayName(double elo, int gamesPlayed) {
         TextColor bronzeColor = TextColor.color(176, 141, 87);
         TextColor silverColor = TextColor.color(192, 192, 192);
         TextColor goldColor = TextColor.color(218, 165, 32);
         TextColor lapisColor = TextColor.color(70, 115, 219);
         TextColor diamondColor = TextColor.color(37, 194, 178);
         TextColor titanColor = TextColor.color(217, 95, 213);
-        // 1000-1100 : silver 3
+        if (elo == 0 || gamesPlayed < 5) {
+            return Component.text("Brak rangi");
+        }
+        if (elo < 600) {
+            return Component.text("Brąz I").color(bronzeColor);
+        }
+        if (elo < 700) {
+            return Component.text("Brąz II").color(bronzeColor);
+        }
+        if (elo < 800) {
+            return Component.text("Brąz III").color(bronzeColor);
+        }
+        if (elo < 900) {
+            return Component.text("Srebro I").color(silverColor);
+        }
+        if (elo < 1000) {
+            return Component.text("Srebro II").color(silverColor);
+        }
+        // 1000-1100 : silver 3, starting rank
         if (elo < 1100) {
             return Component.text("Srebro III").color(silverColor);
         }
@@ -221,26 +245,74 @@ public class RankedHandler {
         if (elo < 1300) {
             return Component.text("Złoto II").color(goldColor);
         }
-        return Component.text("Brak rangi");
+        if (elo < 1400) {
+            return Component.text("Złoto III").color(goldColor);
+        }
+        if (elo < 1500) {
+            return Component.text("Lapis I").color(lapisColor);
+        }
+        if (elo < 1600) {
+            return Component.text("Lapis II").color(lapisColor);
+        }
+        if (elo < 1700) {
+            return Component.text("Lapis III").color(lapisColor);
+        }
+        if (elo < 1800) {
+            return Component.text("Diament I").color(diamondColor);
+        }
+        return Component.text("Tytan").color(titanColor);
     }
 
-    public static TextComponent getShortRankDisplayName(double elo) {
+    public static TextComponent getShortRankDisplayName(double elo, int gamesPlayed) {
         TextColor bronzeColor = TextColor.color(176, 141, 87);
         TextColor silverColor = TextColor.color(192, 192, 192);
         TextColor goldColor = TextColor.color(218, 165, 32);
         TextColor lapisColor = TextColor.color(70, 115, 219);
         TextColor diamondColor = TextColor.color(37, 194, 178);
         TextColor titanColor = TextColor.color(217, 95, 213);
-        // 1000-1100 : silver 3
+        if (elo == 0 || gamesPlayed < 5) {
+            return Component.text("");
+        }
+        if (elo < 600) {
+            return Component.text("B I").color(bronzeColor);
+        }
+        if (elo < 700) {
+            return Component.text("B II").color(bronzeColor);
+        }
+        if (elo < 800) {
+            return Component.text("B III").color(bronzeColor);
+        }
+        if (elo < 900) {
+            return Component.text("S I").color(silverColor);
+        }
+        if (elo < 1000) {
+            return Component.text("S II").color(silverColor);
+        }
+        // 1000-1100 : silver 3, starting rank
         if (elo < 1100) {
             return Component.text("S III").color(silverColor);
         }
         if (elo < 1200) {
-            return Component.text("Z I").color(silverColor);
+            return Component.text("Z I").color(goldColor);
         }
         if (elo < 1300) {
             return Component.text("Z II").color(goldColor);
         }
-        return Component.text("");
+        if (elo < 1400) {
+            return Component.text("Z III").color(goldColor);
+        }
+        if (elo < 1500) {
+            return Component.text("L I").color(lapisColor);
+        }
+        if (elo < 1600) {
+            return Component.text("L II").color(lapisColor);
+        }
+        if (elo < 1700) {
+            return Component.text("L III").color(lapisColor);
+        }
+        if (elo < 1800) {
+            return Component.text("D I").color(diamondColor);
+        }
+        return Component.text("Tytan").color(titanColor);
     }
 }

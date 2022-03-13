@@ -16,6 +16,10 @@ public class JedisRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
+        if (communicator.isClosed()) {
+            communicator.reconnect();
+        }
+
         int maxPartySize = plugin.getTEAM_SIZE();
         if (plugin.getPartiesCount() >= plugin.getTEAMS_COUNT()) {
             maxPartySize = 0;

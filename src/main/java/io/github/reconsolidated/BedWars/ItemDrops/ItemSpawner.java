@@ -23,6 +23,7 @@ public class ItemSpawner {
     private final int team;
     private final int maxAmount;
     private final int basePeriod;
+    private Hologram hologram = null;
 
     public ItemSpawner(BedWars plugin, ItemStack item, int period, Location location, int team, int maxAmount){
         this.plugin = plugin;
@@ -53,7 +54,7 @@ public class ItemSpawner {
         }
         counterTextLine = null;
         if (hasHologram && team == -1){
-            Hologram hologram = HologramsAPI.createHologram(plugin, location.clone().add(0, 3, 0));
+            hologram = HologramsAPI.createHologram(plugin, location.clone().add(0, 3, 0));
             hologram.appendTextLine(color + itemName);
             counterTextLine = hologram.appendTextLine(ChatColor.YELLOW + "Pojawi się za: " + ChatColor.RED + (int)(period/20));
             hologram.appendTextLine("");
@@ -92,6 +93,11 @@ public class ItemSpawner {
 
         @Override
         public void run() {
+            if (hologram != null && hologram.isDeleted()) {
+                cancel();
+                return;
+            }
+
             counter++;
             if (counter >= period){
                 counter = 0;
@@ -126,7 +132,7 @@ public class ItemSpawner {
                         // if there are players nearby put items in their eq instead of dropping
                         for (Player player : playersNearby){
                             player.getInventory().addItem(item);
-                            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 5, 0);
+                            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2, 0);
                         }
                         // set counter to a negative value, so that it takes  longer to regenerate
                         // after it gave away more items than it should have

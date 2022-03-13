@@ -27,6 +27,7 @@ public class PlayerDropItemListener implements Listener {
         Participant p = plugin.getParticipant(event.getPlayer());
         if (isPickaxe(event.getItemDrop().getItemStack())
         || isAxe(event.getItemDrop().getItemStack())
+        || event.getItemDrop().getItemStack().getType().equals(Material.COMPASS)
         || event.getItemDrop().getItemStack().getType().equals(Material.SHEARS)){
             event.setCancelled(true);
             return;
@@ -41,7 +42,7 @@ public class PlayerDropItemListener implements Listener {
     }
     
 
-    private static boolean isPickaxe(ItemStack item){
+    public static boolean isPickaxe(ItemStack item){
         if (item.getType().equals(Material.WOODEN_PICKAXE)
                 || item.getType().equals(Material.STONE_PICKAXE)
                 || item.getType().equals(Material.IRON_PICKAXE)
@@ -51,7 +52,7 @@ public class PlayerDropItemListener implements Listener {
         return false;
     }
 
-    private static boolean isAxe(ItemStack item){
+    public static boolean isAxe(ItemStack item){
         if (item.getType().equals(Material.WOODEN_AXE)
                 || item.getType().equals(Material.STONE_AXE)
                 || item.getType().equals(Material.IRON_AXE)

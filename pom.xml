@@ -32,8 +32,14 @@
         </repository>
 
         <repository>
-            <id>simonsators Repo</id>
-            <url>https://simonsator.de/repo</url>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -47,9 +53,9 @@
         </dependency>
 
         <dependency>
-            <groupId>de.simonsator</groupId>
-            <artifactId>BungeecordPartyAndFriends</artifactId>
-            <version>1.0.86</version>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -73,6 +79,13 @@
             <version>4.1.0</version>
             <type>jar</type>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -105,7 +118,7 @@
         <dependency>
             <groupId>io.github.reconsolidated</groupId>
             <artifactId>jediscommunicator</artifactId>
-            <version>1.06</version>
+            <version>1.08</version>
         </dependency>
 
 

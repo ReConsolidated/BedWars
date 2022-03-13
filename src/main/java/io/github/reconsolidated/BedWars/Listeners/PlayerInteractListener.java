@@ -8,6 +8,7 @@ import io.github.reconsolidated.BedWars.inventoryShop.buyMethods.Buy;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Chest;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.BrewingStand;
@@ -21,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 
 public class PlayerInteractListener implements Listener {
@@ -60,6 +62,9 @@ public class PlayerInteractListener implements Listener {
             IronGolem golem = (IronGolem) location.getWorld().spawnEntity(location, EntityType.IRON_GOLEM);
             golem.setCustomName(p.getChatColor() + "Golem");
             golem.setCustomNameVisible(true);
+            golem.getPersistentDataContainer().set(new NamespacedKey(plugin, "team_id"), PersistentDataType.INTEGER, p.getTeam().ID);
+            golem.getPersistentDataContainer().set(new NamespacedKey(plugin, "owner_name"), PersistentDataType.STRING, p.getPlayer().getName());
+
             plugin.addGolem(golem);
             Buy.charge(p.getPlayer(), new ItemStack(Material.POLAR_BEAR_SPAWN_EGG));
         }

@@ -42,7 +42,7 @@ public class CountdownRunnable extends BukkitRunnable {
             }
 
 
-            Score score = ssb.scoreboard.getObjective("Drużyny").getScore(lastScore);
+            Score score = ssb.scoreboard.getObjective("Druzyny").getScore(lastScore);
             score.setScore(10); //Making it so after "Time:" it displays the int countdown(So how long it has left in seconds.)
 
         }

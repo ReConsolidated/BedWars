@@ -5,6 +5,11 @@ import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
 import io.github.reconsolidated.BedWars.Party.PartyDomain;
+import io.github.reconsolidated.BedWars.RankedHandler;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -33,6 +38,7 @@ public class PlayerJoinListener implements Listener {
             event.setJoinMessage(null);
             if (player.hasPermission("moderator")){
                 plugin.vanishPlayer(player);
+                player.teleport(plugin.getSpawnLocation());
             } else {
                 player.kickPlayer(ChatColor.RED + "Spróbuj ponownie za chwilę...");
             }
@@ -71,14 +77,29 @@ public class PlayerJoinListener implements Listener {
                 p2.showPlayer(player);
             }
 
+            double elo = RankedHandler.getPlayerElo(player.getName());
+            int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
+            TextComponent shortRankDisplayName = (TextComponent) RankedHandler.getRankDisplayName(elo, gamesPlayed).decorate(TextDecoration.BOLD);
+
+            if (shortRankDisplayName.content().length() > 0) {
+                player.displayName(Component.text("[").color(TextColor.color(166,163,154))
+                        .append(
+                                shortRankDisplayName
+                                        .append(Component.text("] ").color(TextColor.color(166,163,154))
+                                                .append(Component.text(player.getName()).color(TextColor.color(255, 255, 255))))));
+            } else {
+                player.displayName(Component.text(player.getName()).color(TextColor.color(255, 255, 255)));
+            }
+
+
             if (!plugin.hasStarted && plugin.getMaxPlayers() > Bukkit.getOnlinePlayers().size()){
                 p = new Participant(player, plugin);
                 participants.add(p);
-                event.setJoinMessage(ChatColor.YELLOW + player.getName()
-                        + " dołączył (" + ChatColor.AQUA + participants.size()
+                event.joinMessage(player.displayName().append(Component.text(ChatColor.YELLOW + " dołączył (" + ChatColor.AQUA + participants.size()
                         + ChatColor.YELLOW + "/" + ChatColor.AQUA
                         + (plugin.getTEAMS_COUNT() * plugin.getTEAM_SIZE())
-                        + ChatColor.YELLOW + ").");
+                        + ChatColor.YELLOW + ").")));
+
                 player.setPlayerListName(player.getName());
                 player.getInventory().clear();
                 for (PotionEffect effect : player.getActivePotionEffects()) {
@@ -93,6 +114,7 @@ public class PlayerJoinListener implements Listener {
                 CustomSpectator.setSpectator(plugin, player);
             }
         }
+
 
     }
 }

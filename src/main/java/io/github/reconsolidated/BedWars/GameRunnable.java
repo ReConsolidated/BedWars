@@ -93,7 +93,7 @@ public class GameRunnable extends BukkitRunnable {
                         Team team = plugin.getTeams().get(j);
                         p.setTeam(team);
                         team.addMember(p);
-                        Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(p.getPlayer().getDisplayName());
+                        Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(p.getPlayer().getName());
 
                         for (String name : party.getMembers()) {
                             Player player = Bukkit.getPlayer(name);
@@ -106,7 +106,7 @@ public class GameRunnable extends BukkitRunnable {
                             }
                             m.setTeam(team);
                             team.addMember(m);
-                            Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(m.getPlayer().getDisplayName());
+                            Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(m.getPlayer().getName());
                         }
                         break;
                     }
@@ -125,7 +125,7 @@ public class GameRunnable extends BukkitRunnable {
                     }
                     p.setTeam(plugin.getTeams().get(minPlayersTeamID));
                     plugin.getTeams().get(minPlayersTeamID).addMember(p);
-                    Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + minPlayersTeamID).addEntry(p.getPlayer().getDisplayName());
+                    Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + minPlayersTeamID).addEntry(p.getPlayer().getName());
                 }
 
                 p.onStart();
