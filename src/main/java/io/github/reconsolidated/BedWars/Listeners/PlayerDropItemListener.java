@@ -24,6 +24,10 @@ public class PlayerDropItemListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (event.getPlayer().getLocation().getY() < 50) {
+            event.setCancelled(true);
+        }
+
         Participant p = plugin.getParticipant(event.getPlayer());
         if (isPickaxe(event.getItemDrop().getItemStack())
         || isAxe(event.getItemDrop().getItemStack())

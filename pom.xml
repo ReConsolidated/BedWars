@@ -121,6 +121,18 @@
             <version>1.08</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.leonardosnt</groupId>
+            <artifactId>bungeechannelapi</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.reconsolidated</groupId>
+            <artifactId>bedwarsguard</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
@@ -147,6 +159,12 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>io.github.leonardosnt.bungeechannelapi</pattern>
+                                    <shadedPattern>YOUR.PLUGIN.PACKAGE.libs.bungeechannelapi</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

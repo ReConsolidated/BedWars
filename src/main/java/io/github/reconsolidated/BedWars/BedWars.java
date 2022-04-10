@@ -2,6 +2,8 @@ package io.github.reconsolidated.BedWars;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
+import io.github.mikolajbartela.BedWarsGuard;
 import io.github.reconsolidated.BedWars.Chat.ChatMessageListener;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
@@ -15,26 +17,23 @@ import io.github.reconsolidated.jediscommunicator.JedisCommunicator;
 import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.chat.Chat;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.logging.log4j.util.IndexedReadOnlyStringMap;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import static io.github.reconsolidated.BedWars.CustomConfig.loadCustomConfig;
 import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
@@ -88,6 +87,10 @@ public class BedWars extends JavaPlugin implements Listener {
     public static Chat chat = null;
     private List<IronGolem> golems;
 
+    private BungeeChannelApi bungeeChannelApi;
+
+    public static BedWarsGuard guard;
+
     @Override
     public void onEnable() {
         if (!setupChat()) {
@@ -96,10 +99,17 @@ public class BedWars extends JavaPlugin implements Listener {
             return;
         }
 
+        guard = getServer().getServicesManager().load(BedWarsGuard.class);
+        if (guard == null) {
+            Bukkit.getServer().shutdown();
+            throw new RuntimeException("Couldn't load BedWarsWorldGuard plugin. Make sure it's added as a dependency.");
+        }
+
 
         new Commands(this);
         getServer().getPluginManager().registerEvents(this, this);
 
+        bungeeChannelApi = BungeeChannelApi.of(this);
         TEAMS_COUNT = getConfig().getInt("team_number");
         TEAM_SIZE = getConfig().getInt("team_size");
 
@@ -111,8 +121,6 @@ public class BedWars extends JavaPlugin implements Listener {
 
         new MakeArmorsInvisible(this).run();
         new StopSpectatorSounds(this).run();
-
-
 
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
@@ -330,11 +338,20 @@ public class BedWars extends JavaPlugin implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()){
+                    bungeeChannelApi.connect(player, "bedwars_l");
+                }
+            }
+        }.runTaskLater(this, 20*12);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()){
                     player.kickPlayer("Koniec gry");
                 }
                 setup();
             }
-        }.runTaskLater(this, 20*12);
+        }.runTaskLater(this, 20*16);
 
         Team winnerTeam = teams.get(0);
         for (Participant p : participants){

@@ -3,7 +3,7 @@ package io.github.reconsolidated.BedWars;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.material.Ladder;
+import org.bukkit.block.data.type.Ladder;
 import org.bukkit.util.Vector;
 
 public class PopupTower {
@@ -34,6 +34,12 @@ public class PopupTower {
         }
     }
 
+    private static void setTypeIfCanBuild(Location location, Material type) {
+        if (!BedWars.guard.isProtected(location)) {
+            location.getBlock().setType(type);
+        }
+    }
+
     private static void buildPopupTower(Location center, Vector direction, Material material){
         Vector forward = direction.clone();
         Vector left = rotateY(direction.clone());
@@ -47,203 +53,206 @@ public class PopupTower {
         pos.add(forward);
         for (int i = 0; i<4; i++){
 
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.add(left);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.subtract(forward);
             pos.add(left);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.subtract(forward);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.subtract(forward);
             pos.subtract(left);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.subtract(left);
             if (i>1){
-                center.getWorld().getBlockAt(pos).setType(material);
+                setTypeIfCanBuild(pos, material);
             }
             pos.subtract(left);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.subtract(left);
             pos.add(forward);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.add(forward);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
             pos.add(forward);
             pos.add(left);
-            center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
 
             pos.add(left);
             pos.add(new Vector(0, 1, 0));
         }
 
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
 
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
 
         pos.subtract(forward);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
         pos.add(forward);
         pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
         pos.subtract(forward);
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-
-        pos.add(new Vector(0, 1, 0));
-
-        pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(forward);
-        pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(left);
-        pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(forward);
-        pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
-        pos.add(left);
-        pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
 
         pos.add(new Vector(0, 1, 0));
 
-        center.getWorld().getBlockAt(pos).setType(material);
         pos.add(left);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
         pos.add(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
+            setTypeIfCanBuild(pos, material);
         pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
         pos.add(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
         pos.subtract(left);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
+            setTypeIfCanBuild(pos, material);
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
         pos.add(left);
         pos.subtract(forward);
-        center.getWorld().getBlockAt(pos).setType(material);
+            setTypeIfCanBuild(pos, material);
+
+        pos.add(new Vector(0, 1, 0));
+
+            setTypeIfCanBuild(pos, material);
+        pos.add(left);
+        pos.add(left);
+            setTypeIfCanBuild(pos, material);
+        pos.add(left);
+        pos.add(left);
+            setTypeIfCanBuild(pos, material);
+        pos.add(forward);
+        pos.add(left);
+            setTypeIfCanBuild(pos, material);
+        pos.add(forward);
+        pos.add(forward);
+        pos.add(forward);
+            setTypeIfCanBuild(pos, material);
+        pos.subtract(left);
+        pos.add(forward);
+            setTypeIfCanBuild(pos, material);
+        pos.subtract(left);
+        pos.subtract(left);
+            setTypeIfCanBuild(pos, material);
+        pos.subtract(left);
+        pos.subtract(left);
+            setTypeIfCanBuild(pos, material);
+        pos.subtract(forward);
+        pos.subtract(left);
+            setTypeIfCanBuild(pos, material);
+        pos.subtract(forward);
+        pos.subtract(forward);
+        pos.subtract(forward);
+            setTypeIfCanBuild(pos, material);
+        pos.add(left);
+        pos.subtract(forward);
+            setTypeIfCanBuild(pos, material);
 
         pos = center.clone();
         pos.add(forward);
         for (int i = 0; i<5; i++){
-            center.getWorld().getBlockAt(pos).setType(Material.LADDER);
-            Ladder ladder = (Ladder) center.getWorld().getBlockAt(pos);
-            if (forward.getX() == -1){
-                ladder.setFacingDirection(BlockFace.EAST);
-            }
-            if (forward.getX() == 1){
-                ladder.setFacingDirection(BlockFace.WEST);
-            }
-            if (forward.getZ() == -1){
-                ladder.setFacingDirection(BlockFace.SOUTH);
-            }
-            if (forward.getZ() == 1){
-                ladder.setFacingDirection(BlockFace.NORTH);
+            if (!BedWars.guard.isProtected(pos)) {
+                center.getWorld().getBlockAt(pos).setType(Material.LADDER);
+                Ladder ladder = (Ladder) center.getWorld().getBlockAt(pos).getBlockData();
+                if (forward.getX() == -1){
+                    ladder.setFacing(BlockFace.EAST);
+                }
+                if (forward.getX() == 1){
+                    ladder.setFacing(BlockFace.WEST);
+                }
+                if (forward.getZ() == -1){
+                    ladder.setFacing(BlockFace.SOUTH);
+                }
+                if (forward.getZ() == 1){
+                    ladder.setFacing(BlockFace.NORTH);
+                }
+                center.getWorld().getBlockAt(pos).setBlockData(ladder);
             }
             pos.add(new Vector(0, 1, 0));
         }

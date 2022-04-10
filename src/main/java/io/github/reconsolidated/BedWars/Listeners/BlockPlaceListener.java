@@ -64,7 +64,7 @@ public class BlockPlaceListener implements Listener {
                     new Location(player.getWorld(), x, event.getBlockPlaced().getLocation().getBlockY(), z),
                     EntityType.PRIMED_TNT);
             tnt.setVelocity(new Vector(0, 0.2, 0));
-            tnt.setFuseTicks(50);
+            tnt.setFuseTicks(60);
             tnt.setSource(player);
         }
 
