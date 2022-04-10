@@ -14,6 +14,7 @@ import io.github.reconsolidated.BedWars.PostgreDB.DatabaseConnector;
 import io.github.reconsolidated.BedWars.PostgreDB.DatabaseFunctions;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import io.github.reconsolidated.jediscommunicator.JedisCommunicator;
+import io.github.reconsolidated.visibleeffects.VisibleEffects;
 import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.chat.Chat;
@@ -90,6 +91,7 @@ public class BedWars extends JavaPlugin implements Listener {
     private BungeeChannelApi bungeeChannelApi;
 
     public static BedWarsGuard guard;
+    public static VisibleEffects vEffects;
 
     @Override
     public void onEnable() {
@@ -103,6 +105,12 @@ public class BedWars extends JavaPlugin implements Listener {
         if (guard == null) {
             Bukkit.getServer().shutdown();
             throw new RuntimeException("Couldn't load BedWarsWorldGuard plugin. Make sure it's added as a dependency.");
+        }
+
+        vEffects = getServer().getServicesManager().load(VisibleEffects.class);
+        if (vEffects == null) {
+            Bukkit.getServer().shutdown();
+            throw new RuntimeException("Couldn't load VisibleEffects plugin. Make sure it's added as a dependency.");
         }
 
 
@@ -253,6 +261,11 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public void onStart(){
+        List<Player> players = new ArrayList<>();
+        for (Participant p : participants) {
+            players.add(p.getPlayer());
+        }
+        vEffects.getCmdProvider().load(players);
         setOpen(false);
         if (!currentConfig.contains(currentWorldName + ".shop")){
             currentConfig.createSection(currentWorldName + ".shop");
@@ -566,8 +579,9 @@ public class BedWars extends JavaPlugin implements Listener {
         participants.add(p);
     }
 
-    public ItemStack getWoodenSword() {
+    public ItemStack getWoodenSword(Player player) {
         ItemStack item = new ItemStack(Material.WOODEN_SWORD);
+        vEffects.setModelData(player, item);
         return item;
     }
 
@@ -579,7 +593,7 @@ public class BedWars extends JavaPlugin implements Listener {
             }
         }
         if (swordsCount < 1){
-            player.getInventory().addItem(unbreakable(getWoodenSword()));
+            player.getInventory().addItem(unbreakable(getWoodenSword(player)));
         }
         if (swordsCount > 1){
             player.getInventory().remove(Material.WOODEN_SWORD);

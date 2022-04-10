@@ -134,6 +134,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.reconsolidated</groupId>
+            <artifactId>visibleeffects</artifactId>
+            <version>1.01</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

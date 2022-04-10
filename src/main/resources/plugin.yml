@@ -2,7 +2,7 @@ name: BedWars
 main: io.github.reconsolidated.BedWars.BedWars
 version: 1.0
 api-version: 1.18
-depend: [HolographicDisplays, BedWarsRegions]
+depend: [HolographicDisplays, BedWarsRegions, VisibleEffects]
 commands:
   bedwars:
     description: BedWars command;

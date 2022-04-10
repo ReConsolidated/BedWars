@@ -114,7 +114,7 @@ public class Participant {
 
         player.getInventory().setArmorContents(armor);
 
-        player.getInventory().addItem(unbreakable(plugin.getWoodenSword()));
+        player.getInventory().addItem(unbreakable(plugin.getWoodenSword(player)));
         player.getInventory().setItem(8, new ItemStack(Material.COMPASS));
 
     }
@@ -198,7 +198,7 @@ public class Participant {
         player.getInventory().clear();
         player.getInventory().setItem(8, new ItemStack(Material.COMPASS));
         player.getInventory().setArmorContents(armor);
-        player.getInventory().addItem(unbreakable(plugin.getWoodenSword()));
+        player.getInventory().addItem(unbreakable(plugin.getWoodenSword(player)));
         player.getInventory().addItem(unbreakable(getPickaxe()));
         player.getInventory().addItem(unbreakable(getAxe()));
         player.getInventory().addItem(unbreakable(getShears()));

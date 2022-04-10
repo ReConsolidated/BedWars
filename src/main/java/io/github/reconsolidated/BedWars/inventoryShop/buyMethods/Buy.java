@@ -148,7 +148,7 @@ public class Buy {
             if (item.getType().equals(Material.STONE_SWORD)
                     || item.getType().equals(Material.IRON_SWORD)
                     || item.getType().equals(Material.DIAMOND_SWORD)){
-                charge(player, plugin.getWoodenSword());
+                charge(player, plugin.getWoodenSword(player));
                 player.getInventory().addItem(unbreakable(newItem));
                 p.getTeam().updateEnchants();
                 return;
