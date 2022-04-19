@@ -25,7 +25,8 @@ public class DragonRunnable extends BukkitRunnable {
         if (!dragon.getLocation().getChunk().isLoaded()){
             dragon.getLocation().getChunk().load();
         }
-        if (destination == null || dragon.getLocation().distanceSquared(destination) < 3){
+        if (destination == null || (dragon.getLocation().getWorld().equals(destination.getWorld())
+                && dragon.getLocation().distanceSquared(destination) < 3)){
             for (Participant p : plugin.getParticipants()){
                 if (p.getTeam().ID == teamID) continue;
                 Random random = new Random();

@@ -26,6 +26,10 @@ public class LimitItemPickup implements Listener {
             return;
         }
         Player player = (Player) event.getEntity();
+        if (PlayerMoveListener.isAfk(player)) {
+            event.setCancelled(true);
+            return;
+        }
         if (playersOnCooldown.contains(player.getUniqueId())){
             event.setCancelled(true);
             if ((new Random()).nextBoolean()){

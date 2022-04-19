@@ -4,6 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import io.github.reconsolidated.BedWars.BedWars;
+import io.github.reconsolidated.BedWars.Listeners.PlayerMoveListener;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -58,7 +59,7 @@ public class ItemSpawner {
             hologram.appendTextLine(color + itemName);
             counterTextLine = hologram.appendTextLine(ChatColor.YELLOW + "Pojawi się za: " + ChatColor.RED + (int)(period/20));
             hologram.appendTextLine("");
-            hologram.appendItemLine(floatingItem); // TODO zamienić na latający item (na hypixelu są one większe)
+            hologram.appendItemLine(floatingItem);
         }
 
 
@@ -115,10 +116,11 @@ public class ItemSpawner {
                     for (Entity e : location.getWorld().getNearbyEntities(location, 2, 5, 2)){
                         if (e instanceof Player){
                             Player player = (Player) e;
-                            if (player.getGameMode().equals(GameMode.SURVIVAL)){
-                                playersNearby.add((Player) e);
+                            if (!PlayerMoveListener.isAfk(player)) {
+                                if (player.getGameMode().equals(GameMode.SURVIVAL)){
+                                    playersNearby.add((Player) e);
+                                }
                             }
-
                         }
                     }
                     if (playersNearby.size() == 0
@@ -131,8 +133,10 @@ public class ItemSpawner {
                     else {
                         // if there are players nearby put items in their eq instead of dropping
                         for (Player player : playersNearby){
-                            player.getInventory().addItem(item);
-                            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2, 0);
+                            if (!PlayerMoveListener.isAfk(player)) {
+                                player.getInventory().addItem(item);
+                                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0);
+                            }
                         }
                         // set counter to a negative value, so that it takes  longer to regenerate
                         // after it gave away more items than it should have

@@ -31,10 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static io.github.reconsolidated.BedWars.CustomConfig.loadCustomConfig;
 import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
@@ -180,6 +177,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().setWhitelist(true);
         getServer().setWhitelistEnforced(true);
         getServer().reloadWhitelist();
+        PlayerMoveListener.lastMove = new HashMap<>();
 
         HologramsAPI.getHolograms(this).forEach(Hologram::delete);
 
