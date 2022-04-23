@@ -61,8 +61,6 @@ public class ItemSpawner {
             hologram.appendTextLine("");
             hologram.appendItemLine(floatingItem);
         }
-
-
     }
 
     public int getBasePeriod(){

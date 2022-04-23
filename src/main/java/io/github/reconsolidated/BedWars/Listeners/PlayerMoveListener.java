@@ -35,6 +35,6 @@ public class PlayerMoveListener implements Listener {
         if (time == null) {
             time = 0L;
         }
-        return time > System.currentTimeMillis() - 5000;
+        return time < System.currentTimeMillis() - 5000;
     }
 }
