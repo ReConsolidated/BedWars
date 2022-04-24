@@ -1,0 +1,62 @@
+name: BedWars
+main: io.github.reconsolidated.BedWars.BedWars
+version: 1.0
+api-version: 1.16
+depend: [HolographicDisplays]
+commands:
+  helpbedwars:
+    description: BedWars help command.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  bdstart:
+    description: Start arena.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  bdstop:
+    description: Stop arena.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  itemspawner:
+    description: Create an item spawner.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  newspawn:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  setspawn:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  setbed:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  newshop1:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  newshop2:
+    description: Set second spawn point and add the two spawn points to spawns.
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  release:
+    description: Go spectator
+    permission: BedWars.admin
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  team:
+    description: Przełącz na czat drużynowy.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  d:
+    description: Przełącz na czat drużynowy.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  all:
+    description: Przełącz na czat ogólny.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
+  w:
+    description: Przełącz na czat ogólny.
+    permission: BedWars.player
+    permission-message: Nie posiadasz uprawnień do tej komendy.
