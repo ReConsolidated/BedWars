@@ -253,6 +253,10 @@ public class Team {
             }
         }, 5L);
         onBedDestroy();
+
+        for (Participant member : members) {
+            member.setLost(true);
+        }
     }
 
     public int getBedsDestroyed() {
@@ -269,5 +273,16 @@ public class Team {
             kills += p.getFinalKills();
         }
         return kills;
+    }
+
+    public boolean isPlaying() {
+        boolean isPlaying = false;
+        for (Participant m : members){
+            if (!m.hasLost() && m.getPlayer().isOnline()){
+                isPlaying = true;
+                break;
+            }
+        }
+        return isPlaying;
     }
 }

@@ -25,7 +25,7 @@ public class PlayerMoveListener implements Listener {
 
         if (event.getPlayer().getLocation().getBlockY() < 0){
             Participant p = plugin.getParticipant(event.getPlayer());
-            if (p == null) return;
+            if (p == null || p.isSpectating()) return;
             p.onDeath();
         }
     }

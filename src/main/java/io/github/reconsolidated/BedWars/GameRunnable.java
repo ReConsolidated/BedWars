@@ -44,18 +44,12 @@ public class GameRunnable extends BukkitRunnable {
         this.spawners = plugin.getSpawners();
         teamsPlaying = 0;
         for (Team t : plugin.getTeams()){
-            boolean isPlaying = false;
-            for (Participant m : t.members){
-                if (!m.hasLost() && m.getPlayer().isOnline()){
-                    isPlaying = true;
-                    break;
-                }
-            }
-            if (isPlaying){
+            if (t.isPlaying()){
                 teamsPlaying++;
             }
-            if (counter > 5 && !isPlaying){
+            if (counter > 5 && !t.isPlaying()){
                 t.destroyBed();
+
             }
         }
 

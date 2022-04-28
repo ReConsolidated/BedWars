@@ -58,14 +58,17 @@ public class BridgeEggRunnable extends BukkitRunnable {
                 lastLocation.getWorld().playSound(lastLocation, Sound.ENTITY_CHICKEN_EGG, 3, 1);
                 Material mat = Material.getMaterial(color + "_WOOL");
                 lastLocation.getBlock().setType(mat);
-                if (lastLocation.clone().add(1, 0, 0).getBlock().getType().equals(Material.AIR)){
-                    lastLocation.clone().add(1, 0, 0).getBlock().setType(mat);
+                Location loc = lastLocation.clone().add(1, 0, 0);
+                if (loc.getBlock().getType().equals(Material.AIR) && !BedWars.guard.isProtected(loc)){
+                    loc.getBlock().setType(mat);
                 }
-                if (lastLocation.clone().add(0, 0, 1).getBlock().getType().equals(Material.AIR)){
-                    lastLocation.clone().add(0, 0, 1).getBlock().setType(mat);
+                loc = lastLocation.clone().add(0, 0, 1);
+                if (loc.getBlock().getType().equals(Material.AIR) && !BedWars.guard.isProtected(loc)){
+                    loc.getBlock().setType(mat);
                 }
-                if (lastLocation.clone().add(1, 0, 1).getBlock().getType().equals(Material.AIR)){
-                    lastLocation.clone().add(1, 0, 1).getBlock().setType(mat);
+                loc = lastLocation.clone().add(1, 0, 1);
+                if (loc.getBlock().getType().equals(Material.AIR) && !BedWars.guard.isProtected(loc)){
+                    loc.getBlock().setType(mat);
                 }
             }
         }

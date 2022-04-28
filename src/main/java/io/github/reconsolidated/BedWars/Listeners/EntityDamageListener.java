@@ -21,7 +21,7 @@ public class EntityDamageListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event){
         if (event.getEntity() instanceof Villager || event.getEntity() instanceof Zombie){
             event.setCancelled(true);

@@ -120,6 +120,7 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(23, CustomItemStack.createCustomItemStack(Material.LADDER, 16, Material.IRON_INGOT, 4, "", new ArrayList<>(), player));
                 this.inv.setItem(24, CustomItemStack.createCustomItemStack(Material.OAK_PLANKS, 16, Material.GOLD_INGOT, 4, "", new ArrayList<>(), player));
                 this.inv.setItem(25, CustomItemStack.createCustomItemStack(Material.OBSIDIAN, 4, Material.EMERALD, 4, "", new ArrayList<>(), player));
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
             }
             case "melee" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.STONE_SWORD, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
@@ -128,16 +129,22 @@ public class VillagerMenu implements Listener {
                 ItemStack item = CustomItemStack.createCustomItemStack(Material.STICK, 1, Material.GOLD_INGOT, 5, "", new ArrayList<>(), player);
                 item.addUnsafeEnchantment(Enchantment.KNOCKBACK, 1);
                 this.inv.setItem(22, item);
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
+
             }
             case "armor" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "", new ArrayList<>(), player));
                 this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.IRON_BOOTS, 1, Material.GOLD_INGOT, 12, "", new ArrayList<>(), player));
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.DIAMOND_BOOTS, 1, Material.EMERALD, 6, "", new ArrayList<>(), player));
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
+
             }
             case "tools" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.SHEARS, 1, Material.IRON_INGOT, 20, "", new ArrayList<>(), player));
                 this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.WOODEN_PICKAXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.WOODEN_AXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
+
             }
             case "ranged" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.ARROW, 8, Material.GOLD_INGOT, 2, "", new ArrayList<>(), player));
@@ -149,11 +156,15 @@ public class VillagerMenu implements Listener {
                 item2.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
                 item2.addUnsafeEnchantment(Enchantment.ARROW_KNOCKBACK, 1);
                 this.inv.setItem(22, item2);
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
+
             }
             case "potions" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomPotion(PotionType.SPEED, 1, Material.EMERALD, 1, "", player));
                 this.inv.setItem(20, CustomItemStack.createCustomPotion(PotionType.JUMP, 1, Material.EMERALD, 1, "", player));
                 this.inv.setItem(21, CustomItemStack.createCustomPotion(PotionType.INVISIBILITY, 1, Material.EMERALD, 2, "", player));
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
+
             }
             case "utility" -> {
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.GOLDEN_APPLE, 1, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
@@ -167,6 +178,8 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(29, CustomItemStack.createCustomItemStack(Material.MILK_BUCKET, 1, Material.GOLD_INGOT, 4, "", new ArrayList<>(), player));
                 this.inv.setItem(30, CustomItemStack.createCustomItemStack(Material.SPONGE, 4, Material.GOLD_INGOT, 3, "", new ArrayList<>(), player));
                 this.inv.setItem(31, CustomItemStack.createCustomItemStack(Material.CHEST, 1, Material.IRON_INGOT, 24, "", new ArrayList<>(), player));
+                this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));
+
             }
         }
         fillEmptySpace();

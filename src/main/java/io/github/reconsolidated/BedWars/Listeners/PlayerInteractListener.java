@@ -73,7 +73,16 @@ public class PlayerInteractListener implements Listener {
                 && event.getClickedBlock() != null
                 && event.getClickedBlock().getState() instanceof Chest){
             int closestTeamID = getClosestTeamID(event.getClickedBlock().getLocation());
-            if (closestTeamID != p.getTeam().ID){
+
+            boolean canBeOpenedByAnyone = false;
+            for (Team t : plugin.getTeams()) {
+                if (t.ID == closestTeamID) {
+                    if (!t.isPlaying()) {
+                        canBeOpenedByAnyone = true;
+                    }
+                }
+            }
+            if (!canBeOpenedByAnyone && closestTeamID != p.getTeam().ID){
                 event.setCancelled(true);
             }
         }

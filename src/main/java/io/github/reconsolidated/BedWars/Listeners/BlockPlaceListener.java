@@ -3,6 +3,7 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.PopupTower;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -43,8 +44,15 @@ public class BlockPlaceListener implements Listener {
             return;
 
         if (event.getBlockPlaced().getType().equals(Material.WATER)){
+
             if (event.getBlockPlaced().getLocation().distance(p.getTeam().getBedLocation()) > 30){
                 p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz wylać wody tak daleko od bazy.");
+                event.setBuild(false);
+                event.setCancelled(true);
+                return;
+            }
+            if (BedWars.guard.isProtected(event.getBlockPlaced().getLocation())) {
+                p.getPlayer().sendMessage(ChatColor.RED + "Nie możesz tego tu postawić!");
                 event.setBuild(false);
                 event.setCancelled(true);
                 return;
@@ -63,8 +71,12 @@ public class BlockPlaceListener implements Listener {
             TNTPrimed tnt = (TNTPrimed) player.getWorld().spawnEntity(
                     new Location(player.getWorld(), x, event.getBlockPlaced().getLocation().getBlockY(), z),
                     EntityType.PRIMED_TNT);
-            tnt.setVelocity(new Vector(0, 0.2, 0));
+            tnt.setVelocity(new Vector(0, 0.3, 0));
             tnt.setFuseTicks(60);
+            Location location = player.getLocation().clone();
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                player.getWorld().createExplosion(location, 2);
+            }, 60L);
             tnt.setSource(player);
         }
 
@@ -79,6 +91,8 @@ public class BlockPlaceListener implements Listener {
 
         }
     }
+
+
 
     private static void removeItemFromInventory(Player player, ItemStack cost) {
         int amount = cost.getAmount();

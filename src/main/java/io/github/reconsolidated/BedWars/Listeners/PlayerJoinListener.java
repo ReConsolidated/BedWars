@@ -33,6 +33,7 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
 
+        player.setMaximumNoDamageTicks(20);
         List<Participant> participants = plugin.getParticipants();
         if (plugin.hasStarted){
             event.setJoinMessage(null);

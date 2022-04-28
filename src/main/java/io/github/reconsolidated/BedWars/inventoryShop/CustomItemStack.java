@@ -38,7 +38,10 @@ public class CustomItemStack {
     public static ItemStack createCustomItemStack(Material material, int amount, Material costMaterial, int cost, String category, List<String> lore, Player player){
         ItemStack itemStack = new ItemStack(material, amount);
 
-        BedWars.vEffects.setModelData(player, itemStack);
+        if (player != null) {
+            BedWars.vEffects.setModelData(player, itemStack);
+        }
+
         changeSwordDamage(itemStack);
 
 

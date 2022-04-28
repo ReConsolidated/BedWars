@@ -1,5 +1,6 @@
 package io.github.reconsolidated.BedWars;
 
+import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
@@ -29,6 +30,12 @@ public class IronGolemRunnable extends BukkitRunnable {
 
         for (Entity e : golem.getNearbyEntities(15, 6, 15)) {
             if (e instanceof Player || e instanceof IronGolem) {
+                if (e instanceof Player) {
+                    Player player = (Player) e;
+                    if (player.getGameMode() != GameMode.SURVIVAL) {
+                        continue;
+                    }
+                }
                 int otherTeam = getTeam(plugin, e);
                 if (golemTeam != otherTeam) {
                     double distanceSq = golem.getLocation().distanceSquared(e.getLocation());

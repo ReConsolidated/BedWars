@@ -124,12 +124,18 @@ public class Participant {
         deaths++;
         isDead = true;
         player.teleport(player.getWorld().getSpawnLocation());
+        player.setAbsorptionAmount(0);
+        if (player.getItemOnCursor() != null) {
+            player.setItemOnCursor(new ItemStack(Material.AIR));
+        }
+
 
         if (getLastHitBy() != null){
             if (!team.isBedAlive()){
                 getLastHitBy().setFinalKills(getLastHitBy().getFinalKills()+1);
             }
             getLastHitBy().setKills(getLastHitBy().getKills() + 1);
+
             for (ItemStack item : player.getInventory().getContents()){
                 if (item == null) continue;
                 if (item.getType().equals(Material.IRON_INGOT)
@@ -198,7 +204,7 @@ public class Participant {
         player.getInventory().clear();
         player.getInventory().setItem(8, new ItemStack(Material.COMPASS));
         player.getInventory().setArmorContents(armor);
-        player.getInventory().addItem(unbreakable(plugin.getWoodenSword(player)));
+        player.getInventory().addItem(enchantedSword(unbreakable(plugin.getWoodenSword(player))));
         player.getInventory().addItem(unbreakable(getPickaxe()));
         player.getInventory().addItem(unbreakable(getAxe()));
         player.getInventory().addItem(unbreakable(getShears()));
@@ -213,6 +219,13 @@ public class Participant {
         isDead = false;
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.setFireTicks(0), 2L);
+    }
+
+    private ItemStack enchantedSword(ItemStack sword) {
+        if (team.sharpLevel > 0) {
+            sword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
+        }
+        return sword;
     }
 
 
@@ -521,5 +534,9 @@ public class Participant {
 
     public void setPlace(int i) {
         place = i;
+    }
+
+    public void setLost(boolean value) {
+        hasLost = value;
     }
 }

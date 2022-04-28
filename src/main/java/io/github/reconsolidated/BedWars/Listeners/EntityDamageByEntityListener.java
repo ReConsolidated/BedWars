@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -22,7 +23,7 @@ public class EntityDamageByEntityListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
         if (event.getEntity() instanceof Player ){
             Participant p1 = plugin.getParticipant((Player) event.getEntity());
@@ -67,7 +68,7 @@ public class EntityDamageByEntityListener implements Listener {
             }
 
             if (event.getDamager() instanceof TNTPrimed){
-                event.setDamage(4);
+                event.setDamage(2);
             }
 
             if (event.getDamager() instanceof IronGolem){

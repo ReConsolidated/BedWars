@@ -116,6 +116,6 @@
     <orderEntry type="library" name="Maven: io.github.reconsolidated:jediscommunicator:1.08" level="project" />
     <orderEntry type="library" name="Maven: io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.github.reconsolidated:bedwarsguard:1.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.github.reconsolidated:visibleeffects:1.03" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.github.reconsolidated:visibleeffects:1.10" level="project" />
   </component>
 </module>

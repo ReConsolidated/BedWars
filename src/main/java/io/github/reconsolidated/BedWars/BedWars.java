@@ -140,7 +140,6 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new EntityTargetListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityPickupItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new EntityExplodeListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockDropItemListener(), this);
@@ -371,6 +370,12 @@ public class BedWars extends JavaPlugin implements Listener {
                 winnerTeam = p.getTeam();
             }
         }
+        for (Participant p : inactiveParticipants) {
+            if (!p.hasLost()){
+                winnerTeam = p.getTeam();
+            }
+        }
+
         for (Participant p : inactiveParticipants){
             handleParticipant(p);
         }
@@ -379,10 +384,10 @@ public class BedWars extends JavaPlugin implements Listener {
 
             if (!p.hasLost()){
                 p.setPlace(1);
-                p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", "", 5, 100, 5);
+                p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", " ", 5, 100, 5);
             }
             else{
-                p.getPlayer().sendTitle("", ChatColor.GOLD + "Wygrała drużyna " + winnerTeam.getChatColor() + winnerTeam.getName(), 5, 100, 5);
+                p.getPlayer().sendTitle(" ", ChatColor.GOLD + "Wygrała drużyna " + winnerTeam.getChatColor() + winnerTeam.getName(), 5, 100, 5);
             }
             CustomSpectator.setSpectator(this, p.getPlayer());
         }
