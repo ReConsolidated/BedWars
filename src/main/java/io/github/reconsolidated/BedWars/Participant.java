@@ -299,7 +299,7 @@ public class Participant {
             }
             case 6 -> {
                 color = Color.PURPLE;
-                return "LIGHT_PURPLE";
+                return "PURPLE";
             }
             case 7 -> {
                 color = Color.WHITE;

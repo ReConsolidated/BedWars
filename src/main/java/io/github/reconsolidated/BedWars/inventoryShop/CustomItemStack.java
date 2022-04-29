@@ -36,6 +36,7 @@ public class CustomItemStack {
     private static YamlConfiguration categoryNamesConfig;
 
     public static ItemStack createCustomItemStack(Material material, int amount, Material costMaterial, int cost, String category, List<String> lore, Player player){
+
         ItemStack itemStack = new ItemStack(material, amount);
 
         if (player != null) {
