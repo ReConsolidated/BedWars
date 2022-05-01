@@ -42,6 +42,12 @@ public class BlockBreakListener implements Listener {
                         p.setBedsDestroyed(p.getBedsDestroyed() + 1);
                         teams.get(i).onBedDestroy();
                         Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Zniszczono łóżko drużyny: " + teams.get(i).getChatColor() + teams.get(i).getName());
+
+                        for (Participant o : plugin.getParticipants()) {
+                            if (o.getTeam().ID != i) {
+                                o.getPlayer().playSound(o.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 3, 1);
+                            }
+                        }
                         for (Participant m : teams.get(i).members) {
                             m.getPlayer().playSound(m.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 7, 1);
                             m.getPlayer().sendMessage(ChatColor.RED + "Twoje łóżko zostało zniszczone i już się nie odrodzisz.");

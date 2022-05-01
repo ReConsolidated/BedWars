@@ -255,7 +255,7 @@ public class Team {
         onBedDestroy();
 
         for (Participant member : members) {
-            member.setLost(true);
+            member.setLostBed(true);
         }
     }
 

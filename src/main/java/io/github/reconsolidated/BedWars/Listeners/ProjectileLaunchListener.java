@@ -3,20 +3,13 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.BridgeEggRunnable;
 import io.github.reconsolidated.BedWars.Participant;
-import io.github.reconsolidated.BedWars.ScoreScoreboard;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Silverfish;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
 
 public class ProjectileLaunchListener implements Listener {
     private BedWars plugin;

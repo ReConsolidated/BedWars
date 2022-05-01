@@ -2,16 +2,17 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
+import io.github.reconsolidated.BedWars.Scoreboards.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.title.Title;
-import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +41,7 @@ public class Participant {
     @Setter
     private int bedsDestroyed = 0;
 
+    @Getter
     private int deaths = 0;
 
     @Getter
@@ -52,11 +54,13 @@ public class Participant {
     @Getter
     private Integer gameLoseTime = 0;
 
+    private boolean hasLost = false;
+
     @Getter
     @Setter
     private ScoreScoreboard scoreboard;
     private final BedWars plugin;
-    private boolean hasLost = false;
+    private boolean hasLostBed = false;
     private int trapInvincibilityTime = 0;
     private int pickaxeLevel = 0;
     private int axeLevel = 0;
@@ -75,20 +79,13 @@ public class Participant {
 
     // onStart() initializes the player, teleports him to his bed and sets his inventory
     public void onStart(){
-        player.setPlayerListName(getChatColor() + player.getName() + ChatColor.WHITE);
-
         double elo = RankedHandler.getPlayerElo(player.getName());
         int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
-        TextComponent shortRankDisplayName = RankedHandler.getRankDisplayName(elo, gamesPlayed);
-        if (shortRankDisplayName.content().length() > 0) {
-            player.displayName(Component.text("[").color(TextColor.color(166,163,154))
-                    .append(
-                            shortRankDisplayName
-                                    .append(Component.text("] ").color(TextColor.color(166,163,154))
-                                            .append(Component.text(team.getChatColor() + player.getName())))));
-        } else {
-            player.displayName(Component.text(player.getName()).color(TextColor.color(255, 255, 255)));
-        }
+
+
+        player.playerListName(RankedHandler.getRankPrefix(elo, gamesPlayed).append(Component.text(getChatColor() + player.getName() + ChatColor.WHITE)));
+        player.displayName(RankedHandler.getRankPrefix(elo, gamesPlayed)
+                .append(Component.text(team.getChatColor() + player.getName())));
 
 
         player.teleport(team.getSpawnLocation());
@@ -177,7 +174,8 @@ public class Participant {
             new RespawnRunnable(plugin, 5, this).runTaskTimer(plugin, 0L, 20L);
         }
         else{
-            place = plugin.getTeamsLeft();
+            setPlace(plugin.getTeamsLeft());
+            Bukkit.broadcastMessage("Miejsce " + player.getName() + ": " + getPlace());
             hasLost = true;
             onGameEnd();
         }
@@ -244,12 +242,7 @@ public class Participant {
     public void setLastHitBy(Participant p){
         lastHitBy = p;
         BukkitScheduler scheduler = Bukkit.getScheduler();
-        scheduler.scheduleSyncDelayedTask(plugin, new Runnable(){
-            @Override
-            public void run(){
-                lastHitBy = null;
-            }
-        }, 8 * 20L);
+        scheduler.scheduleSyncDelayedTask(plugin, () -> lastHitBy = null, 8 * 20L);
     }
 
     // When player has lost the game, but he can still spectate
@@ -495,10 +488,15 @@ public class Participant {
         return isDead;
     }
 
+    public boolean hasLostBed(){
+        return hasLostBed;
+    }
+
     // Returns true if the player is dead and will not respawn (has lost the game completely).
-    public boolean hasLost(){
+    public boolean hasLost() {
         return hasLost;
     }
+
 
     // Trap invincibility can be obtained by drinking milk
     public boolean isTrapInvincible(){
@@ -533,10 +531,15 @@ public class Participant {
 
 
     public void setPlace(int i) {
+        Bukkit.getLogger().info("Setting player" + player.getName() + " place to: " + i);
         place = i;
     }
 
-    public void setLost(boolean value) {
-        hasLost = value;
+    public void setLostBed(boolean value) {
+        hasLostBed = value;
+    }
+
+    public void setLost(boolean b) {
+        hasLost = b;
     }
 }

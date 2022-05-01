@@ -1,10 +1,20 @@
-package io.github.reconsolidated.BedWars;
+package io.github.reconsolidated.BedWars.Scoreboards;
 
+import io.github.reconsolidated.BedWars.BedWars;
+import io.github.reconsolidated.BedWars.CountdownRunnable;
+import io.github.reconsolidated.BedWars.Participant;
+import io.github.reconsolidated.BedWars.RankedHandler;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 
@@ -12,8 +22,9 @@ import org.bukkit.scoreboard.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.UUID;
 
-public class ScoreScoreboard extends BukkitRunnable {
+public class ScoreScoreboard extends BukkitRunnable implements Listener {
     public Objective objective;
     private ArrayList<Team> teams;
     private ScoreboardManager manager;
@@ -37,7 +48,7 @@ public class ScoreScoreboard extends BukkitRunnable {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         scoreboard.getObjective("Druzyny").setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "BEDWARS");
-        Score funFactScore = scoreboard.getObjective("Druzyny").getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "Grypciocraft.pl");
+        Score funFactScore = scoreboard.getObjective("Druzyny").getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "GRPMC.PL");
         funFactScore.setScore(12);
         Score spaceScore = scoreboard.getObjective("Druzyny").getScore("    ");
         spaceScore.setScore(11);
@@ -53,22 +64,33 @@ public class ScoreScoreboard extends BukkitRunnable {
 
 
         // CREATING SCOREBOARD TEAMS
-        org.bukkit.scoreboard.Team scoreboardTeam = scoreboard.registerNewTeam("ALL_PLAYERS");
-        for (Player bukkitPlayer : Bukkit.getOnlinePlayers()){
-            scoreboardTeam.addEntry(bukkitPlayer.getName());
+
+        for (Player p2 : Bukkit.getOnlinePlayers()) {
+            assignPlayerTeam(scoreboard, p2);
         }
-        scoreboardTeam.setCanSeeFriendlyInvisibles(false);
-        scoreboardTeam.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
-                org.bukkit.scoreboard.Team.OptionStatus.NEVER);
-
-
 
         new CountdownRunnable(plugin, this).runTaskTimer(plugin, 0L, 20L);
 
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public void registerPlayer(Player player){
         player.setScoreboard(scoreboard);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> assignPlayerTeam(scoreboard, event.getPlayer()), 20L);
+    }
+
+    private void assignPlayerTeam(Scoreboard scoreboard, Player player) {
+        org.bukkit.scoreboard.Team t = scoreboard.registerNewTeam(player.getName());
+        double elo = RankedHandler.getPlayerElo(player.getName());
+        int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
+        t.prefix(RankedHandler.getRankPrefix(elo, gamesPlayed));
+        t.addPlayer(player);
+        t.setCanSeeFriendlyInvisibles(false);
+        t.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, org.bukkit.scoreboard.Team.OptionStatus.NEVER);
     }
 
 

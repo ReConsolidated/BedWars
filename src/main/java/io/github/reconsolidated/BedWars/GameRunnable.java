@@ -3,6 +3,7 @@ package io.github.reconsolidated.BedWars;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
 import io.github.reconsolidated.BedWars.Party.PartyDomain;
+import io.github.reconsolidated.BedWars.Scoreboards.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import lombok.Getter;
 import org.bukkit.*;
@@ -42,14 +43,23 @@ public class GameRunnable extends BukkitRunnable {
 
         this.participants = plugin.getParticipants();
         this.spawners = plugin.getSpawners();
+
         teamsPlaying = 0;
-        for (Team t : plugin.getTeams()){
+        for (Team t : plugin.getTeams()) {
             if (t.isPlaying()){
                 teamsPlaying++;
             }
+        }
+
+        for (Team t : plugin.getTeams()){
             if (counter > 5 && !t.isPlaying()){
                 t.destroyBed();
-
+                for (Participant m : t.members) {
+                    if (!m.hasLost()) {
+                        m.setLost(true);
+                        m.setPlace(teamsPlaying);
+                    }
+                }
             }
         }
 

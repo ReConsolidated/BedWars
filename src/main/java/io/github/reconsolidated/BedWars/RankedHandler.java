@@ -4,7 +4,9 @@ import io.github.reconsolidated.BedWars.PostgreDB.DatabaseConnector;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 public class RankedHandler {
+    private final static Map<String, Double> playerElo = new HashMap<>();
+    private final static Map<String, Integer> playerGamesPlayed = new HashMap<>();
+
+    public static void onSetup() {
+        playerElo.clear();
+        playerGamesPlayed.clear();
+    }
+
     public static void handleRanked(BedWars plugin) throws Exception {
         List<Participant> participants = (List<Participant>) plugin.getParticipants().clone();
         participants.addAll(plugin.getInactiveParticipants());
@@ -41,7 +51,6 @@ public class RankedHandler {
                 throw new Exception("Couldn't connect to database, can't calculate ranked match outcome");
             }
             gamesPlayed.put(p, games);
-            setPlayerGamesPlayed(p.getPlayer().getName(), games+1);
         }
 
 
@@ -51,7 +60,8 @@ public class RankedHandler {
             double elo = participantsElo.get(p);
 
             int place = p.getPlace();
-            int teamsNumber = plugin.getTEAMS_COUNT();
+            int teamsNumber = BedWars.getInstance().getPlayersOnStart()/BedWars.getInstance().getTEAM_SIZE();
+
 
             double baseValue = getBaseValue(place, teamsNumber);
             double teamBeds = p.getTeam().getBedsDestroyed();
@@ -71,6 +81,7 @@ public class RankedHandler {
 
             elo += eloGain;
             setPlayerElo(p.getPlayer().getName(), elo);
+            setStatsPostMatch(p.getPlayer().getName(), p.getPlace(), p.getFinalKills(), p.getDeaths(), p.getKills(), p.getBedsDestroyed());
 
             Bukkit.getLogger().info("Gracz: " + p.getPlayer().getName());
             Bukkit.getLogger().info("baseValue: " + baseValue);
@@ -84,7 +95,9 @@ public class RankedHandler {
             Bukkit.getLogger().info("averageElo: " + averageElo);
             Bukkit.getLogger().info("elo: " + elo);
 
+            Bukkit.getLogger().info("Stare ELO gracza: " + p.getPlayer().getName() + ": " + (elo-eloGain));
             Bukkit.getLogger().info("Nowe ELO gracza: " + p.getPlayer().getName() + ": " + elo);
+            p.getPlayer().sendMessage(p.getPlayer().getName(), "Twoje stare ELO: " + (elo-eloGain));
             p.getPlayer().sendMessage(p.getPlayer().getName(), "Twoje nowe ELO: " + elo);
             plugin.getCommunicator().sendNotification(p.getPlayer().getName(), "Twoje nowe ELO: " + elo);
         }
@@ -117,6 +130,8 @@ public class RankedHandler {
     }
 
     private static void setPlayerGamesPlayed(String name, int games) {
+        playerGamesPlayed.put(name, games);
+
         if (DatabaseConnector.getSql() == null) {
             Bukkit.getLogger().warning("Database is not connected.");
             return;
@@ -126,11 +141,11 @@ public class RankedHandler {
             Statement statement = DatabaseConnector.getSql().createStatement();
 
             String sql = "UPDATE bedwars_ranked SET games_played=" + games
-                    + " WHERE playername='" + name + "';";
+                    + " WHERE player_name='" + name + "' AND queue_name='" + BedWars.getInstance().getQueueName() + "';";
             statement.executeUpdate(sql);
 
-            sql = "INSERT INTO bedwars_ranked (playername, games_played) VALUES  ('" + name + "', '" + games + "')" +
-                    "ON CONFLICT DO NOTHING;";
+            sql = "INSERT INTO bedwars_ranked (player_name, queue_name, games_played) VALUES  ('%s', '%s', %d) ON CONFLICT DO NOTHING;"
+                    .formatted(name, BedWars.getInstance().getQueueName(), games);
 
             statement.executeUpdate(sql);
             statement.close();
@@ -140,6 +155,11 @@ public class RankedHandler {
     }
 
     public static int getPlayerGamesPlayed(String name) {
+        if (playerGamesPlayed.containsKey(name)) {
+            return playerGamesPlayed.get(name);
+        }
+
+
         if (DatabaseConnector.getSql() == null) {
             Bukkit.getLogger().warning("Database is not connected.");
             return -1;
@@ -148,12 +168,14 @@ public class RankedHandler {
         try {
             Statement statement = DatabaseConnector.getSql().createStatement();
 
-            String sql = "SELECT * FROM bedwars_ranked " +
-                    "WHERE playername='" + name + "';";
+            String sql = "SELECT games_played FROM bedwars_ranked " +
+                    "WHERE player_name='%s' AND queue_name='%s';".formatted(name, BedWars.getInstance().getQueueName());
             statement.executeQuery(sql);
             ResultSet result = statement.getResultSet();
             if (result.next()) {
-                return result.getInt("games_played");
+                int gamesPlayed = result.getInt("games_played");
+                playerGamesPlayed.put(name, gamesPlayed);
+                return gamesPlayed;
             }
             return 0;
         } catch (SQLException throwables) {
@@ -164,6 +186,10 @@ public class RankedHandler {
 
 
     public static double getPlayerElo(String playerName) {
+        if (playerElo.containsKey(playerName)) {
+            return playerElo.get(playerName);
+        }
+
         if (DatabaseConnector.getSql() == null) {
             Bukkit.getLogger().warning("Database is not connected.");
             return 0;
@@ -172,12 +198,14 @@ public class RankedHandler {
         try {
             Statement statement = DatabaseConnector.getSql().createStatement();
 
-            String sql = "SELECT * FROM bedwars_ranked " +
-                    "WHERE playername='" + playerName + "';";
+            String sql = "SELECT elo FROM bedwars_ranked " +
+                    "WHERE player_name='%s' AND queue_name='%s';".formatted(playerName, BedWars.getInstance().getQueueName());
             statement.executeQuery(sql);
             ResultSet result = statement.getResultSet();
             if (result.next()) {
-                return result.getDouble("elo");
+                double elo = result.getDouble("elo");
+                playerElo.put(playerName, elo);
+                return elo;
             }
             return 1000;
         } catch (SQLException throwables) {
@@ -187,6 +215,8 @@ public class RankedHandler {
     }
 
     private static void setPlayerElo(String playerName, double ELO) {
+        playerElo.put(playerName, ELO);
+
         if (DatabaseConnector.getSql() == null) {
             Bukkit.getLogger().warning("Database is not connected.");
             return;
@@ -196,17 +226,94 @@ public class RankedHandler {
             Statement statement = DatabaseConnector.getSql().createStatement();
 
             String sql = "UPDATE bedwars_ranked SET elo=" + ELO
-                    + " WHERE playername='" + playerName + "';";
+                    + "WHERE player_name='%s' AND queue_name='%s';".formatted(playerName, BedWars.getInstance().getQueueName());
             statement.executeUpdate(sql);
 
-            sql = "INSERT INTO bedwars_ranked (playername, elo) VALUES  ('" + playerName + "', '" + ELO + "')" +
-                    "ON CONFLICT DO NOTHING;";
+            sql = "INSERT INTO bedwars_ranked (player_name, queue_name, elo) VALUES  ('%s', '%s', %f) ON CONFLICT DO NOTHING;"
+                    .formatted(playerName, BedWars.getInstance().getQueueName(), ELO);
 
             statement.executeUpdate(sql);
             statement.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+
+    /**
+     *
+     Record with playerName=playerName and queueName=plugin.getQueueName() must exist in database before using this
+     */
+    private static void setStatsPostMatch(String playerName, int place, int finalKills, int deaths, int kills, int bedsDestroyed) {
+        if (DatabaseConnector.getSql() == null) {
+            Bukkit.getLogger().warning("Database is not connected.");
+            return;
+        }
+
+        try {
+            Statement statement = DatabaseConnector.getSql().createStatement();
+
+            int streak = getPlayerStreak(playerName);
+            int teams = BedWars.getInstance().getTEAMS_COUNT();
+            if (place <= BedWars.getInstance().getPlayersOnStart()/BedWars.getInstance().getTEAM_SIZE()/2) {
+                if (streak >= 0) {
+                    streak++;
+                }
+                if (streak < 0) {
+                    streak = 1;
+                }
+            } else {
+                if (streak <= 0) {
+                    streak--;
+                }
+                if (streak > 0) {
+                    streak = -1;
+                }
+            }
+
+
+            String sql = """
+            UPDATE bedwars_ranked SET games_played=games_played+1, streak=%d, final_kills=final_kills+%d,
+             deaths=deaths+%d, kills=kills+%d, beds_destroyed=beds_destroyed+%d, sum_of_places=sum_of_places+%d
+             WHERE player_name='%s' AND queue_name='%s';
+            """.formatted(streak, finalKills, deaths, kills, bedsDestroyed, place, playerName, BedWars.getInstance().getQueueName());
+            statement.executeUpdate(sql);
+
+            statement.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private static int getPlayerStreak(String playerName) {
+        if (DatabaseConnector.getSql() == null) {
+            Bukkit.getLogger().warning("Database is not connected.");
+            return 0;
+        }
+
+        try {
+            Statement statement = DatabaseConnector.getSql().createStatement();
+
+            String sql = "SELECT streak FROM bedwars_ranked " +
+                    "WHERE player_name='%s' AND queue_name='%s';".formatted(playerName, BedWars.getInstance().getQueueName());
+            statement.executeQuery(sql);
+            ResultSet result = statement.getResultSet();
+            if (result.next()) {
+                return result.getInt("streak");
+            }
+            return 1000;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static TextComponent getRankPrefix(double elo, int gamesPlayed) {
+        return Component.text("[").color(TextColor.color(166,163,154))
+                .append(
+                        RankedHandler.getRankDisplayName(elo, gamesPlayed).decorate(TextDecoration.BOLD)
+                                .append(Component.text("] ").decoration(TextDecoration.BOLD, false)
+                                        .color(TextColor.color(166,163,154))));
     }
 
 

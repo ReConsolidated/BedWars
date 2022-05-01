@@ -1,6 +1,7 @@
 package io.github.reconsolidated.BedWars;
 
 
+import io.github.reconsolidated.BedWars.Scoreboards.ScoreScoreboard;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Score;
 

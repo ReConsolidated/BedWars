@@ -6,6 +6,7 @@ import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
 import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import io.github.reconsolidated.BedWars.RankedHandler;
+import io.github.reconsolidated.BedWars.Scoreboards.LobbyScoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -95,13 +96,13 @@ public class PlayerJoinListener implements Listener {
 
             if (!plugin.hasStarted && plugin.getMaxPlayers() >= Bukkit.getOnlinePlayers().size()){
                 p = new Participant(player, plugin);
+                new LobbyScoreboard(plugin, player);
                 participants.add(p);
                 event.joinMessage(player.displayName().append(Component.text(ChatColor.YELLOW + " dołączył (" + ChatColor.AQUA + participants.size()
                         + ChatColor.YELLOW + "/" + ChatColor.AQUA
                         + (plugin.getTEAMS_COUNT() * plugin.getTEAM_SIZE())
                         + ChatColor.YELLOW + ").")));
 
-                player.setPlayerListName(player.getName());
                 player.getInventory().clear();
                 for (PotionEffect effect : player.getActivePotionEffects()) {
                     player.removePotionEffect(effect.getType());
@@ -110,6 +111,8 @@ public class PlayerJoinListener implements Listener {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setFireTicks(0);
                 player.setHealth(player.getMaxHealth());
+
+
             }
             else{
                 CustomSpectator.setSpectator(plugin, player);

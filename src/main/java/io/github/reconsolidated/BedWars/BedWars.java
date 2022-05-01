@@ -38,6 +38,8 @@ import static io.github.reconsolidated.BedWars.CustomConfig.saveCustomConfig;
 import static io.github.reconsolidated.BedWars.Participant.unbreakable;
 
 public class BedWars extends JavaPlugin implements Listener {
+    private static BedWars instance;
+
     public World world;
     public boolean hasStarted = false;
 
@@ -48,6 +50,9 @@ public class BedWars extends JavaPlugin implements Listener {
     @Getter
     @Setter
     private int partiesCount = 0;
+
+    @Getter
+    private int playersOnStart = -1;
 
     private static String currentWorldName = "bedwars_ancient"; //
 
@@ -90,8 +95,13 @@ public class BedWars extends JavaPlugin implements Listener {
     public static BedWarsGuard guard;
     public static VisibleEffects vEffects;
 
+    public static BedWars getInstance() {
+        return instance;
+    }
+
     @Override
     public void onEnable() {
+        instance = this;
         if (!setupChat()) {
             Bukkit.getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
@@ -173,6 +183,8 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public void setup() {
+        RankedHandler.onSetup();
+
         getServer().setWhitelist(true);
         getServer().setWhitelistEnforced(true);
         getServer().reloadWhitelist();
@@ -263,6 +275,7 @@ public class BedWars extends JavaPlugin implements Listener {
         for (Participant p : participants) {
             players.add(p.getPlayer());
         }
+        playersOnStart = players.size();
         vEffects.getCmdProvider().load(players);
         setOpen(false);
         if (!currentConfig.contains(currentWorldName + ".shop")){
@@ -590,6 +603,11 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public void checkSwords(Player player) {
+        Participant p = getParticipant(player);
+        if (p == null) return;
+        if (!hasStarted) return;
+        if (p.isSpectating()) return;
+
         int swordsCount = 0;
         for (ItemStack itemStack : player.getInventory().getContents()){
             if (isSword(itemStack)){
@@ -691,5 +709,9 @@ public class BedWars extends JavaPlugin implements Listener {
 
     public List<IronGolem> getGolems() {
         return golems;
+    }
+
+    public String getQueueName() {
+        return "bedwars" + TEAM_SIZE;
     }
 }
