@@ -35,7 +35,7 @@ public class PopupTower {
     }
 
     private static void setTypeIfCanBuild(Location location, Material type) {
-        if (!BedWars.guard.isProtected(location)) {
+        if (!BedWars.guard.isProtected(location) && location.getBlock().getType().equals(Material.AIR)) {
             location.getBlock().setType(type);
         }
     }

@@ -45,10 +45,10 @@ public class TeamBase extends BukkitRunnable {
                 if (p.getPlayer().getGameMode() != GameMode.SURVIVAL) continue;
                 if (p.getTeam().ID == teamID){
                     if (p.getTeam().hasHealPool()){
-                        p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1, 1));
+                        p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 60, 1));
                     }
                 }
-                else if (!p.isTrapInvincible()){
+                else if (!p.isTrapInvincible() && !p.hasLost() && p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)){
                     if (trapCooldown > 0){
                         continue;
                     }

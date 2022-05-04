@@ -9,6 +9,7 @@ import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -77,15 +78,24 @@ public class Participant {
         this.plugin = plugin;
     }
 
-    // onStart() initializes the player, teleports him to his bed and sets his inventory
-    public void onStart(){
+    public void setPrefixes() {
         double elo = RankedHandler.getPlayerElo(player.getName());
         int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
-
 
         player.playerListName(RankedHandler.getRankPrefix(elo, gamesPlayed).append(Component.text(getChatColor() + player.getName() + ChatColor.WHITE)));
         player.displayName(RankedHandler.getRankPrefix(elo, gamesPlayed)
                 .append(Component.text(team.getChatColor() + player.getName())));
+    }
+
+    public void setSpectatorPrefixes() {
+        player.playerListName(Component.text(getChatColor() + "" + ChatColor.ITALIC + player.getName()
+                + ChatColor.GRAY + "" + ChatColor.ITALIC + " (obserwuje)"
+                + ChatColor.WHITE).decorate(TextDecoration.ITALIC));
+    }
+
+    // onStart() initializes the player, teleports him to his bed and sets his inventory
+    public void onStart(){
+        setPrefixes();
 
 
         player.teleport(team.getSpawnLocation());

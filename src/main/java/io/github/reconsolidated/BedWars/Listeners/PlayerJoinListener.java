@@ -38,13 +38,22 @@ public class PlayerJoinListener implements Listener {
         List<Participant> participants = plugin.getParticipants();
         if (plugin.hasStarted){
             event.setJoinMessage(null);
-            if (player.hasPermission("moderator")){
+
+            boolean isInactive = false;
+            for (Participant in : plugin.getInactiveParticipants()) {
+                if (in.getPlayer().getName().equalsIgnoreCase(player.getName())) {
+                    isInactive = true;
+                }
+            }
+            if (!isInactive && player.hasPermission("moderator")){
                 plugin.vanishPlayer(player);
                 player.teleport(plugin.getSpawnLocation());
-            } else {
+                return;
+            } else if (!isInactive) {
                 player.kickPlayer(ChatColor.RED + "Spróbuj ponownie za chwilę...");
+                return;
             }
-            return;
+
         }
 
         // Updating serverStateDomain if there is a new party
@@ -66,6 +75,7 @@ public class PlayerJoinListener implements Listener {
                 p.onRespawn();
             }
             p.getScoreboard().registerPlayer(p.getPlayer());
+            p.setPrefixes();
 
         }
         else{

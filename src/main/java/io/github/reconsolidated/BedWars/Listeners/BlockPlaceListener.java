@@ -73,9 +73,8 @@ public class BlockPlaceListener implements Listener {
                     EntityType.PRIMED_TNT);
             tnt.setVelocity(new Vector(0, 0.3, 0));
             tnt.setFuseTicks(60);
-            Location location = player.getLocation().clone();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                player.getWorld().createExplosion(location, 2);
+                player.getWorld().createExplosion(tnt.getLocation(), 2);
             }, 60L);
             tnt.setSource(player);
         }

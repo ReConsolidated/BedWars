@@ -66,7 +66,10 @@ public class LobbyScoreboard implements Listener {
     }
 
     private void assignPlayerTeam(Scoreboard scoreboard, Player player) {
-        Team t = scoreboard.registerNewTeam(player.getName());
+        org.bukkit.scoreboard.Team t = scoreboard.getTeam(player.getName());
+        if (t == null) {
+            t = scoreboard.registerNewTeam(player.getName());
+        }
         double elo = RankedHandler.getPlayerElo(player.getName());
         int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
         t.prefix(RankedHandler.getRankPrefix(elo, gamesPlayed));

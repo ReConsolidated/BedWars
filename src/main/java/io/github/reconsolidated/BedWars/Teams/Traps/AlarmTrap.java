@@ -3,6 +3,7 @@ package io.github.reconsolidated.BedWars.Teams.Traps;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.inventoryShop.CustomItemStack;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ public class AlarmTrap implements Trap {
             if (e instanceof Player) {
                 Participant p = plugin.getParticipant((Player) e);
                 if (p == null) continue;
+                if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) continue;
                 if (p.getTeam().ID != teamID) {
                     p.getPlayer().getActivePotionEffects().removeIf(effect -> effect.getType().equals(PotionEffectType.INVISIBILITY));
                 }

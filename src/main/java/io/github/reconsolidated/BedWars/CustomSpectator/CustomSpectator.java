@@ -14,6 +14,7 @@ public class CustomSpectator {
         if (p == null) return;
         p.setIsSpectating(true);
         p.saveInventoryForSpectating();
+        p.setSpectatorPrefixes();
         player.setGameMode(GameMode.ADVENTURE);
         player.setAllowFlight(true);
         player.setFlying(true);
@@ -43,6 +44,7 @@ public class CustomSpectator {
         Participant p = plugin.getParticipant(player);
         if (p == null) return;
         p.setIsSpectating(false);
+        p.setPrefixes();
         p.restoreInventoryAfterSpectating();
         player.setGameMode(GameMode.SURVIVAL);
         player.setAllowFlight(false);

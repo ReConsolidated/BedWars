@@ -226,7 +226,7 @@ public class RankedHandler {
             Statement statement = DatabaseConnector.getSql().createStatement();
 
             String sql = "UPDATE bedwars_ranked SET elo=" + ELO
-                    + "WHERE player_name='%s' AND queue_name='%s';".formatted(playerName, BedWars.getInstance().getQueueName());
+                    + " WHERE player_name='%s' AND queue_name='%s';".formatted(playerName, BedWars.getInstance().getQueueName());
             statement.executeUpdate(sql);
 
             sql = "INSERT INTO bedwars_ranked (player_name, queue_name, elo) VALUES  ('%s', '%s', %f) ON CONFLICT DO NOTHING;"

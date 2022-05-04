@@ -25,7 +25,7 @@ public class ProjectileHitListener implements Listener {
         if (shooter == null) return;
 
         if (event.getEntity() instanceof Fireball) {
-            event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 2, false, true);
+            event.getEntity().getWorld().createExplosion(shooter.getPlayer(), event.getEntity().getLocation(), 2, false, true);
             // (Entity) event.getEntity().getShooter()
         }
 

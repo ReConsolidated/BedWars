@@ -170,6 +170,8 @@ public class BedWars extends JavaPlugin implements Listener {
         new JedisRunnable(this, communicator);
         new IronGolemRunnable(this);
 
+        new RejoinRunnable().runTaskTimer(this, 10, 80);
+
 
         vanish = new Vanish(this);
         DatabaseConnector.connect();
@@ -292,7 +294,7 @@ public class BedWars extends JavaPlugin implements Listener {
             }
             if (type == 2){
                 location.getWorld().setDifficulty(Difficulty.NORMAL);
-                Zombie zombie = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
+                Zombie zombie = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE, false);
                 zombie.setAdult();
                 zombie.setRemoveWhenFarAway(false);
                 zombie.setSilent(true);

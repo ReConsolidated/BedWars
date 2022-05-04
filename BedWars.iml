@@ -113,7 +113,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.22" level="project" />
     <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.3.1" level="project" />
-    <orderEntry type="library" name="Maven: io.github.reconsolidated:jediscommunicator:1.08" level="project" />
+    <orderEntry type="library" name="Maven: io.github.reconsolidated:jediscommunicator:1.10" level="project" />
     <orderEntry type="library" name="Maven: io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.github.reconsolidated:bedwarsguard:1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.github.reconsolidated:visibleeffects:1.11" level="project" />
