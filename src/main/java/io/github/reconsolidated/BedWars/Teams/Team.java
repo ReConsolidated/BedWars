@@ -4,6 +4,8 @@ import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Teams.Traps.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,6 +23,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class Team {
+    public static int teamsLeft = 0;
+
     private Location bedLocation;
     private Location spawnLocation;
 
@@ -34,6 +38,10 @@ public class Team {
     public int hasteLevel = 0;
     public int dragons = 1;
     public int ID;
+
+    @Getter
+    @Setter
+    private int place = 0;
 
 
     private boolean hasHealPool = false;
@@ -284,5 +292,12 @@ public class Team {
             }
         }
         return isPlaying;
+    }
+
+    public void setPlaceIfLost() {
+        if (!isPlaying() && place == 0) {
+            setPlace(teamsLeft);
+            teamsLeft--;
+        }
     }
 }

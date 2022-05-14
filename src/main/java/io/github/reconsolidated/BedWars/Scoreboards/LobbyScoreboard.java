@@ -78,10 +78,17 @@ public class LobbyScoreboard implements Listener {
 
     public void update(){
         set(1, "");
-        set(2, "Graczy: " + Bukkit.getOnlinePlayers().size() + "/" + plugin.getMaxPlayers());
-        set(3, "Start za: 00:00");
-        set(4, "");
-        set(5, "GRPMC.PL");
+        set(2, ChatColor.GOLD + "Graczy: " + ChatColor.WHITE + Bukkit.getOnlinePlayers().size() + ChatColor.GRAY + "/"
+                + ChatColor.WHITE + plugin.getMaxPlayers());
+        set(3, "");
+        set(4, ChatColor.GREEN + "Mapa: " + ChatColor.WHITE + plugin.world.getName());
+        if (plugin.isRanked()) {
+            set(5, ChatColor.DARK_AQUA + "Tryb: " + ChatColor.WHITE + "Rankingowy");
+        } else {
+            set(5, ChatColor.DARK_AQUA + "Tryb: " + ChatColor.WHITE + "Normalny");
+        }
+        set(6, "");
+        set(7, ChatColor.GOLD + "" +  ChatColor.BOLD + "GRPMC.PL");
     }
 
     public void put(String newText){

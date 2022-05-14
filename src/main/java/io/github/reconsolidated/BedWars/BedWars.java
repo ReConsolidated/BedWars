@@ -52,6 +52,9 @@ public class BedWars extends JavaPlugin implements Listener {
     private int partiesCount = 0;
 
     @Getter
+    private boolean isRanked = false;
+
+    @Getter
     private int playersOnStart = -1;
 
     private static String currentWorldName = "bedwars_ancient"; //
@@ -76,6 +79,8 @@ public class BedWars extends JavaPlugin implements Listener {
 
     @Getter
     private JedisCommunicator communicator;
+    @Getter
+    private JedisRunnable jedisRunnable;
 
     // These variables should be initiated in onStart() method, based on teams' beds locations.
     @Getter
@@ -167,7 +172,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new CreatureSpawnListener(), this);
 
         communicator = new JedisCommunicator();
-        new JedisRunnable(this, communicator);
+        jedisRunnable = new JedisRunnable(this, communicator);
         new IronGolemRunnable(this);
 
         new RejoinRunnable().runTaskTimer(this, 10, 80);
@@ -234,17 +239,30 @@ public class BedWars extends JavaPlugin implements Listener {
 
         vanish.clean();
 
-        if (gameRunnable != null && !gameRunnable.isCancelled() && gameRunnable.isRunning()) {
-            gameRunnable.cancel();
-        }
+        try{
+            if (gameRunnable != null && !gameRunnable.isCancelled() && gameRunnable.isRunning()) {
+                gameRunnable.cancel();
+            }
+        } catch (IllegalStateException ignored) {}
+
+
         gameRunnable = new GameRunnable(this);
         if (startGameRunnable != null && !startGameRunnable.isCancelled()) {
             startGameRunnable.cancel();
         }
         startGameRunnable = new StartGameRunnable(this);
 
+        if (!getConfig().isSet("ranked")) {
+            getConfig().set("ranked", false);
+            saveConfig();
+        }
+        isRanked = getConfig().getBoolean("ranked", false);
+
         getServer().setWhitelist(false);
         getServer().reloadWhitelist();
+
+        Team.teamsLeft = TEAMS_COUNT;
+
 
 
 
@@ -398,7 +416,7 @@ public class BedWars extends JavaPlugin implements Listener {
             handleParticipant(p);
 
             if (!p.hasLost()){
-                p.setPlace(1);
+                p.getTeam().setPlace(1);
                 p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", " ", 5, 100, 5);
             }
             else{
@@ -406,11 +424,17 @@ public class BedWars extends JavaPlugin implements Listener {
             }
             CustomSpectator.setSpectator(this, p.getPlayer());
         }
-        try {
-            RankedHandler.handleRanked(this);
-        } catch (Exception e) {
-            Bukkit.broadcastMessage(ChatColor.RED + "Rozgrywka rankingowa nie została zapisana, ze względu na błąd połączenia z bazą danych.");
+
+        if (isRanked) {
+            try {
+                RankedHandler.handleRanked(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().info(ChatColor.RED + ("Rozgrywka rankingowa nie została zapisana, ze względu na " +
+                        "błąd połączenia z bazą danych lub nieprawidłową liczbę drużyn (%d)").formatted(TEAMS_COUNT));
+            }
         }
+
 
     }
 
@@ -714,6 +738,6 @@ public class BedWars extends JavaPlugin implements Listener {
     }
 
     public String getQueueName() {
-        return "bedwars" + TEAM_SIZE;
+        return "bedwars";
     }
 }

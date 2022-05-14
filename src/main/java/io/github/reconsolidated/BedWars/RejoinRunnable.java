@@ -11,7 +11,8 @@ public class RejoinRunnable extends BukkitRunnable {
         JedisCommunicator jedis = new JedisCommunicator();
         for (Participant p : BedWars.getInstance().getInactiveParticipants()) {
             if (p.getTeam().isPlaying()) {
-                jedis.setRejoin(p.getPlayer().getName(), "" + Bukkit.getServer().getPort());
+                jedis.setRejoin();
+               // jedis.setRejoin(p.getPlayer().getName(), "" + Bukkit.getServer().getPort());
             }
         }
     }

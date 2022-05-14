@@ -81,11 +81,15 @@ public class BlockPlaceListener implements Listener {
 
         if (event.getBlockPlaced().getType().equals(Material.CHEST)){
             event.setCancelled(true);
-            removeItemFromInventory(event.getPlayer(), new ItemStack(Material.CHEST, 1));
 
             Location center = event.getBlockPlaced().getLocation();
             Vector direction = event.getPlayer().getLocation().subtract(center).getDirection();
 
+            if (BedWars.guard.isProtected(center)) {
+                return;
+            }
+
+            removeItemFromInventory(event.getPlayer(), new ItemStack(Material.CHEST, 1));
             PopupTower.build(center, direction, Material.getMaterial(p.getColor() + "_WOOL"));
 
         }

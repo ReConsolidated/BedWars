@@ -20,7 +20,6 @@
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
 
-
         <repository>
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
@@ -41,6 +40,12 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
+        <repository>
+            <id>simonsators Repo</id>
+            <url>https://simonsator.de/repo</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -118,7 +123,7 @@
         <dependency>
             <groupId>io.github.reconsolidated</groupId>
             <artifactId>jediscommunicator</artifactId>
-            <version>1.10</version>
+            <version>1.14</version>
         </dependency>
 
         <dependency>
@@ -137,7 +142,14 @@
         <dependency>
             <groupId>io.github.reconsolidated</groupId>
             <artifactId>visibleeffects</artifactId>
-            <version>1.11</version>
+            <version>1.15</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.simonsator</groupId>
+            <artifactId>Party-and-Friends-MySQL-Edition-Spigot-API</artifactId>
+            <version>1.5.3</version>
             <scope>provided</scope>
         </dependency>
 
@@ -169,7 +181,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>io.github.leonardosnt.bungeechannelapi</pattern>
-                                    <shadedPattern>YOUR.PLUGIN.PACKAGE.libs.bungeechannelapi</shadedPattern>
+                                    <shadedPattern>io.github.reconsolidated.libs.bungeechannelapi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

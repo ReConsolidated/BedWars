@@ -24,6 +24,12 @@ public class JedisRunnable extends BukkitRunnable {
         if (plugin.getPartiesCount() >= plugin.getTEAMS_COUNT()) {
             maxPartySize = 0;
         }
-        communicator.setServerInfo(plugin.getServerName(), plugin.isOpen(), plugin.getParticipants().size(), plugin.getMaxPlayers(), maxPartySize, "bedwars" + plugin.getTEAM_SIZE());
+        communicator.setServerInfo(
+                plugin.getServerName(),
+                plugin.isOpen(),
+                plugin.getParticipants().size(),
+                plugin.getMaxPlayers(), maxPartySize,
+                "bedwars" + plugin.getTEAM_SIZE(),
+                plugin.getConfig().getBoolean("ranked", false));
     }
 }

@@ -1,12 +1,13 @@
 package io.github.reconsolidated.BedWars.Listeners;
 
+
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
-import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import io.github.reconsolidated.BedWars.RankedHandler;
 import io.github.reconsolidated.BedWars.Scoreboards.LobbyScoreboard;
+import io.github.reconsolidated.jediscommunicator.Party;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -32,6 +33,8 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
+        plugin.getJedisRunnable().run();
+
         Player player = event.getPlayer();
 
         player.setMaximumNoDamageTicks(20);
@@ -57,12 +60,18 @@ public class PlayerJoinListener implements Listener {
         }
 
         // Updating serverStateDomain if there is a new party
-        PartyDomain party = PartyDataManager.getParty(event.getPlayer());
+        Party party = PartyDataManager.getParty(event.getPlayer());
         if (party != null) {
+            Bukkit.getLogger().info("[DEBUG] party gracza %s:".formatted(event.getPlayer().getName()) + party.getAllMembers());
+
             if (party.getOwner().equalsIgnoreCase(event.getPlayer().getName())){
                 plugin.setPartiesCount(plugin.getPartiesCount()+1);
             }
+        } else {
+            Bukkit.getLogger().info("[DEBUG] party gracza %s jest null".formatted(event.getPlayer().getName()));
         }
+
+
 
         Participant p = plugin.getInactiveParticipant(player);
         if (p != null){

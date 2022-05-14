@@ -65,7 +65,7 @@ public class ScoreScoreboard extends BukkitRunnable implements Listener {
 
         // CREATING SCOREBOARD TEAMS
 
-        for (Player p2 : Bukkit.getOnlinePlayers()) {
+        for (Participant p2 : plugin.getParticipants()) {
             assignPlayerTeam(scoreboard, p2);
         }
 
@@ -78,21 +78,18 @@ public class ScoreScoreboard extends BukkitRunnable implements Listener {
         player.setScoreboard(scoreboard);
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> assignPlayerTeam(scoreboard, event.getPlayer()), 20L);
-    }
 
-    private void assignPlayerTeam(Scoreboard scoreboard, Player player) {
-        org.bukkit.scoreboard.Team t = scoreboard.getTeam(player.getName());
+    private void assignPlayerTeam(Scoreboard scoreboard, Participant p) {
+        String teamName = p.getTeam().ID + p.getPlayer().getName();
+        org.bukkit.scoreboard.Team t = scoreboard.getTeam(teamName);
         if (t == null) {
-            t = scoreboard.registerNewTeam(player.getName());
+            t = scoreboard.registerNewTeam(teamName);
         }
 
-        double elo = RankedHandler.getPlayerElo(player.getName());
-        int gamesPlayed = RankedHandler.getPlayerGamesPlayed(player.getName());
+        double elo = RankedHandler.getPlayerElo(p.getPlayer().getName());
+        int gamesPlayed = RankedHandler.getPlayerGamesPlayed(p.getPlayer().getName());
         t.prefix(RankedHandler.getRankPrefix(elo, gamesPlayed));
-        t.addPlayer(player);
+        t.addPlayer(p.getPlayer());
         t.setCanSeeFriendlyInvisibles(false);
         t.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, org.bukkit.scoreboard.Team.OptionStatus.NEVER);
     }

@@ -50,6 +50,7 @@ public class PlayerDropItemListener implements Listener {
         if (item.getType().equals(Material.WOODEN_PICKAXE)
                 || item.getType().equals(Material.STONE_PICKAXE)
                 || item.getType().equals(Material.IRON_PICKAXE)
+                || item.getType().equals(Material.GOLDEN_PICKAXE)
                 || item.getType().equals(Material.DIAMOND_PICKAXE)){
             return true;
         }

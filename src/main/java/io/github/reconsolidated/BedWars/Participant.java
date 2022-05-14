@@ -46,9 +46,6 @@ public class Participant {
     private int deaths = 0;
 
     @Getter
-    private int place = 100;
-
-    @Getter
     @Setter
     private Team team;
 
@@ -184,8 +181,6 @@ public class Participant {
             new RespawnRunnable(plugin, 5, this).runTaskTimer(plugin, 0L, 20L);
         }
         else{
-            setPlace(plugin.getTeamsLeft());
-            Bukkit.broadcastMessage("Miejsce " + player.getName() + ": " + getPlace());
             hasLost = true;
             onGameEnd();
         }
@@ -261,6 +256,8 @@ public class Participant {
         player.sendMessage(ChatColor.RED + "Twoje łóżko zostało zniszczone i już się nie odrodzisz.");
         CustomSpectator.setSpectator(plugin, player);
         player.teleport(player.getLocation().getWorld().getSpawnLocation());
+
+        team.setPlaceIfLost();
     }
 
     // ChatColor and Color depend on the team, not really needed here, but it's handful
@@ -298,7 +295,7 @@ public class Participant {
             }
             case 5 -> {
                 color = Color.GRAY;
-                return "DARK_GRAY";
+                return "BLACK";
             }
             case 6 -> {
                 color = Color.PURPLE;
@@ -539,11 +536,6 @@ public class Participant {
         return isRespawning;
     }
 
-
-    public void setPlace(int i) {
-        Bukkit.getLogger().info("Setting player" + player.getName() + " place to: " + i);
-        place = i;
-    }
 
     public void setLostBed(boolean value) {
         hasLostBed = value;

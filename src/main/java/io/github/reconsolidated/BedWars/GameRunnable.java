@@ -2,9 +2,9 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.ItemDrops.ItemSpawner;
 import io.github.reconsolidated.BedWars.Party.PartyDataManager;
-import io.github.reconsolidated.BedWars.Party.PartyDomain;
 import io.github.reconsolidated.BedWars.Scoreboards.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import io.github.reconsolidated.jediscommunicator.Party;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
@@ -57,9 +57,10 @@ public class GameRunnable extends BukkitRunnable {
                 for (Participant m : t.members) {
                     if (!m.hasLost()) {
                         m.setLost(true);
-                        m.setPlace(teamsPlaying);
                     }
                 }
+                t.setPlaceIfLost();
+
             }
         }
 
@@ -89,8 +90,8 @@ public class GameRunnable extends BukkitRunnable {
                 if (p.getTeam() != null) {
                     continue;
                 }
-                PartyDomain party = PartyDataManager.getParty(p.getPlayer());
-                if (party != null) {
+                Party party = PartyDataManager.getParty(p.getPlayer());
+                if (party != null && party.getMembers().size() > 0) {
                     for (int j = 0; j < plugin.getTeams().size(); j++) {
                         if (teamHasParty[j]) continue;
                         teamHasParty[j] = true;
@@ -99,13 +100,13 @@ public class GameRunnable extends BukkitRunnable {
                         team.addMember(p);
                         Bukkit.getScoreboardManager().getMainScoreboard().getTeam("" + j).addEntry(p.getPlayer().getName());
 
-                        for (String name : party.getMembers()) {
-                            Player player = Bukkit.getPlayer(name);
-                            if (player == null || !player.isOnline()) {
+                        for (String playerName : party.getAllMembers()) {
+                            Player bukkitPlayer = Bukkit.getPlayer(playerName);
+                            if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
                                 continue;
                             }
-                            Participant m = plugin.getParticipant(player);
-                            if (m == null) {
+                            Participant m = plugin.getParticipant(bukkitPlayer);
+                            if (m == null || m.getTeam() != null) {
                                 continue;
                             }
                             m.setTeam(team);
@@ -133,9 +134,19 @@ public class GameRunnable extends BukkitRunnable {
                 }
 
                 p.onStart();
-                p.setScoreboard(new ScoreScoreboard(plugin, plugin.getTeams(), p));
-                p.getScoreboard().runTaskTimer(plugin, 0, 4);
+
             }
+
+            for (Participant p : participants) {
+                if (p.getTeam() != null) {
+                    p.setScoreboard(new ScoreScoreboard(plugin, plugin.getTeams(), p));
+                    p.getScoreboard().runTaskTimer(plugin, 0, 4);
+                } else {
+                    Bukkit.getLogger().warning("Couldn't set scoreboard for player: " + p.getPlayer().getName() + ", team is null");
+                }
+
+            }
+
             for (ItemSpawner spawner : spawners) {
                 spawner.start();
             }

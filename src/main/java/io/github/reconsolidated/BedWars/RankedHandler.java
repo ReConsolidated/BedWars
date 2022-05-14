@@ -59,8 +59,11 @@ public class RankedHandler {
         for (Participant p : participantsElo.keySet()) {
             double elo = participantsElo.get(p);
 
-            int place = p.getPlace();
-            int teamsNumber = BedWars.getInstance().getPlayersOnStart()/BedWars.getInstance().getTEAM_SIZE();
+            int place = p.getTeam().getPlace();
+            if (place == 0) {
+                throw new RuntimeException("Place was 0 for team: " + p.getTeam().getName());
+            }
+            int teamsNumber = BedWars.getInstance().getTEAMS_COUNT();
 
 
             double baseValue = getBaseValue(place, teamsNumber);
@@ -81,7 +84,7 @@ public class RankedHandler {
 
             elo += eloGain;
             setPlayerElo(p.getPlayer().getName(), elo);
-            setStatsPostMatch(p.getPlayer().getName(), p.getPlace(), p.getFinalKills(), p.getDeaths(), p.getKills(), p.getBedsDestroyed());
+            setStatsPostMatch(p.getPlayer().getName(), place, p.getFinalKills(), p.getDeaths(), p.getKills(), p.getBedsDestroyed());
 
             Bukkit.getLogger().info("Gracz: " + p.getPlayer().getName());
             Bukkit.getLogger().info("baseValue: " + baseValue);
@@ -122,11 +125,29 @@ public class RankedHandler {
     }
 
     private static double getBaseValue(int place, double teamsCount) {
-        if (place <= teamsCount/2) {
-            return 4 * teamsCount/place;
-        } else {
-            return -4 * teamsCount/(teamsCount-place+1);
+        if (teamsCount == 2) {
+            if (place == 1) return 8;
+            if (place == 2) return -10;
         }
+        else if (teamsCount == 4) {
+            if (place == 1) return 8;
+            if (place == 2) return 4;
+            if (place == 3) return -6;
+            if (place == 4) return -12;
+        }
+        else if (teamsCount == 8) {
+            if (place == 1) return 8;
+            if (place == 2) return 6;
+            if (place == 3) return 4;
+            if (place == 4) return 2;
+            if (place == 5) return -3;
+            if (place == 6) return -6;
+            if (place == 7) return -9;
+            if (place == 8) return -12;
+        } else {
+            throw new RuntimeException("TeamsCount is not 2, 4 or 8, can't handle ranked");
+        }
+        throw new RuntimeException("Incorrect place: " + place);
     }
 
     private static void setPlayerGamesPlayed(String name, int games) {
