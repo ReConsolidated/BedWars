@@ -17,6 +17,7 @@ import io.github.reconsolidated.jediscommunicator.JedisCommunicator;
 import io.github.reconsolidated.visibleeffects.VisibleEffects;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -63,6 +64,7 @@ public class BedWars extends JavaPlugin implements Listener {
     private ArrayList<Participant> inactiveParticipants;
     private ArrayList<Team> teams;
     private ArrayList<ItemSpawner> spawners;
+    @Getter
     private GameRunnable gameRunnable;
     private StartGameRunnable startGameRunnable;
 
@@ -309,6 +311,8 @@ public class BedWars extends JavaPlugin implements Listener {
                 Villager villager = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
                 villager.setSilent(true);
                 villager.setAI(false);
+                villager.setCustomNameVisible(true);
+                villager.customName(Component.text("Zwykły sklep"));
             }
             if (type == 2){
                 location.getWorld().setDifficulty(Difficulty.NORMAL);
@@ -317,6 +321,8 @@ public class BedWars extends JavaPlugin implements Listener {
                 zombie.setRemoveWhenFarAway(false);
                 zombie.setSilent(true);
                 zombie.setAI(false);
+                zombie.setCustomNameVisible(true);
+                zombie.customName(Component.text("Sklep Drużynowy"));
             }
         }
 

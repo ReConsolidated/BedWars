@@ -6,6 +6,7 @@ import io.github.reconsolidated.BedWars.Scoreboards.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.Teams.Team;
 import io.github.reconsolidated.jediscommunicator.Party;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 
 public class GameRunnable extends BukkitRunnable {
     private final BedWars plugin;
+    @Setter
     private int counter;
     private ArrayList<Participant> participants;
     private ArrayList<ItemSpawner> spawners;

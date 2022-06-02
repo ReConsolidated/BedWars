@@ -29,7 +29,7 @@ public class DragonRunnable extends BukkitRunnable {
                 && dragon.getLocation().distanceSquared(destination) < 3)){
             for (Participant p : plugin.getParticipants()){
                 if (p.getTeam().ID == teamID) continue;
-                if (!destination.getWorld().equals(p.getPlayer().getWorld())) {
+                if (destination != null && !destination.getWorld().equals(p.getPlayer().getWorld())) {
                     cancel();
                 }
                 Random random = new Random();
@@ -55,6 +55,7 @@ public class DragonRunnable extends BukkitRunnable {
         Location dragonNewLocation = dragon.getLocation().clone().add(vdir);
         vdir.multiply(-1);
         dragonNewLocation.setDirection(vdir);
+        dragon.setRotation(dir.getYaw() + 180, dir.getPitch());
         dragon.teleport(dragonNewLocation);
     }
 }

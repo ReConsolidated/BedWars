@@ -42,6 +42,11 @@ public class Commands implements CommandExecutor {
                     plugin.setup();
                 }
             }
+            if (args.length == 2) {
+                if (args[0].equalsIgnoreCase("settime")) {
+                    plugin.getGameRunnable().setCounter(Integer.parseInt(args[1]));
+                }
+            }
         }
 
 
