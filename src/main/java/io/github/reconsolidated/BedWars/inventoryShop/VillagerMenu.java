@@ -69,7 +69,7 @@ public class VillagerMenu implements Listener {
                 this.inv.setItem(7, CustomItemStack.createCustomItemStack(Material.TNT, 1, Material.IRON_INGOT, -1, "utility", new ArrayList<>(), player));
                 this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.getMaterial(color + "_WOOL"), 16, Material.IRON_INGOT, 4, "", new ArrayList<>(), player));
                 this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.STONE_SWORD, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
-                this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "", new ArrayList<>(), player));
+                this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 30, "", new ArrayList<>(), player));
                 if (p.getPickaxeLevel() == 0)
                     this.inv.setItem(22, CustomItemStack.createCustomItemStack(Material.WOODEN_PICKAXE, 1, Material.IRON_INGOT, 10, "", new ArrayList<>(), player));
                 else if (p.getPickaxeLevel() == 1)
@@ -133,7 +133,7 @@ public class VillagerMenu implements Listener {
 
             }
             case "armor" -> {
-                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 40, "", new ArrayList<>(), player));
+                this.inv.setItem(19, CustomItemStack.createCustomItemStack(Material.CHAINMAIL_BOOTS, 1, Material.IRON_INGOT, 30, "", new ArrayList<>(), player));
                 this.inv.setItem(20, CustomItemStack.createCustomItemStack(Material.IRON_BOOTS, 1, Material.GOLD_INGOT, 12, "", new ArrayList<>(), player));
                 this.inv.setItem(21, CustomItemStack.createCustomItemStack(Material.DIAMOND_BOOTS, 1, Material.EMERALD, 6, "", new ArrayList<>(), player));
                 this.inv.setItem(49, CustomItemStack.createCustomItemStack(Material.ARROW, 1, Material.IRON_INGOT, -1, "main", new ArrayList<>(), player));

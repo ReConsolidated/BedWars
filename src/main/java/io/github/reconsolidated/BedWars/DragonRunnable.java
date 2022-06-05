@@ -2,6 +2,7 @@ package io.github.reconsolidated.BedWars;
 
 import io.github.reconsolidated.BedWars.Teams.Team;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -48,6 +49,15 @@ public class DragonRunnable extends BukkitRunnable {
             }
         }
         if (destination == null) return;
+
+        Location loc = dragon.getLocation();
+        for (int i = loc.getBlockX() - 2; i < loc.getBlockX() + 2; i++) {
+            for (int j = loc.getBlockY() - 2; j < loc.getBlockY() + 2; j++) {
+                for (int k = loc.getBlockZ() - 2; k < loc.getBlockZ() + 2; k++) {
+                    loc.getWorld().getBlockAt(i, j, k).setType(Material.AIR);
+                }
+            }
+        }
 
         Location dir = destination.clone().subtract(dragon.getLocation().clone());
         Vector vdir = dir.toVector();

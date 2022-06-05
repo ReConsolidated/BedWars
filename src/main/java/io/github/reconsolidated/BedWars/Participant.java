@@ -1,9 +1,11 @@
 package io.github.reconsolidated.BedWars;
 
+import io.github.reconsolidated.BedWars.AfterGameEnd.Items;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
 import io.github.reconsolidated.BedWars.Scoreboards.ScoreScoreboard;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import io.github.reconsolidated.visibleeffects.VisibleEffects;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
@@ -23,6 +25,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Comparator;
+
+import static io.github.reconsolidated.BedWars.BedWars.vEffects;
 
 public class Participant {
     @Getter
@@ -125,8 +129,19 @@ public class Participant {
 
     // When player dies or falls into the void
     public void onDeath(){
+        if (getLastHitBy() != null) {
+            if (!team.isBedAlive()) {
+                vEffects.playEffect(getLastHitBy().getPlayer(), VisibleEffects.EFFECT_EVENT.FINAL_KILL, player.getLocation().clone().add(0, 3, 0));
+            } else {
+                vEffects.playEffect(getLastHitBy().getPlayer(), VisibleEffects.EFFECT_EVENT.KILL, player.getLocation().clone().add(0, 3, 0));
+            }
+        }
+
+
         deaths++;
         isDead = true;
+
+
         player.teleport(player.getWorld().getSpawnLocation());
         player.setAbsorptionAmount(0);
         if (player.getItemOnCursor() != null) {
@@ -139,6 +154,7 @@ public class Participant {
                 getLastHitBy().setFinalKills(getLastHitBy().getFinalKills()+1);
             }
             getLastHitBy().setKills(getLastHitBy().getKills() + 1);
+
 
             for (ItemStack item : player.getInventory().getContents()){
                 if (item == null) continue;
@@ -256,8 +272,10 @@ public class Participant {
         player.sendMessage(ChatColor.RED + "Twoje łóżko zostało zniszczone i już się nie odrodzisz.");
         CustomSpectator.setSpectator(plugin, player);
         player.teleport(player.getLocation().getWorld().getSpawnLocation());
-
         team.setPlaceIfLost();
+
+        player.getInventory().clear();
+        Items.setItems(player);
     }
 
     // ChatColor and Color depend on the team, not really needed here, but it's handful

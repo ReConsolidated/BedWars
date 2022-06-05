@@ -6,6 +6,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
@@ -100,10 +101,38 @@ public class RankedHandler {
 
             Bukkit.getLogger().info("Stare ELO gracza: " + p.getPlayer().getName() + ": " + (elo-eloGain));
             Bukkit.getLogger().info("Nowe ELO gracza: " + p.getPlayer().getName() + ": " + elo);
-            p.getPlayer().sendMessage(p.getPlayer().getName(), "Twoje stare ELO: " + (elo-eloGain));
-            p.getPlayer().sendMessage(p.getPlayer().getName(), "Twoje nowe ELO: " + elo);
-            plugin.getCommunicator().sendNotification(p.getPlayer().getName(), "Twoje nowe ELO: " + elo);
+
+
+            String message = "&6---------------------------------------\n&7\n";
+
+            message += "&7Zabójstwa: &6" + p.getKills();
+            message += "\n&7Final Kille: &6" + p.getFinalKills();
+            message += "\n&7Zniszczone łóżka: &6" + p.getBedsDestroyed();
+            message += "\n&7Miejsce: &6" + place;
+            message += "\n&7\n&7Zdobyto &6&l%d &7punktów rankingowych!".formatted((int) eloGain);
+            int games = gamesPlayed.get(p);
+            if (games < 5) {
+                if (5-games == 1) {
+                    message += "\n&7Zagraj jeszcze &d%d &7grę, aby poznać swoją &6rangę.\n".formatted(5-games);
+                } else {
+                    message += "\n&7Zagraj jeszcze &d%d &7gry, aby poznać swoją &6rangę.\n".formatted(5-games);
+                }
+            } else {
+                message += "\n&bTwoja aktualna &6&lranga &bto &7&l%s, &6&l%d &bpunktów.\n".formatted(getString(getRankDisplayName(elo, games)), getPointsLeft(elo));
+            }
+            message += "&7\n&6---------------------------------------";
+            sendNotificationAndMessage(p.getPlayer(), message);
         }
+    }
+
+    private static String getString(Component textComponent) {
+        TextComponent component = (TextComponent) textComponent;
+        return component.content();
+    }
+
+    private static void sendNotificationAndMessage(Player player, String message) {
+        BedWars.getInstance().getCommunicator().sendNotification(player.getName(), message);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
 
     private static double getEloValue(double elo, double averageElo, boolean gainedPoints) {
@@ -338,6 +367,17 @@ public class RankedHandler {
     }
 
 
+    public static int getPointsLeft(double elo) {
+        if (elo < 500) {
+            return 0;
+        }
+        if (elo > 2000) {
+            return (int) elo - 2000;
+        }
+        return (int) elo % 100;
+    }
+
+
     public static TextComponent getRankDisplayName(double elo, int gamesPlayed) {
         TextColor bronzeColor = TextColor.color(176, 141, 87);
         TextColor silverColor = TextColor.color(192, 192, 192);
@@ -387,6 +427,12 @@ public class RankedHandler {
         }
         if (elo < 1800) {
             return Component.text("Diament I").color(diamondColor);
+        }
+        if (elo < 1900) {
+            return Component.text("Diament II").color(diamondColor);
+        }
+        if (elo < 2000) {
+            return Component.text("Diament III").color(diamondColor);
         }
         return Component.text("Tytan").color(titanColor);
     }
@@ -440,6 +486,12 @@ public class RankedHandler {
         }
         if (elo < 1800) {
             return Component.text("D I").color(diamondColor);
+        }
+        if (elo < 1900) {
+            return Component.text("D II").color(diamondColor);
+        }
+        if (elo < 2000) {
+            return Component.text("D III").color(diamondColor);
         }
         return Component.text("Tytan").color(titanColor);
     }

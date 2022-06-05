@@ -4,6 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import io.github.mikolajbartela.BedWarsGuard;
+import io.github.reconsolidated.BedWars.AfterGameEnd.Items;
 import io.github.reconsolidated.BedWars.Chat.ChatMessageListener;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.CustomSpectator.MakeArmorsInvisible;
@@ -97,6 +98,7 @@ public class BedWars extends JavaPlugin implements Listener {
     public static Chat chat = null;
     private List<IronGolem> golems;
 
+    @Getter
     private BungeeChannelApi bungeeChannelApi;
 
     public static BedWarsGuard guard;
@@ -172,6 +174,7 @@ public class BedWars extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new ChatMessageListener(this), this);
         getServer().getPluginManager().registerEvents(new LimitItemPickup(this), this);
         getServer().getPluginManager().registerEvents(new CreatureSpawnListener(), this);
+        getServer().getPluginManager().registerEvents(new Items(), this);
 
         communicator = new JedisCommunicator();
         jedisRunnable = new JedisRunnable(this, communicator);
@@ -265,9 +268,6 @@ public class BedWars extends JavaPlugin implements Listener {
 
         Team.teamsLeft = TEAMS_COUNT;
 
-
-
-
     }
 
     public void releasePlayer(Player player) {
@@ -312,7 +312,7 @@ public class BedWars extends JavaPlugin implements Listener {
                 villager.setSilent(true);
                 villager.setAI(false);
                 villager.setCustomNameVisible(true);
-                villager.customName(Component.text("Zwykły sklep"));
+                villager.customName(Component.text(ChatColor.translateAlternateColorCodes('&', "&8[&a&l$&8] &bSklep")));
             }
             if (type == 2){
                 location.getWorld().setDifficulty(Difficulty.NORMAL);
@@ -322,7 +322,7 @@ public class BedWars extends JavaPlugin implements Listener {
                 zombie.setSilent(true);
                 zombie.setAI(false);
                 zombie.setCustomNameVisible(true);
-                zombie.customName(Component.text("Sklep Drużynowy"));
+                zombie.customName(Component.text(ChatColor.translateAlternateColorCodes('&', "&8[&d&l↑&8] &bUlepszenia")));
             }
         }
 
@@ -388,6 +388,11 @@ public class BedWars extends JavaPlugin implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()){
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bdproxycd %s 1 join %s %s".formatted(
+                            player.getName(),
+                            player.getName(),
+                            BedWars.getInstance().getQueueName()
+                    ));
                     bungeeChannelApi.connect(player, "bedwars_l");
                 }
             }
@@ -415,15 +420,17 @@ public class BedWars extends JavaPlugin implements Listener {
             }
         }
 
+
         for (Participant p : inactiveParticipants){
             handleParticipant(p);
         }
         for (Participant p : participants){
             handleParticipant(p);
 
-            if (!p.hasLost()){
+            if (!p.hasLost() && p.getTeam().getPlace() != 1){
                 p.getTeam().setPlace(1);
                 p.getPlayer().sendTitle(ChatColor.GREEN + "Zwycięstwo!", " ", 5, 100, 5);
+                vEffects.playEffect(p.getPlayer(), VisibleEffects.EFFECT_EVENT.VICTORY, p.getPlayer().getLocation().clone().add(0, 3, 0));
             }
             else{
                 p.getPlayer().sendTitle(" ", ChatColor.GOLD + "Wygrała drużyna " + winnerTeam.getChatColor() + winnerTeam.getName(), 5, 100, 5);
@@ -438,6 +445,17 @@ public class BedWars extends JavaPlugin implements Listener {
                 e.printStackTrace();
                 Bukkit.getLogger().info(ChatColor.RED + ("Rozgrywka rankingowa nie została zapisana, ze względu na " +
                         "błąd połączenia z bazą danych lub nieprawidłową liczbę drużyn (%d)").formatted(TEAMS_COUNT));
+
+
+                String message = ChatColor.translateAlternateColorCodes('&', "&Gra rankingowa " +
+                        "nie została zapisana ze względu na błąd serwera. Zgłoś to administratorowi! Kod błędu: B"
+                        + Bukkit.getServer().getPort());
+                for (Participant p : participants) {
+                    communicator.sendNotification(p.getPlayer().getName(), message);
+                }
+                for (Participant p : inactiveParticipants) {
+                    communicator.sendNotification(p.getPlayer().getName(), message);
+                }
             }
         }
 
@@ -447,7 +465,6 @@ public class BedWars extends JavaPlugin implements Listener {
     private void handleParticipant(Participant p) {
         int gold = p.getKills() * 50 + p.getFinalKills() * 100 + 50 + p.getBedsDestroyed() * 300;
         if (!p.hasLost()) gold += 300;
-        DatabaseFunctions.addGold(this, p.getPlayer(), gold);
 
         int exp = 0;
         if (p.getGameLoseTime() == null){
@@ -457,7 +474,14 @@ public class BedWars extends JavaPlugin implements Listener {
             exp += p.getGameLoseTime() / 100;
         }
         if (!p.hasLost()) exp += 50;
-        DatabaseFunctions.addExperience(this, p.getPlayer(), exp);
+
+        int finalGold = gold;
+        int finalExp = exp;
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            DatabaseFunctions.addGold(this, p.getPlayer(), finalGold);
+            DatabaseFunctions.addExperience(this, p.getPlayer(), finalExp);
+            DatabaseFunctions.increaseBattlePassProgress(p.getPlayer().getName(), finalExp);
+        });
 
     }
 

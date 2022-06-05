@@ -48,6 +48,7 @@ public class StartGameRunnable extends BukkitRunnable {
         }
 
         if (counter <= 5){
+            plugin.setOpen(false);
             plugin.onStart();
             this.cancel();
         } else {

@@ -39,6 +39,26 @@ public class DatabaseFunctions {
         }
     }
 
+    public static void increaseBattlePassProgress(String playerName, int increase) {
+        if (io.github.reconsolidated.visibleeffects.PostgreDB.DatabaseConnector.getSql() == null) {
+            Bukkit.getLogger().warning("Database is not connected.");
+            return;
+        }
+
+        try {
+            Statement statement = io.github.reconsolidated.visibleeffects.PostgreDB.DatabaseConnector.getSql().createStatement();
+
+            String sql = ("INSERT INTO battlepass_progress VALUES ('%s', 0) ON CONFLICT DO NOTHING; " +
+                    "UPDATE battlepass_progress SET progress = progress + %d WHERE player_name='%s'").formatted(
+                    playerName, increase, playerName);
+
+            statement.executeUpdate(sql);
+            statement.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
     private static void savePlayerDomain(BedWars plugin, PlayerGlobalDataDomain domain){
         new BukkitRunnable() {
             @Override

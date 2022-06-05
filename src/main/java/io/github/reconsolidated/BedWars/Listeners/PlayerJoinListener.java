@@ -1,6 +1,7 @@
 package io.github.reconsolidated.BedWars.Listeners;
 
 
+import io.github.reconsolidated.BedWars.AfterGameEnd.Items;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.CustomSpectator.CustomSpectator;
 import io.github.reconsolidated.BedWars.Participant;
@@ -123,6 +124,7 @@ public class PlayerJoinListener implements Listener {
                         + ChatColor.YELLOW + ").")));
 
                 player.getInventory().clear();
+                player.getInventory().setItem(8, Items.getLeaveItem());
                 for (PotionEffect effect : player.getActivePotionEffects()) {
                     player.removePotionEffect(effect.getType());
                 }

@@ -3,6 +3,7 @@ package io.github.reconsolidated.BedWars.Listeners;
 import io.github.reconsolidated.BedWars.BedWars;
 import io.github.reconsolidated.BedWars.Participant;
 import io.github.reconsolidated.BedWars.Teams.Team;
+import io.github.reconsolidated.visibleeffects.VisibleEffects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
@@ -16,6 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.ArrayList;
+
+import static io.github.reconsolidated.BedWars.BedWars.vEffects;
 
 public class BlockBreakListener implements Listener {
     private BedWars plugin;
@@ -42,6 +45,7 @@ public class BlockBreakListener implements Listener {
                         p.setBedsDestroyed(p.getBedsDestroyed() + 1);
                         teams.get(i).onBedDestroy();
                         Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Zniszczono łóżko drużyny: " + teams.get(i).getChatColor() + teams.get(i).getName());
+                        vEffects.playEffect(player, VisibleEffects.EFFECT_EVENT.BED_DESTROYED, event.getBlock().getLocation().clone().add(0, 3, 0));
 
                         for (Participant o : plugin.getParticipants()) {
                             if (o.getTeam().ID != i) {
